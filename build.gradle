@@ -1,0 +1,6 @@
+subprojects {
+    apply plugin: 'java'
+
+    group = 'com.vecoo.extraapi'
+    version = '1.0.0'
+}
