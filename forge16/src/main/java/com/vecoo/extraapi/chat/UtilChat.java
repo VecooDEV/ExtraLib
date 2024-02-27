@@ -9,18 +9,21 @@ import net.minecraft.util.text.event.ClickEvent;
 
 public class UtilChat {
     public static ITextComponent formatMessage(String message) {
-        return ITextComponent.Serializer.fromJson(message.replace("&", "§").trim());
+        return ITextComponent.Serializer.fromJson(message.replace("&", "\u00a7").trim());
     }
 
     public static ITextComponent clickableMessage(String message, String command) {
-        return ITextComponent.Serializer.fromJson(message.replace("&", "§").trim()).setStyle(Style.EMPTY.withClickEvent(
+        return ITextComponent.Serializer.fromJson(formatMessage(message).getString()).setStyle(Style.EMPTY.withClickEvent(
                 new ClickEvent(ClickEvent.Action.RUN_COMMAND, command)));
     }
 
-    public static void clickableBroadcast(String message, String command, MinecraftServer server) {
-        ITextComponent component = ITextComponent.Serializer.fromJson(message.replace("&", "§").trim()).setStyle(Style.EMPTY.withClickEvent(
-                new ClickEvent(ClickEvent.Action.RUN_COMMAND, command)));
+    public static void broadcast(String message, MinecraftServer server) {
+        server.getPlayerList().broadcastMessage(formatMessage(message), ChatType.CHAT, Util.NIL_UUID);
+    }
 
+    public static void clickableBroadcast(String message, String command, MinecraftServer server) {
+        ITextComponent component = ITextComponent.Serializer.fromJson(formatMessage(message).getString()).setStyle(Style.EMPTY.withClickEvent(
+                new ClickEvent(ClickEvent.Action.RUN_COMMAND, command)));
         server.getPlayerList().broadcastMessage(component, ChatType.CHAT, Util.NIL_UUID);
     }
 }
