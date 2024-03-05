@@ -38,6 +38,6 @@ public class UtilPlayer {
             return false;
         }
 
-        return (PermissionAPI.getPermission(player, permissionNode) || player.hasPermissions(4));
+        return (PermissionAPI.getPermission(player, permissionNode) || player.hasPermissions(2));
     }
 }
