@@ -4,7 +4,7 @@ license="All Rights Reserved"
 
 [[mods]]
 modId="extrasapi"
-version="1.1.0"
+version="1.1.1"
 displayName="ExtrasAPI"
 authors="Vecoo"
 description="API for various mods."

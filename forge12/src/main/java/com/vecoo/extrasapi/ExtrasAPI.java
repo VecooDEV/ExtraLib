@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
 @Mod(
         modid = ExtrasAPI.MOD_ID,
         name = "ExtrasAPI",
-        version = "1.1.0",
+        version = "1.1.1",
         acceptableRemoteVersions = "*"
 )
 public class ExtrasAPI {
@@ -23,7 +23,7 @@ public class ExtrasAPI {
 
     @Mod.EventHandler
     public void onServerStarting(FMLServerStartingEvent event) {
-        server = event.getServer();
+        this.server = event.getServer();
     }
 
     public static ExtrasAPI getInstance() {
