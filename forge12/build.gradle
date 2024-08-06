@@ -5,13 +5,12 @@ plugins {
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(11)
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 
-forgeVersion = "1.16.5"
+forgeVersion = "1.12.2"
 
 minecraft {
-    mappings channel: 'official', version: '1.16.5'
-    copyIdeResources = true
+    mappings channel: 'stable', version: '39-1.12'
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
@@ -19,7 +18,7 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 repositories {}
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.16.5-36.2.34'
+    minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2860'
 }
 
 shadowJar {

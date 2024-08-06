@@ -1,7 +1,8 @@
-package com.vecoo.extraapi.gson;
+package com.vecoo.extrasapi.gson;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.vecoo.extrasapi.ExtrasAPI;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -70,13 +71,12 @@ public abstract class UtilGson {
             writer.close();
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            ExtrasAPI.getLogger().error("Write file sync error");
             return false;
         }
     }
 
-    public static CompletableFuture<Boolean> readFileAsync(String filePath, String filename,
-                                                           Consumer<String> callback) {
+    public static CompletableFuture<Boolean> readFileAsync(String filePath, String filename, Consumer<String> callback) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
         ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -116,6 +116,7 @@ public abstract class UtilGson {
         try {
             Scanner reader = new Scanner(file);
             String data = "";
+
             while (reader.hasNextLine()) {
                 data += reader.nextLine();
             }
@@ -123,7 +124,7 @@ public abstract class UtilGson {
             callback.accept(data);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            ExtrasAPI.getLogger().error("Read file sync error");
             return false;
         }
     }

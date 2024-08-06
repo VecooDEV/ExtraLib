@@ -1,0 +1,17 @@
+[
+  {
+    "modid": "extrasapi",
+    "name": "ExtrasAPI",
+    "description": "API for various mods.",
+    "version": "1.1.0",
+    "mcversion": "1.12.2",
+    "logoFile": "",
+    "url": "",
+    "updateUrl": "",
+    "authorList": ["Vecoo"],
+    "credits": "Vecoo",
+    "parent": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]

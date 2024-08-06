@@ -1,9 +1,9 @@
-package com.vecoo.extraapi.chat;
+package com.vecoo.extrasapi.chat;
 
+import com.vecoo.extrasapi.ExtrasAPI;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.server.MinecraftServer;
 
 public class UtilChat {
     public static Component formatMessage(String message) {
@@ -15,13 +15,13 @@ public class UtilChat {
                 new ClickEvent(ClickEvent.Action.RUN_COMMAND, command)));
     }
 
-    public static void broadcast(String message, MinecraftServer server) {
-        server.getPlayerList().broadcastSystemMessage(formatMessage(message), false);
+    public static void broadcast(String message) {
+        ExtrasAPI.getInstance().getServer().getPlayerList().broadcastSystemMessage(formatMessage(message), false);
     }
 
-    public static void clickableBroadcast(String message, String command, MinecraftServer server) {
+    public static void clickableBroadcast(String message, String command) {
         Component component = Component.literal(formatMessage(message).getString()).setStyle(Style.EMPTY.withClickEvent(
                 new ClickEvent(ClickEvent.Action.RUN_COMMAND, command)));
-        server.getPlayerList().broadcastSystemMessage(component, false);
+        ExtrasAPI.getInstance().getServer().getPlayerList().broadcastSystemMessage(component, false);
     }
 }
