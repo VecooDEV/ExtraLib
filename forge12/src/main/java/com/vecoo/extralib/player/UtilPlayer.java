@@ -1,4 +1,4 @@
-package com.vecoo.extrasapi.player;
+package com.vecoo.extralib.player;
 
 import net.minecraftforge.common.UsernameCache;
 

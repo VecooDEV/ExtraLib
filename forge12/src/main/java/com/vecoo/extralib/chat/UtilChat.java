@@ -1,6 +1,6 @@
-package com.vecoo.extrasapi.chat;
+package com.vecoo.extralib.chat;
 
-import com.vecoo.extrasapi.ExtrasAPI;
+import com.vecoo.extralib.ExtraLib;
 import net.minecraft.util.text.TextComponentString;
 
 public class UtilChat {
@@ -13,6 +13,6 @@ public class UtilChat {
     }
 
     public static void broadcast(String message) {
-        ExtrasAPI.getInstance().getServer().getPlayerList().sendMessage(formatMessage(message));
+        ExtraLib.getInstance().getServer().getPlayerList().sendMessage(formatMessage(message));
     }
 }

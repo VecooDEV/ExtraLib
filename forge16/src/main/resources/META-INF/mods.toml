@@ -3,20 +3,20 @@ loaderVersion="[36,)"
 license="All Rights Reserved"
 
 [[mods]]
-modId="extrasapi"
-version="1.1.1"
-displayName="ExtrasAPI"
+modId="extralib"
+version="1.1.2"
+displayName="ExtraLib"
 authors="Vecoo"
-description="API for various mods."
+description="Library for various mods."
 
-[[dependencies.extrasapi]]
+[[dependencies.extralib]]
 modId="forge"
 mandatory=true
 versionRange="[36,)"
 ordering="NONE"
 side="BOTH"
 
-[[dependencies.extrasapi]]
+[[dependencies.extralib]]
 modId="minecraft"
 mandatory=true
 versionRange="[1.16,)"

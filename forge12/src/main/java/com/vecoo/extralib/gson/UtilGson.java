@@ -1,8 +1,8 @@
-package com.vecoo.extrasapi.gson;
+package com.vecoo.extralib.gson;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.vecoo.extrasapi.ExtrasAPI;
+import com.vecoo.extralib.ExtraLib;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -71,7 +71,7 @@ public abstract class UtilGson {
             writer.close();
             return true;
         } catch (Exception e) {
-            ExtrasAPI.getLogger().error("Write file sync error");
+            ExtraLib.getLogger().error("Write file sync error");
             return false;
         }
     }
@@ -124,7 +124,7 @@ public abstract class UtilGson {
             callback.accept(data);
             return true;
         } catch (Exception e) {
-            ExtrasAPI.getLogger().error("Read file sync error");
+            ExtraLib.getLogger().error("Read file sync error");
             return false;
         }
     }

@@ -1,6 +1,6 @@
-package com.vecoo.extrasapi.chat;
+package com.vecoo.extralib.chat;
 
-import com.vecoo.extrasapi.ExtrasAPI;
+import com.vecoo.extralib.ExtraLib;
 import net.minecraft.util.Util;
 import net.minecraft.util.text.ChatType;
 import net.minecraft.util.text.StringTextComponent;
@@ -22,11 +22,11 @@ public class UtilChat {
     }
 
     public static void broadcast(String message) {
-        ExtrasAPI.getInstance().getServer().getPlayerList().broadcastMessage(formatMessage(message), ChatType.CHAT, Util.NIL_UUID);
+        ExtraLib.getInstance().getServer().getPlayerList().broadcastMessage(formatMessage(message), ChatType.CHAT, Util.NIL_UUID);
     }
 
     public static void clickableBroadcast(String message, String command) {
         StringTextComponent text = (StringTextComponent) formatMessage(message).setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command)));
-        ExtrasAPI.getInstance().getServer().getPlayerList().broadcastMessage(text, ChatType.CHAT, Util.NIL_UUID);
+        ExtraLib.getInstance().getServer().getPlayerList().broadcastMessage(text, ChatType.CHAT, Util.NIL_UUID);
     }
 }

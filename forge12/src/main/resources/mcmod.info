@@ -1,9 +1,9 @@
 [
   {
-    "modid": "extrasapi",
-    "name": "ExtrasAPI",
-    "description": "API for various mods.",
-    "version": "1.1.1",
+    "modid": "extralib",
+    "name": "ExtraLib",
+    "description": "Library for various mods.",
+    "version": "1.1.2",
     "mcversion": "1.12.2",
     "logoFile": "",
     "url": "",

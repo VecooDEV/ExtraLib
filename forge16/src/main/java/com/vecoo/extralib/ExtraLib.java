@@ -1,4 +1,4 @@
-package com.vecoo.extrasapi;
+package com.vecoo.extralib;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
@@ -8,16 +8,16 @@ import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(ExtrasAPI.MOD_ID)
-public class ExtrasAPI {
-    public static final String MOD_ID = "extrasapi";
-    private static final Logger LOGGER = LogManager.getLogger("ExtrasAPI");
+@Mod(ExtraLib.MOD_ID)
+public class ExtraLib {
+    public static final String MOD_ID = "extralib";
+    private static final Logger LOGGER = LogManager.getLogger("ExtraLib");
 
-    private static ExtrasAPI instance;
+    private static ExtraLib instance;
 
     private MinecraftServer server;
 
-    public ExtrasAPI() {
+    public ExtraLib() {
         instance = this;
 
         MinecraftForge.EVENT_BUS.register(this);
@@ -28,7 +28,7 @@ public class ExtrasAPI {
         server = event.getServer();
     }
 
-    public static ExtrasAPI getInstance() {
+    public static ExtraLib getInstance() {
         return instance;
     }
 

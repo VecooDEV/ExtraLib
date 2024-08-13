@@ -1,4 +1,4 @@
-package com.vecoo.extrasapi;
+package com.vecoo.extralib;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.common.Mod;
@@ -7,17 +7,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Mod(
-        modid = ExtrasAPI.MOD_ID,
-        name = "ExtrasAPI",
-        version = "1.1.1",
+        modid = ExtraLib.MOD_ID,
+        name = "ExtraLib",
+        version = "1.1.2",
         acceptableRemoteVersions = "*"
 )
-public class ExtrasAPI {
-    public static final String MOD_ID = "extrasapi";
-    private static final Logger LOGGER = LogManager.getLogger("ExtrasAPI");
+public class ExtraLib {
+    public static final String MOD_ID = "extralib";
+    private static final Logger LOGGER = LogManager.getLogger("ExtraLib");
 
-    @Mod.Instance(ExtrasAPI.MOD_ID)
-    private static ExtrasAPI instance;
+    @Mod.Instance(ExtraLib.MOD_ID)
+    private static ExtraLib instance;
 
     private MinecraftServer server;
 
@@ -26,7 +26,7 @@ public class ExtrasAPI {
         this.server = event.getServer();
     }
 
-    public static ExtrasAPI getInstance() {
+    public static ExtraLib getInstance() {
         return instance;
     }
 

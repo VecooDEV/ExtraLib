@@ -1,6 +1,6 @@
-package com.vecoo.extrasapi.chat;
+package com.vecoo.extralib.chat;
 
-import com.vecoo.extrasapi.ExtrasAPI;
+import com.vecoo.extralib.ExtraLib;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -16,12 +16,12 @@ public class UtilChat {
     }
 
     public static void broadcast(String message) {
-        ExtrasAPI.getInstance().getServer().getPlayerList().broadcastSystemMessage(formatMessage(message), false);
+        ExtraLib.getInstance().getServer().getPlayerList().broadcastSystemMessage(formatMessage(message), false);
     }
 
     public static void clickableBroadcast(String message, String command) {
         Component component = Component.literal(formatMessage(message).getString()).setStyle(Style.EMPTY.withClickEvent(
                 new ClickEvent(ClickEvent.Action.RUN_COMMAND, command)));
-        ExtrasAPI.getInstance().getServer().getPlayerList().broadcastSystemMessage(component, false);
+        ExtraLib.getInstance().getServer().getPlayerList().broadcastSystemMessage(component, false);
     }
 }
