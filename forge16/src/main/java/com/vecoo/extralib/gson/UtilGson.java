@@ -138,6 +138,6 @@ public abstract class UtilGson {
     }
 
     public static Gson newGson() {
-        return new GsonBuilder().setPrettyPrinting().create();
+        return new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     }
 }
