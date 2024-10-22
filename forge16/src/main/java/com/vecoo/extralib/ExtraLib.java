@@ -1,5 +1,7 @@
 package com.vecoo.extralib;
 
+import com.vecoo.extralib.config.ServerConfig;
+import com.vecoo.extralib.storage.player.PlayerProvider;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -15,10 +17,16 @@ public class ExtraLib {
 
     private static ExtraLib instance;
 
+    private ServerConfig config;
+
+    private PlayerProvider playerProvider;
+
     private MinecraftServer server;
 
     public ExtraLib() {
         instance = this;
+
+        this.loadConfig();
 
         MinecraftForge.EVENT_BUS.register(this);
     }
@@ -26,7 +34,27 @@ public class ExtraLib {
     @SubscribeEvent
     public void onServerStarting(FMLServerStartingEvent event) {
         server = event.getServer();
+        this.loadStorage();
     }
+
+    public void loadConfig() {
+        try {
+            this.config = new ServerConfig();
+            this.config.init();
+        } catch (Exception e) {
+            LOGGER.error("[ExtraLib] Error load config.");
+        }
+    }
+
+    public void loadStorage() {
+        try {
+            this.playerProvider = new PlayerProvider();
+            this.playerProvider.init();
+        } catch (Exception e) {
+            LOGGER.error("[ExtraLib] Error load storage.");
+        }
+    }
+
 
     public static ExtraLib getInstance() {
         return instance;
@@ -38,5 +66,13 @@ public class ExtraLib {
 
     public MinecraftServer getServer() {
         return instance.server;
+    }
+
+    public ServerConfig getConfig() {
+        return instance.config;
+    }
+
+    public PlayerProvider getPlayerProvider() {
+        return instance.playerProvider;
     }
 }

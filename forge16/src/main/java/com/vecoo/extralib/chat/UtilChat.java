@@ -8,7 +8,7 @@ import net.minecraft.util.text.Style;
 import net.minecraft.util.text.event.ClickEvent;
 
 public class UtilChat {
-    public static String formattedString(String unformattedString) {
+    private static String formattedString(String unformattedString) {
         return unformattedString.replace("&", "\u00a7");
     }
 

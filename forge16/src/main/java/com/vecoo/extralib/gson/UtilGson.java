@@ -71,7 +71,7 @@ public abstract class UtilGson {
             writer.close();
             return true;
         } catch (Exception e) {
-            ExtraLib.getLogger().error("Write file sync error");
+            ExtraLib.getLogger().error("[ExtraLib] Write file sync error");
             return false;
         }
     }
@@ -115,16 +115,16 @@ public abstract class UtilGson {
     public static boolean readFileSync(File file, Consumer<String> callback) {
         try {
             Scanner reader = new Scanner(file);
-            String data = "";
+            StringBuilder data = new StringBuilder();
 
             while (reader.hasNextLine()) {
-                data += reader.nextLine();
+                data.append(reader.nextLine());
             }
             reader.close();
-            callback.accept(data);
+            callback.accept(data.toString());
             return true;
         } catch (Exception e) {
-            ExtraLib.getLogger().error("Read file sync error");
+            ExtraLib.getLogger().error("[ExtraLib] Read file sync error");
             return false;
         }
     }
