@@ -7,7 +7,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class UtilPlayer {
-    private static Map<String, UUID> username = UtilPlayer.invertMap(UsernameCache.getMap());
+    private static final Map<String, UUID> username = UtilPlayer.invertMap(UsernameCache.getMap());
 
     public static <K, V> Map<V, K> invertMap(Map<K, V> map) {
         return map.entrySet().stream().collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));

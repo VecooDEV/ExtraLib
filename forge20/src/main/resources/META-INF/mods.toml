@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[36,)"
+loaderVersion="[47,)"
 license="All Rights Reserved"
 
 [[mods]]
@@ -13,13 +13,13 @@ description="Library for various mods."
 [[dependencies.extralib]]
 modId="forge"
 mandatory=true
-versionRange="[36,)"
+versionRange="[47,)"
 ordering="NONE"
 side="BOTH"
 
 [[dependencies.extralib]]
 modId="minecraft"
 mandatory=true
-versionRange="[1.16,)"
+versionRange="[1.20,)"
 ordering="NONE"
 side="BOTH"

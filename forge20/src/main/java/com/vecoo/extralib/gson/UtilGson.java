@@ -41,7 +41,7 @@ public abstract class UtilGson {
         )) {
             ByteBuffer buffer = ByteBuffer.wrap(data.getBytes(StandardCharsets.UTF_8));
 
-            fileChannel.write(buffer, 0, buffer, new CompletionHandler<Integer, ByteBuffer>() {
+            fileChannel.write(buffer, 0, buffer, new CompletionHandler<>() {
                 @Override
                 public void completed(Integer result, ByteBuffer attachment) {
                     attachment.clear();

@@ -4,7 +4,7 @@ import com.vecoo.extralib.ExtraLib;
 import net.minecraft.util.text.TextComponentString;
 
 public class UtilChat {
-    public static String formattedString(String unformattedString) {
+    private static String formattedString(String unformattedString) {
         return unformattedString.replace("&", "\u00a7");
     }
 
