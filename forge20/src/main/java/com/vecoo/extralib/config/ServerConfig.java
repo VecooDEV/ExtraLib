@@ -32,6 +32,7 @@ public class ServerConfig {
             }
         } catch (Exception e) {
             ExtraLib.getLogger().error("[ExtraLib] Error in config.");
+            write();
         }
     }
 }
