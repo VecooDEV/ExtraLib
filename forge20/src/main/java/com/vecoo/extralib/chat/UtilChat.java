@@ -6,7 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 
 public class UtilChat {
-    private static Component formatMessage(String message) {
+    public static Component formatMessage(String message) {
         return Component.literal(message.replace("&", "\u00a7").trim());
     }
 
