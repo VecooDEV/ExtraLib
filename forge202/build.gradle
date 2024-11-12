@@ -23,7 +23,7 @@ dependencies {
 shadowJar {
     configurations = [project.configurations.shadow]
     setArchiveClassifier('')
-    setArchiveBaseName("${rootProject.name}-forge")
+    setArchiveBaseName("${rootProject.name}")
 }
 
 jar.finalizedBy('shadowJar')
