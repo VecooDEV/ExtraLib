@@ -16,4 +16,4 @@ plugins {
 
 rootProject.name = 'ExtraLib'
 
-include 'forge12', 'forge16', 'forge201', "forge202"
+include 'forge12', 'forge16', 'forge19', 'forge201', "forge202"
