@@ -1,6 +1,5 @@
 package com.vecoo.extralib.permission;
 
-import com.vecoo.extralib.ExtraLib;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.server.permission.DefaultPermissionLevel;
@@ -41,9 +40,8 @@ public class UtilPermissions {
         try {
             return PermissionAPI.hasPermission(source.getPlayerOrException(), node) || permissionMap.get(node) == 0;
         } catch (Exception e) {
-            ExtraLib.getLogger().error("[ExtraLib] Unknown source of permission.");
+            return true;
         }
-        return false;
     }
 
     public static boolean hasPermission(ServerPlayerEntity player, String node, HashMap<String, Integer> permissionMap) {

@@ -3,7 +3,7 @@
     "modid": "extralib",
     "name": "ExtraLib",
     "description": "Library for various mods.",
-    "version": "1.2.2",
+    "version": "1.2.3",
     "mcversion": "1.12.2",
     "logoFile": "logo.png",
     "authorList": ["Vecoo"]
