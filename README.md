@@ -5,6 +5,7 @@ Library for mods.
 * [LegendControl](https://modrinth.com/mod/legendcontrol)
 * [ChunkLimiter](https://modrinth.com/mod/chunklimiter)
 * [ExtraQuests](https://modrinth.com/mod/extraquests)
+* [ExtraRTP](https://modrinth.com/mod/extrartp)
 
 ## FAQ
 **Q: Do I need to install this on both server and client?**  
