@@ -1,5 +1,6 @@
 package com.vecoo.extralib;
 
+import com.vecoo.extralib.config.LocaleConfig;
 import com.vecoo.extralib.config.ServerConfig;
 import com.vecoo.extralib.storage.player.PlayerProvider;
 import net.minecraft.server.MinecraftServer;
@@ -18,6 +19,7 @@ public class ExtraLib {
     private static ExtraLib instance;
 
     private ServerConfig config;
+    private LocaleConfig locale;
 
     private PlayerProvider playerProvider;
 
@@ -41,6 +43,8 @@ public class ExtraLib {
         try {
             this.config = new ServerConfig();
             this.config.init();
+            this.locale = new LocaleConfig();
+            this.locale.init();
         } catch (Exception e) {
             LOGGER.error("[ExtraLib] Error load config.");
         }
@@ -69,6 +73,10 @@ public class ExtraLib {
 
     public ServerConfig getConfig() {
         return instance.config;
+    }
+
+    public LocaleConfig getLocale() {
+        return instance.locale;
     }
 
     public PlayerProvider getPlayerProvider() {

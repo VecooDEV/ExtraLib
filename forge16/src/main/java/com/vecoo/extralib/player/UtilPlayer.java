@@ -1,5 +1,6 @@
 package com.vecoo.extralib.player;
 
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.common.UsernameCache;
 
 import java.util.Map;
@@ -13,5 +14,9 @@ public class UtilPlayer {
 
     public static boolean hasUUID(String player) {
         return UsernameCache.getMap().entrySet().stream().collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey)).containsKey(player);
+    }
+
+    public static boolean isOp(ServerPlayerEntity player) {
+        return player.hasPermissions(2);
     }
 }
