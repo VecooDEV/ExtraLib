@@ -1,9 +1,9 @@
 package com.vecoo.extralib.storage.player;
 
 import com.google.gson.Gson;
-import com.vecoo.extralib.ExtraLib;
 import com.vecoo.extralib.gson.UtilGson;
 import com.vecoo.extralib.world.UtilWorld;
+import net.minecraft.server.MinecraftServer;
 
 import java.io.File;
 import java.util.HashMap;
@@ -11,11 +11,12 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public class PlayerProvider {
-    private final String filePath = UtilWorld.worldDirectory(ExtraLib.getInstance().getConfig().getPlayerStorage());
+    private final String filePath;
     private final HashMap<UUID, PlayerStorage> map;
 
-    public PlayerProvider() {
+    public PlayerProvider(String filePath, MinecraftServer server) {
         this.map = new HashMap<>();
+        this.filePath = UtilWorld.worldDirectory(filePath, server);
     }
 
     public PlayerStorage getPlayerStorage(UUID playerUUID) {
@@ -48,8 +49,7 @@ public class PlayerProvider {
 
         for (String file : list) {
             UtilGson.readFileAsync(filePath, file, el -> {
-                Gson gson = UtilGson.newGson();
-                PlayerStorage player = gson.fromJson(el, PlayerStorage.class);
+                PlayerStorage player = UtilGson.newGson().fromJson(el, PlayerStorage.class);
                 this.map.put(player.getUuid(), player);
             });
         }

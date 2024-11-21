@@ -13,8 +13,8 @@ import net.minecraft.world.level.storage.LevelResource;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class UtilWorld {
-    public static Level getWorldByName(String worldName) {
-        for (Level world : ExtraLib.getInstance().getServer().getAllLevels()) {
+    public static Level getWorldByName(String worldName, MinecraftServer server) {
+        for (Level world : server.getAllLevels()) {
             if (world.dimension().location().getPath().equals(worldName.toLowerCase())) {
                 return world;
             }
@@ -22,8 +22,7 @@ public class UtilWorld {
         return null;
     }
 
-    public static String worldDirectory(String file) {
-        MinecraftServer server = ExtraLib.getInstance().getServer();
+    public static String worldDirectory(String file, MinecraftServer server) {
         if (server.isDedicatedServer()) {
             return file.replace("%directory%", "world");
         } else {

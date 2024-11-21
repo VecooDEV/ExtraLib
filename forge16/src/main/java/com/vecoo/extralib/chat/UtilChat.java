@@ -1,6 +1,6 @@
 package com.vecoo.extralib.chat;
 
-import com.vecoo.extralib.ExtraLib;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Util;
 import net.minecraft.util.text.ChatType;
 import net.minecraft.util.text.StringTextComponent;
@@ -38,15 +38,15 @@ public class UtilChat {
                 new ClickEvent(ClickEvent.Action.RUN_COMMAND, command))).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, formatMessage(text))));
     }
 
-    public static void broadcast(String message) {
-        ExtraLib.getInstance().getServer().getPlayerList().broadcastMessage(formatMessage(message), ChatType.CHAT, Util.NIL_UUID);
+    public static void broadcast(String message, MinecraftServer server) {
+        server.getPlayerList().broadcastMessage(formatMessage(message), ChatType.CHAT, Util.NIL_UUID);
     }
 
-    public static void clickableBroadcastCommand(String message, String command) {
-        ExtraLib.getInstance().getServer().getPlayerList().broadcastMessage(clickableMessageCommand(message, command), ChatType.CHAT, Util.NIL_UUID);
+    public static void clickableBroadcastCommand(String message, String command, MinecraftServer server) {
+        server.getPlayerList().broadcastMessage(clickableMessageCommand(message, command), ChatType.CHAT, Util.NIL_UUID);
     }
 
-    public static void clickableBroadcastURL(String message, String url) {
-        ExtraLib.getInstance().getServer().getPlayerList().broadcastMessage(clickableMessageURL(message, url), ChatType.CHAT, Util.NIL_UUID);
+    public static void clickableBroadcastURL(String message, String url, MinecraftServer server) {
+        server.getPlayerList().broadcastMessage(clickableMessageURL(message, url), ChatType.CHAT, Util.NIL_UUID);
     }
 }
