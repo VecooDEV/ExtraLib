@@ -28,11 +28,6 @@ public class UtilChat {
                 new HoverEvent(HoverEvent.Action.SHOW_TEXT, formatMessage(text))));
     }
 
-    public static StringTextComponent hoverMessageItem(String message, HoverEvent.ItemHover itemHover) {
-        return (StringTextComponent) formatMessage(message).setStyle(Style.EMPTY.withHoverEvent(
-                new HoverEvent(HoverEvent.Action.SHOW_ITEM, itemHover)));
-    }
-
     public static StringTextComponent clickableHoverMessageCommandText(String message, String command, String text) {
         return (StringTextComponent) formatMessage(message).setStyle(Style.EMPTY.withClickEvent(
                 new ClickEvent(ClickEvent.Action.RUN_COMMAND, command))).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, formatMessage(text))));

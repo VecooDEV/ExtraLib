@@ -15,8 +15,9 @@ public class PlayerProvider {
     private final HashMap<UUID, PlayerStorage> map;
 
     public PlayerProvider(String filePath, MinecraftServer server) {
-        this.map = new HashMap<>();
         this.filePath = UtilWorld.worldDirectory(filePath, server);
+
+        this.map = new HashMap<>();
     }
 
     public PlayerStorage getPlayerStorage(UUID playerUUID) {

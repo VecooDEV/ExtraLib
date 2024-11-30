@@ -1,11 +1,11 @@
-package com.vecoo.extralib.storage.player;
+package com.vecoo.extralib.storage;
 
 import com.vecoo.extralib.ExtraLib;
 
 import java.util.HashMap;
 import java.util.UUID;
 
-public class LibPlayerFactory {
+public class LibFactory {
     public static boolean hasCommandCooldown(UUID playerUUID, String command) {
         return ExtraLib.getInstance().getPlayerProvider().getPlayerStorage(playerUUID).hasKeyCooldown(command);
     }

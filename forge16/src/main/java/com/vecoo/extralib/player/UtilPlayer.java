@@ -2,6 +2,9 @@ package com.vecoo.extralib.player;
 
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.Util;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.common.UsernameCache;
 
 import java.util.Map;
@@ -17,8 +20,22 @@ public class UtilPlayer {
         return UsernameCache.getMap().entrySet().stream().collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey)).containsKey(player);
     }
 
-    public static boolean isOp(ServerPlayerEntity player) {
-        return player.hasPermissions(2);
+    public static String getPlayerName(UUID uuid) {
+        String playerName = UsernameCache.containsUUID(uuid) ? UsernameCache.getLastKnownUsername(uuid) : "Undefined";
+
+        if (playerName == null) {
+            playerName = "Undefined";
+        }
+
+        return playerName;
+    }
+
+    public static void sendMessage(UUID uuid, StringTextComponent message, MinecraftServer server) {
+        ServerPlayerEntity player = server.getPlayerList().getPlayer(uuid);
+
+        if (player != null) {
+            player.sendMessage(message, Util.NIL_UUID);
+        }
     }
 
     public static int countItemStack(ServerPlayerEntity player, ItemStack itemStack) {
@@ -32,6 +49,7 @@ public class UtilPlayer {
                 }
             }
         }
+
         return count;
     }
 
