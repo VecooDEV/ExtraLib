@@ -42,18 +42,18 @@ public class UtilWorld {
         return blockCount;
     }
 
-    public static int countBlocksInChunk(IChunk chunk, String tag) {
-        int blockCount = 0;
-
-        for (int x = 0; x < 16; x++) {
-            for (int z = 0; z < 16; z++) {
-                for (int y = 0; y < chunk.getMaxBuildHeight(); y++) {
-                    if (BlockTags.bind(tag).contains(chunk.getBlockState(new BlockPos(x + chunk.getPos().x * 16, y, z + chunk.getPos().z * 16)).getBlock())) {
-                        blockCount++;
-                    }
-                }
-            }
-        }
-        return blockCount;
-    }
+//    public static int countBlocksInChunk(IChunk chunk, String tag) {
+//        int blockCount = 0;
+//
+//        for (int x = 0; x < 16; x++) {
+//            for (int z = 0; z < 16; z++) {
+//                for (int y = 0; y < chunk.getMaxBuildHeight(); y++) {
+//                    if (BlockTags.bind(tag).contains(chunk.getBlockState(new BlockPos(x + chunk.getPos().x * 16, y, z + chunk.getPos().z * 16)).getBlock())) {
+//                        blockCount++;
+//                    }
+//                }
+//            }
+//        }
+//        return blockCount;
+//    }
 }

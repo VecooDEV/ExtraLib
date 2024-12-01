@@ -1,5 +1,7 @@
 package com.vecoo.extralib.player;
 
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.UsernameCache;
@@ -17,8 +19,22 @@ public class UtilPlayer {
         return UsernameCache.getMap().entrySet().stream().collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey)).containsKey(player);
     }
 
-    public static boolean isOp(ServerPlayer player) {
-        return player.hasPermissions(2);
+    public static String getPlayerName(UUID uuid) {
+        String playerName = UsernameCache.containsUUID(uuid) ? UsernameCache.getLastKnownUsername(uuid) : "Undefined";
+
+        if (playerName == null) {
+            playerName = "Undefined";
+        }
+
+        return playerName;
+    }
+
+    public static void sendMessageOffline(UUID uuid, Component message, MinecraftServer server) {
+        ServerPlayer player = server.getPlayerList().getPlayer(uuid);
+
+        if (player != null) {
+            player.sendSystemMessage(message);
+        }
     }
 
     public static int countItemStack(ServerPlayer player, ItemStack itemStack) {
@@ -32,6 +48,7 @@ public class UtilPlayer {
                 }
             }
         }
+
         return count;
     }
 

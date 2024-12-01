@@ -30,7 +30,7 @@ public class UtilPlayer {
         return playerName;
     }
 
-    public static void sendMessage(UUID uuid, StringTextComponent message, MinecraftServer server) {
+    public static void sendMessageOffline(UUID uuid, StringTextComponent message, MinecraftServer server) {
         ServerPlayerEntity player = server.getPlayerList().getPlayer(uuid);
 
         if (player != null) {

@@ -6,11 +6,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.registries.ForgeRegistries;
 
-public class UtilItemStack {
+public class UtilItem {
     public static ItemStack parseItemId(String itemId) {
         Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemId));
         if (item == null) {
-            return new ItemStack(Items.BARRIER);
+            return new ItemStack(Items.STONE);
         }
 
         return item.getDefaultInstance();

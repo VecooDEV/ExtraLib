@@ -23,10 +23,6 @@ public class PlayerStorage {
         return this.keyCooldown;
     }
 
-    public boolean hasKeyCooldown(String command) {
-        return this.keyCooldown.containsKey(command);
-    }
-
     public void addKeyCooldown(String command, long time) {
         this.keyCooldown.put(command, time);
         ExtraLib.getInstance().getPlayerProvider().updatePlayerStorage(this);

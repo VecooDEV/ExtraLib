@@ -33,12 +33,7 @@ public abstract class UtilGson {
             file.getParentFile().mkdirs();
         }
 
-        try (AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(
-                path,
-                StandardOpenOption.WRITE,
-                StandardOpenOption.CREATE,
-                StandardOpenOption.TRUNCATE_EXISTING
-        )) {
+        try (AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
             ByteBuffer buffer = ByteBuffer.wrap(data.getBytes(StandardCharsets.UTF_8));
 
             fileChannel.write(buffer, 0, buffer, new CompletionHandler<Integer, ByteBuffer>() {

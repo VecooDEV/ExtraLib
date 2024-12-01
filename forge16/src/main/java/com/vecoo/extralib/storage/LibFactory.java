@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public class LibFactory {
     public static boolean hasCommandCooldown(UUID playerUUID, String command) {
-        return ExtraLib.getInstance().getPlayerProvider().getPlayerStorage(playerUUID).hasKeyCooldown(command);
+        return ExtraLib.getInstance().getPlayerProvider().getPlayerStorage(playerUUID).getKeyCooldown().containsKey(command);
     }
 
     public static HashMap<String, Long> getCommandCooldown(UUID playerUUID) {
