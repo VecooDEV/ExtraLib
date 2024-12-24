@@ -1,5 +1,6 @@
 package com.vecoo.extralib.player;
 
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -29,12 +30,21 @@ public class UtilPlayer {
         return playerName;
     }
 
-    public static void sendMessageOffline(UUID uuid, Component message, MinecraftServer server) {
+    public static void sendMessageUuid(UUID uuid, Component message, MinecraftServer server) {
         ServerPlayer player = server.getPlayerList().getPlayer(uuid);
 
         if (player != null) {
             player.sendSystemMessage(message);
         }
+    }
+
+    public static ServerPlayer getPlayer(String playerName, MinecraftServer server) {
+        return server.getPlayerList().getPlayerByName(playerName);
+    }
+
+    public static CommandSourceStack getSource(String sourceName, MinecraftServer server) {
+        ServerPlayer player = server.getPlayerList().getPlayerByName(sourceName);
+        return (player != null) ? player.createCommandSourceStack() : server.createCommandSourceStack();
     }
 
     public static int countItemStack(ServerPlayer player, ItemStack itemStack) {

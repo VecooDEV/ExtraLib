@@ -1,5 +1,6 @@
 package com.vecoo.extralib.player;
 
+import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
@@ -30,12 +31,21 @@ public class UtilPlayer {
         return playerName;
     }
 
-    public static void sendMessageOffline(UUID uuid, StringTextComponent message, MinecraftServer server) {
+    public static void sendMessageUuid(UUID uuid, StringTextComponent message, MinecraftServer server) {
         ServerPlayerEntity player = server.getPlayerList().getPlayer(uuid);
 
         if (player != null) {
             player.sendMessage(message, Util.NIL_UUID);
         }
+    }
+
+    public static ServerPlayerEntity getPlayer(String playerName, MinecraftServer server) {
+        return server.getPlayerList().getPlayerByName(playerName);
+    }
+
+    public static CommandSource getSource(String sourceName, MinecraftServer server) {
+        ServerPlayerEntity player = server.getPlayerList().getPlayerByName(sourceName);
+        return (player != null) ? player.createCommandSourceStack() : server.createCommandSourceStack();
     }
 
     public static int countItemStack(ServerPlayerEntity player, ItemStack itemStack) {

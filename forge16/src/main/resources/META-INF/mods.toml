@@ -4,7 +4,7 @@ license="All Rights Reserved"
 
 [[mods]]
 modId="extralib"
-version="1.4.0"
+version="1.4.1"
 displayName="ExtraLib"
 logoFile ="logo.png"
 authors="Vecoo"

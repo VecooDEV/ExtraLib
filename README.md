@@ -6,6 +6,7 @@ Library for mods.
 * [ChunkLimiter](https://modrinth.com/mod/chunklimiter)
 * [ExtraQuests](https://modrinth.com/mod/extraquests)
 * [ExtraRTP](https://modrinth.com/mod/extrartp)
+* [CurrencyHandler](https://modrinth.com/mod/currencyhandler)
 
 ## FAQ
 **Q: Do I need to install this on both server and client?**  
