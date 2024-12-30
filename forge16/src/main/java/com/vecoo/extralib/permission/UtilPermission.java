@@ -1,9 +1,13 @@
 package com.vecoo.extralib.permission;
 
+import com.mojang.authlib.GameProfile;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.server.permission.DefaultPermissionLevel;
 import net.minecraftforge.server.permission.PermissionAPI;
+import net.minecraftforge.server.permission.context.Context;
+
+import java.util.UUID;
 
 public class UtilPermission {
     public static boolean hasPermission(CommandSource source, String node) {
@@ -25,6 +29,15 @@ public class UtilPermission {
         } else {
             PermissionAPI.registerNode(node, DefaultPermissionLevel.OP, "");
             return hasPermission(player, node);
+        }
+    }
+
+    public static boolean hasPermission(UUID playerUuid, String playerName, String node) {
+        if (PermissionAPI.getPermissionHandler().getRegisteredNodes().contains(node)) {
+            return PermissionAPI.hasPermission(new GameProfile(playerUuid, playerName), node, new Context());
+        } else {
+            PermissionAPI.registerNode(node, DefaultPermissionLevel.OP, "");
+            return hasPermission(playerUuid, playerName, node);
         }
     }
 }
