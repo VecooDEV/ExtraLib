@@ -5,6 +5,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Util;
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.common.UsernameCache;
 
@@ -32,6 +33,14 @@ public class UtilPlayer {
     }
 
     public static void sendMessageUuid(UUID uuid, StringTextComponent message, MinecraftServer server) {
+        ServerPlayerEntity player = server.getPlayerList().getPlayer(uuid);
+
+        if (player != null) {
+            player.sendMessage(message, Util.NIL_UUID);
+        }
+    }
+
+    public static void sendMessageUuid(UUID uuid, IFormattableTextComponent message, MinecraftServer server) {
         ServerPlayerEntity player = server.getPlayerList().getPlayer(uuid);
 
         if (player != null) {
