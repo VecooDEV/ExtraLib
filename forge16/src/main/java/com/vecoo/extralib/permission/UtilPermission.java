@@ -7,6 +7,7 @@ import net.minecraftforge.server.permission.DefaultPermissionLevel;
 import net.minecraftforge.server.permission.PermissionAPI;
 import net.minecraftforge.server.permission.context.Context;
 
+import java.util.List;
 import java.util.UUID;
 
 public class UtilPermission {
@@ -39,5 +40,23 @@ public class UtilPermission {
             PermissionAPI.registerNode(node, DefaultPermissionLevel.OP, "");
             return hasPermission(playerUuid, playerName, node);
         }
+    }
+
+    public static int minValue(int value, UUID playerUUID, String playerName, List<String> permissionList) {
+        for (String permission : permissionList) {
+            if (UtilPermission.hasPermission(playerUUID, playerName, permission)) {
+                value = Math.min(value, Integer.parseInt(permission.substring(permission.lastIndexOf('.') + 1)));
+            }
+        }
+        return value;
+    }
+
+    public static int maxValue(int value, UUID playerUUID, String playerName, List<String> permissionList) {
+        for (String permission : permissionList) {
+            if (UtilPermission.hasPermission(playerUUID, playerName, permission)) {
+                value = Math.max(value, Integer.parseInt(permission.substring(permission.lastIndexOf('.') + 1)));
+            }
+        }
+        return value;
     }
 }

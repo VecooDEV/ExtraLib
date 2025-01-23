@@ -14,16 +14,16 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class UtilPlayer {
-    public static UUID getUUID(String player) {
-        return UsernameCache.getMap().entrySet().stream().collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey)).get(player);
+    public static UUID getUUID(String playerName) {
+        return UsernameCache.getMap().entrySet().stream().collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey)).get(playerName);
     }
 
-    public static boolean hasUUID(String player) {
-        return UsernameCache.getMap().entrySet().stream().collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey)).containsKey(player);
+    public static boolean hasUUID(String playerName) {
+        return UsernameCache.getMap().entrySet().stream().collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey)).containsKey(playerName);
     }
 
-    public static String getPlayerName(UUID uuid) {
-        String playerName = UsernameCache.containsUUID(uuid) ? UsernameCache.getLastKnownUsername(uuid) : "Undefined";
+    public static String getPlayerName(UUID playerUUID) {
+        String playerName = UsernameCache.containsUUID(playerUUID) ? UsernameCache.getLastKnownUsername(playerUUID) : "Undefined";
 
         if (playerName == null) {
             playerName = "Undefined";
@@ -32,16 +32,16 @@ public class UtilPlayer {
         return playerName;
     }
 
-    public static void sendMessageUuid(UUID uuid, StringTextComponent message, MinecraftServer server) {
-        ServerPlayerEntity player = server.getPlayerList().getPlayer(uuid);
+    public static void sendMessageUuid(UUID playerUUID, StringTextComponent message, MinecraftServer server) {
+        ServerPlayerEntity player = server.getPlayerList().getPlayer(playerUUID);
 
         if (player != null) {
             player.sendMessage(message, Util.NIL_UUID);
         }
     }
 
-    public static void sendMessageUuid(UUID uuid, IFormattableTextComponent message, MinecraftServer server) {
-        ServerPlayerEntity player = server.getPlayerList().getPlayer(uuid);
+    public static void sendMessageUuid(UUID playerUUID, IFormattableTextComponent message, MinecraftServer server) {
+        ServerPlayerEntity player = server.getPlayerList().getPlayer(playerUUID);
 
         if (player != null) {
             player.sendMessage(message, Util.NIL_UUID);

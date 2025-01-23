@@ -11,8 +11,4 @@ public class UtilText {
 
         return format;
     }
-
-    public static int lengthOfFloat(float value) {
-        return String.valueOf(value).split("\\.")[1].length();
-    }
 }
