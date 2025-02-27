@@ -36,7 +36,7 @@ public abstract class UtilGson {
         try (AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
             ByteBuffer buffer = ByteBuffer.wrap(data.getBytes(StandardCharsets.UTF_8));
 
-            fileChannel.write(buffer, 0, buffer, new CompletionHandler<Integer, ByteBuffer>() {
+            fileChannel.write(buffer, 0, buffer, new CompletionHandler<>() {
                 @Override
                 public void completed(Integer result, ByteBuffer attachment) {
                     attachment.clear();
@@ -54,6 +54,7 @@ public abstract class UtilGson {
                 }
             });
         } catch (IOException | SecurityException e) {
+            ExtraLib.getLogger().error("[ExtraLib] Write file async error");
             future.complete(future.complete(false));
         }
         return future;
@@ -101,6 +102,7 @@ public abstract class UtilGson {
             executor.shutdown();
             future.complete(true);
         } catch (Exception e) {
+            ExtraLib.getLogger().error("[ExtraLib] Read file async error");
             future.complete(readFileSync(file, callback));
             executor.shutdown();
         }

@@ -1,5 +1,4 @@
-# ExtraLib
-Library for mods.
+![](https://i.imgur.com/VU3zZoT.png)
 
 ## Depending on
 * [LegendControl](https://modrinth.com/mod/legendcontrol)
