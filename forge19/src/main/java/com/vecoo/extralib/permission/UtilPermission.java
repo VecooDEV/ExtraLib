@@ -12,7 +12,7 @@ public class UtilPermission {
     public static boolean hasPermission(CommandSourceStack source, PermissionNode<Boolean> node) {
         try {
             if (PermissionAPI.getRegisteredNodes().contains(node)) {
-                return PermissionAPI.getPermission(source.getPlayerOrException(), node) || source.hasPermission(2);
+                return PermissionAPI.getPermission(source.getPlayerOrException(), node) || source.hasPermission(4);
             }
             return false;
         } catch (Exception e) {
@@ -22,7 +22,7 @@ public class UtilPermission {
 
     public static boolean hasPermission(ServerPlayer player, PermissionNode<Boolean> node) {
         if (PermissionAPI.getRegisteredNodes().contains(node)) {
-            return PermissionAPI.getPermission(player, node) || player.hasPermissions(2);
+            return PermissionAPI.getPermission(player, node) || player.hasPermissions(4);
         }
         return false;
     }

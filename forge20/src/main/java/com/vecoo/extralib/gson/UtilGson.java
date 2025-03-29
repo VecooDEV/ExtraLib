@@ -54,7 +54,6 @@ public abstract class UtilGson {
                 }
             });
         } catch (IOException | SecurityException e) {
-            ExtraLib.getLogger().error("[ExtraLib] Write file async error");
             future.complete(future.complete(false));
         }
         return future;
@@ -102,7 +101,6 @@ public abstract class UtilGson {
             executor.shutdown();
             future.complete(true);
         } catch (Exception e) {
-            ExtraLib.getLogger().error("[ExtraLib] Read file async error");
             future.complete(readFileSync(file, callback));
             executor.shutdown();
         }
