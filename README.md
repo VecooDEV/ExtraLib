@@ -1,25 +1,16 @@
 ![](https://i.imgur.com/VU3zZoT.png)
 
 ## Depending on
-* [LegendControl](https://modrinth.com/mod/legendcontrol)
-* [ChunkLimiter](https://modrinth.com/mod/chunklimiter)
-* [ExtraQuests](https://modrinth.com/mod/extraquests)
-* [ExtraRTP](https://modrinth.com/mod/extrartp)
-* [CurrencyHandler](https://modrinth.com/mod/currencyhandler)
 
-## FAQ
-**Q: Do I need to install this on both server and client?**  
-A: Only server.
+[![](https://i.imgur.com/cZWWuUy.png)](https://www.curseforge.com/minecraft/mc-mods/legendcontrol)[![](https://i.imgur.com/HouEaC6.png)](https://www.curseforge.com/minecraft/mc-mods/extraquests)[![](https://i.imgur.com/pdArHKM.png)](https://www.curseforge.com/minecraft/mc-mods/extrartp)[![](https://i.imgur.com/YklL79G.png)](https://www.curseforge.com/minecraft/mc-mods/chunklimiter)
 
-**Q: Will the mod work in single player mode?**  
-A: Should work.
-
-**Q: Where can I report a bug or suggest my idea for a mod?**     
-A: In my [discord server](https://discord.gg/VSGEVagRPq).
+## Help
+[![](https://i.imgur.com/B4evs2K.png)](https://discord.gg/VSGEVagRPq)  [![](https://i.imgur.com/uquQMuU.png)](https://github.com/VecooDEV/ExtraLib/wiki)
 
 ## Support Me
-A lot of effort goes into creating and updating mods. If you want to support me, you can do so on [Patreon](https://www.patreon.com/Vecoo) or [Boosty](https://boosty.to/vecoo).
+[![](https://i.imgur.com/eaHjYUQ.png)](https://www.patreon.com/Vecoo)
+[![](https://i.imgur.com/yPBPV5c.png)](https://ko-fi.com/vecoo)
 
 ## Download
-* [Modrinth](https://modrinth.com/mod/extralib)
-* [CurseForge](https://www.curseforge.com/minecraft/mc-mods/extralib)
+[![](https://i.imgur.com/x3JMFRv.png)](https://www.curseforge.com/minecraft/mc-mods/extralib)
+[![](https://i.imgur.com/Q6tm4Fv.png)](https://modrinth.com/mod/extralib)
