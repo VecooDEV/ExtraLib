@@ -1,15 +1,17 @@
 package com.vecoo.extralib.world;
 
-import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.chunk.LevelChunkSection;
+import net.minecraft.world.level.chunk.PalettedContainer;
 import net.minecraft.world.level.storage.LevelResource;
 
 public class UtilWorld {
-    public static Level getWorldByName(String worldName, MinecraftServer server) {
-        for (Level world : server.getAllLevels()) {
+    public static ServerLevel getWorldByName(String worldName, MinecraftServer server) {
+        for (ServerLevel world : server.getAllLevels()) {
             if (world.dimension().location().getPath().equals(worldName.toLowerCase())) {
                 return world;
             }
@@ -26,18 +28,22 @@ public class UtilWorld {
         return file.replace("%directory%", "saves/" + directory.substring(directory.lastIndexOf("/") + 1));
     }
 
-    public static int countBlocksInChunk(ChunkAccess chunk, Block block) {
-        int blockCount = 0;
+    public static int countBlocksInChunk(LevelChunk chunk, Block targetBlock) {
+        int[] count = {0};
 
-        for (int x = 0; x < 16; x++) {
-            for (int z = 0; z < 16; z++) {
-                for (int y = chunk.getMinBuildHeight(); y < chunk.getMaxBuildHeight(); y++) {
-                    if (chunk.getBlockState(new BlockPos(x + chunk.getPos().x * 16, y, z + chunk.getPos().z * 16)).getBlock().equals(block)) {
-                        blockCount++;
-                    }
-                }
+        for (LevelChunkSection section : chunk.getSections()) {
+            if (section == null || section.hasOnlyAir()) {
+                continue;
             }
+
+            PalettedContainer<BlockState> states = section.getStates();
+            states.count((blockState, amount) -> {
+                if (blockState.is(targetBlock)) {
+                    count[0] += amount;
+                }
+            });
         }
-        return blockCount;
+
+        return count[0];
     }
 }

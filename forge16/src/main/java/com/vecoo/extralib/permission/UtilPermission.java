@@ -1,9 +1,10 @@
 package com.vecoo.extralib.permission;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.vecoo.extralib.ExtraLib;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraftforge.server.permission.DefaultPermissionLevel;
 import net.minecraftforge.server.permission.PermissionAPI;
 import net.minecraftforge.server.permission.context.Context;
 
@@ -14,32 +15,32 @@ public class UtilPermission {
     public static boolean hasPermission(CommandSource source, String node) {
         try {
             if (PermissionAPI.getPermissionHandler().getRegisteredNodes().contains(node)) {
-                return PermissionAPI.hasPermission(source.getPlayerOrException(), node) || source.hasPermission(2);
-            } else {
-                PermissionAPI.registerNode(node, DefaultPermissionLevel.OP, "");
-                return hasPermission(source, node);
+                return PermissionAPI.hasPermission(source.getPlayerOrException(), node) || source.hasPermission(4);
             }
-        } catch (Exception e) {
+        } catch (CommandSyntaxException e) {
             return true;
         }
+
+        ExtraLib.getLogger().error("[ExtraLib] No permission found for node: " + node);
+        return false;
     }
 
     public static boolean hasPermission(ServerPlayerEntity player, String node) {
         if (PermissionAPI.getPermissionHandler().getRegisteredNodes().contains(node)) {
-            return PermissionAPI.hasPermission(player, node) || player.hasPermissions(2);
-        } else {
-            PermissionAPI.registerNode(node, DefaultPermissionLevel.OP, "");
-            return hasPermission(player, node);
+            return PermissionAPI.hasPermission(player, node) || player.hasPermissions(4);
         }
+
+        ExtraLib.getLogger().error("[ExtraLib] No permission found for node: " + node);
+        return false;
     }
 
-    public static boolean hasPermission(UUID playerUuid, String playerName, String node) {
+    public static boolean hasPermission(UUID playerUUID, String playerName, String node) {
         if (PermissionAPI.getPermissionHandler().getRegisteredNodes().contains(node)) {
-            return PermissionAPI.hasPermission(new GameProfile(playerUuid, playerName), node, new Context());
-        } else {
-            PermissionAPI.registerNode(node, DefaultPermissionLevel.OP, "");
-            return hasPermission(playerUuid, playerName, node);
+            return PermissionAPI.hasPermission(new GameProfile(playerUUID, playerName), node, new Context());
         }
+
+        ExtraLib.getLogger().error("[ExtraLib] No permission found for node: " + node);
+        return false;
     }
 
     public static int minValue(int value, UUID playerUUID, String playerName, List<String> permissionList) {

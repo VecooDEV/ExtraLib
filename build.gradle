@@ -3,17 +3,19 @@ subprojects {
     apply plugin: 'idea'
 
     group = 'com.vecoo.extralib'
-    version = '1.5.2'
+    version = project_version
 
     ext {
-        forgeVersion = "none"
+        minecraftVersion = "none"
     }
 
     jar {
         setArchiveBaseName("${rootProject.name}")
     }
 
-    repositories {}
+    repositories {
+        maven { url = "https://cursemaven.com" }
+    }
 
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
@@ -27,8 +29,7 @@ subprojects {
         from("./build/libs/${rootProject.name}-${version}.jar")
         into('../release/')
         include '*.jar'
-        rename { filename ->
-            "${rootProject.name}-${project.version}-${forgeVersion}.jar"
+        rename { filename -> "${rootProject.name}-${project.version}-${minecraftVersion}.jar"
         }
     }
 }

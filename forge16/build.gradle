@@ -4,7 +4,7 @@ plugins {
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 
-forgeVersion = "1.16.5"
+minecraftVersion = "1.16.5-Forge"
 
 minecraft {
     mappings channel: 'official', version: '1.16.5'
@@ -16,7 +16,16 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 repositories {}
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.16.5-36.2.42'
+    minecraft "net.minecraftforge:forge:1.16.5-${forge_version_16}"
+}
+
+processResources {
+    filesMatching('META-INF/mods.toml') {
+        expand(
+                'project_name': project_name,
+                'project_version': project_version
+        )
+    }
 }
 
 jar.finalizedBy('reobfJar')

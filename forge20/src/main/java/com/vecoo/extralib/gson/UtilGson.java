@@ -36,7 +36,7 @@ public abstract class UtilGson {
         try (AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
             ByteBuffer buffer = ByteBuffer.wrap(data.getBytes(StandardCharsets.UTF_8));
 
-            fileChannel.write(buffer, 0, buffer, new CompletionHandler<>() {
+            fileChannel.write(buffer, 0, buffer, new CompletionHandler<Integer, ByteBuffer>() {
                 @Override
                 public void completed(Integer result, ByteBuffer attachment) {
                     attachment.clear();
@@ -115,6 +115,7 @@ public abstract class UtilGson {
             while (reader.hasNextLine()) {
                 data.append(reader.nextLine());
             }
+
             reader.close();
             callback.accept(data.toString());
             return true;
@@ -126,9 +127,11 @@ public abstract class UtilGson {
 
     public static File checkForDirectory(String path) {
         File dir = new File(new File("").getAbsolutePath() + path);
+
         if (!dir.exists()) {
             dir.mkdirs();
         }
+
         return dir;
     }
 

@@ -2,7 +2,7 @@ package com.vecoo.extralib.world;
 
 import net.minecraft.block.Block;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.FolderName;
@@ -26,18 +26,21 @@ public class UtilWorld {
         return file.replace("%directory%", "saves/" + directory.substring(directory.lastIndexOf("/") + 1));
     }
 
-    public static int countBlocksInChunk(IChunk chunk, Block block) {
-        int blockCount = 0;
+    public static int countBlocksInChunk(IChunk chunk, Block targetBlock) {
+        int[] count = {0};
 
-        for (int x = 0; x < 16; x++) {
-            for (int z = 0; z < 16; z++) {
-                for (int y = 0; y < chunk.getMaxBuildHeight(); y++) {
-                    if (chunk.getBlockState(new BlockPos(x + chunk.getPos().x * 16, y, z + chunk.getPos().z * 16)).getBlock().equals(block)) {
-                        blockCount++;
-                    }
-                }
+        for (ChunkSection section : chunk.getSections()) {
+            if (section == null || section.isEmpty()) {
+                continue;
             }
+
+            section.getStates().count((state, amount) -> {
+                if (state.is(targetBlock)) {
+                    count[0] += amount;
+                }
+            });
         }
-        return blockCount;
+
+        return count[0];
     }
 }

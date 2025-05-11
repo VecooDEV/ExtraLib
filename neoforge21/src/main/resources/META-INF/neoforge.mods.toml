@@ -1,0 +1,25 @@
+modLoader = "javafml"
+loaderVersion = "[2,)"
+license = "All Rights Reserved"
+
+[[mods]]
+modId = "extralib"
+version = "${project_version}"
+displayName = "${project_name}"
+logoFile = "logo.png"
+authors = "Vecoo"
+description = "Library for mods."
+
+[[dependencies.extralib]]
+modId = "neoforge"
+type = "required"
+versionRange = "[2,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.extralib]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21,)"
+ordering = "NONE"
+side = "BOTH"

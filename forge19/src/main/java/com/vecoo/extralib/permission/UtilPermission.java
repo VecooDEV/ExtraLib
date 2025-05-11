@@ -1,5 +1,7 @@
 package com.vecoo.extralib.permission;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.vecoo.extralib.ExtraLib;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.server.permission.PermissionAPI;
@@ -14,16 +16,20 @@ public class UtilPermission {
             if (PermissionAPI.getRegisteredNodes().contains(node)) {
                 return PermissionAPI.getPermission(source.getPlayerOrException(), node) || source.hasPermission(4);
             }
-            return false;
-        } catch (Exception e) {
+        } catch (CommandSyntaxException e) {
             return true;
         }
+
+        ExtraLib.getLogger().error("[ExtraLib] No permission found for node: " + node);
+        return false;
     }
 
     public static boolean hasPermission(ServerPlayer player, PermissionNode<Boolean> node) {
         if (PermissionAPI.getRegisteredNodes().contains(node)) {
             return PermissionAPI.getPermission(player, node) || player.hasPermissions(4);
         }
+
+        ExtraLib.getLogger().error("[ExtraLib] No permission found for node: " + node);
         return false;
     }
 
@@ -31,6 +37,8 @@ public class UtilPermission {
         if (PermissionAPI.getRegisteredNodes().contains(node)) {
             return PermissionAPI.getOfflinePermission(playerUuid, node);
         }
+
+        ExtraLib.getLogger().error("[ExtraLib] No permission found for node: " + node);
         return false;
     }
 

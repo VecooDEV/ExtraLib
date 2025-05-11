@@ -9,8 +9,8 @@ import net.minecraft.util.text.event.ClickEvent;
 import net.minecraft.util.text.event.HoverEvent;
 
 public class UtilChat {
-    public static StringTextComponent formatMessage(String text) {
-        return new StringTextComponent(text.replace("&", "\u00a7"));
+    public static StringTextComponent formatMessage(String message) {
+        return new StringTextComponent(message.replace("&", "\u00a7"));
     }
 
     public static StringTextComponent clickableMessageCommand(String message, String command) {
@@ -28,9 +28,9 @@ public class UtilChat {
                 new HoverEvent(HoverEvent.Action.SHOW_TEXT, formatMessage(text))));
     }
 
-    public static StringTextComponent clickableHoverMessageCommandText(String message, String command, String text) {
+    public static StringTextComponent clickableHoverMessageCommandText(String message, String command, String hoverText) {
         return (StringTextComponent) formatMessage(message).setStyle(Style.EMPTY.withClickEvent(
-                new ClickEvent(ClickEvent.Action.RUN_COMMAND, command))).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, formatMessage(text))));
+                new ClickEvent(ClickEvent.Action.RUN_COMMAND, command))).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, formatMessage(hoverText))));
     }
 
     public static void broadcast(String message, MinecraftServer server) {
@@ -39,9 +39,5 @@ public class UtilChat {
 
     public static void clickableBroadcastCommand(String message, String command, MinecraftServer server) {
         server.getPlayerList().broadcastMessage(clickableMessageCommand(message, command), ChatType.CHAT, Util.NIL_UUID);
-    }
-
-    public static void clickableBroadcastURL(String message, String url, MinecraftServer server) {
-        server.getPlayerList().broadcastMessage(clickableMessageURL(message, url), ChatType.CHAT, Util.NIL_UUID);
     }
 }

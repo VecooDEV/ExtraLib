@@ -4,8 +4,8 @@ license = "All Rights Reserved"
 
 [[mods]]
 modId = "extralib"
-version = "1.5.2"
-displayName = "ExtraLib"
+version = "${project_version}"
+displayName = "${project_name}"
 logoFile = "logo.png"
 authors = "Vecoo"
 description = "Library for mods."

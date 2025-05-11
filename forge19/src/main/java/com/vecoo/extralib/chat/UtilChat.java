@@ -26,9 +26,9 @@ public class UtilChat {
                 new HoverEvent(HoverEvent.Action.SHOW_TEXT, formatMessage(text))));
     }
 
-    public static Component clickableHoverMessageCommandText(String message, String command, String text) {
+    public static Component clickableHoverMessageCommandText(String message, String command, String hoverText) {
         return Component.literal(formatMessage(message).getString()).setStyle(Style.EMPTY.withClickEvent(
-                new ClickEvent(ClickEvent.Action.RUN_COMMAND, command))).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, formatMessage(text))));
+                new ClickEvent(ClickEvent.Action.RUN_COMMAND, command))).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, formatMessage(hoverText))));
     }
 
     public static void broadcast(String message, MinecraftServer server) {
@@ -37,9 +37,5 @@ public class UtilChat {
 
     public static void clickableBroadcastCommand(String message, String command, MinecraftServer server) {
         server.getPlayerList().broadcastSystemMessage(clickableMessageCommand(message, command), false);
-    }
-
-    public static void clickableBroadcastURL(String message, String url, MinecraftServer server) {
-        server.getPlayerList().broadcastSystemMessage(clickableMessageURL(message, url), false);
     }
 }
