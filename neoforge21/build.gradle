@@ -11,7 +11,7 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 repositories {}
 
 dependencies {
-    implementation "net.neoforged:neoforge:21.1.161"
+    implementation "net.neoforged:neoforge:${neoforge_version_21}"
 }
 
 processResources {
