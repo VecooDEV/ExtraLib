@@ -1,1 +1,1 @@
-* Fix permission.
+* Fix save directory.

@@ -22,8 +22,7 @@ public class UtilWorld {
             return file.replace("%directory%", "world");
         }
 
-        String directory = server.getWorldPath(new FolderName("")).toString().replace("\\", "/");
-        return file.replace("%directory%", "saves/" + directory.substring(directory.lastIndexOf("/") + 1));
+        return file.replace("%directory%", "saves/" + server.getWorldPath(FolderName.LEVEL_DATA_FILE).normalize().getParent().getFileName().toString());
     }
 
     public static int countBlocksInChunk(IChunk chunk, Block targetBlock) {
