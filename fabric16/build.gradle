@@ -32,15 +32,15 @@ processResources {
     }
 }
 
-def localProperties = new Properties()
-def localPropertiesFile = new File(rootProject.file("/.gradle/gradle.properties").path)
+def gradleProperties = new Properties()
+def gradlePropertiesFile = new File(rootProject.file("/.gradle/gradle.properties").path)
 
-if (localPropertiesFile.exists()) {
-    localPropertiesFile.withInputStream { localProperties.load(it) }
+if (gradlePropertiesFile.exists()) {
+    gradlePropertiesFile.withInputStream { gradleProperties.load(it) }
 }
 
 modrinth {
-    token = localProperties.getProperty("modrinth_api_key")
+    token = gradleProperties.getProperty("modrinth_api_key")
     projectId = "extralib"
     versionName = "${project_name}-${version}"
     versionNumber = project_version
