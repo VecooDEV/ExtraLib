@@ -1,12 +1,13 @@
 plugins {
     id 'fabric-loom' version '0.12-SNAPSHOT'
+    id "com.modrinth.minotaur" version "2.8.7"
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 
 archivesBaseName = "${project_name}"
 
-minecraftVersion = "1.16.5-Fabric"
+version = "${project_version}-1.16.5-Fabric"
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
@@ -19,7 +20,7 @@ dependencies {
     modCompileOnly "net.fabricmc:fabric-loader:${fabric_loader_16}"
     modCompileOnly "net.fabricmc.fabric-api:fabric-api:${fabric_api_16}"
 
-    modApi "curse.maven:luckperms-431733:3245738"
+    modImplementation (include "me.lucko:fabric-permissions-api:${fabric_permissions_api_16}")
 }
 
 processResources {
@@ -29,6 +30,25 @@ processResources {
                 'project_version': project_version
         )
     }
+}
+
+def localProperties = new Properties()
+def localPropertiesFile = new File(rootProject.file("/.gradle/gradle.properties").path)
+
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withInputStream { localProperties.load(it) }
+}
+
+modrinth {
+    token = localProperties.getProperty("modrinth_api_key")
+    projectId = "extralib"
+    versionName = "${project_name}-${version}"
+    versionNumber = project_version
+    versionType = "release"
+    changelog = rootProject.file("changelog.md").text
+    uploadFile = remapJar
+    gameVersions = ["1.16.5"]
+    loaders = ["fabric"]
 }
 
 build.finalizedBy('versionedRelease')

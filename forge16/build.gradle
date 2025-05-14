@@ -1,10 +1,11 @@
 plugins {
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id "com.modrinth.minotaur" version "2.8.7"
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 
-minecraftVersion = "1.16.5-Forge"
+version = "${project_version}-1.16.5-Forge"
 
 minecraft {
     mappings channel: 'official', version: '1.16.5'
@@ -26,6 +27,25 @@ processResources {
                 'project_version': project_version
         )
     }
+}
+
+def localProperties = new Properties()
+def localPropertiesFile = new File(rootProject.file("/.gradle/gradle.properties").path)
+
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withInputStream { localProperties.load(it) }
+}
+
+modrinth {
+    token = localProperties.getProperty("modrinth_api_key")
+    projectId = "extralib"
+    versionName = "${project_name}-${version}"
+    versionNumber = project_version
+    versionType = "release"
+    changelog = rootProject.file("changelog.md").text
+    uploadFile = jar
+    gameVersions = ["1.16.5"]
+    loaders = ["forge"]
 }
 
 jar.finalizedBy('reobfJar')

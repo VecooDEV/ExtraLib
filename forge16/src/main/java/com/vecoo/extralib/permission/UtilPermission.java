@@ -43,6 +43,24 @@ public class UtilPermission {
         return false;
     }
 
+    public static int minValue(int value, ServerPlayerEntity player, List<String> permissionList) {
+        for (String permission : permissionList) {
+            if (UtilPermission.hasPermission(player, permission)) {
+                value = Math.min(value, Integer.parseInt(permission.substring(permission.lastIndexOf('.') + 1)));
+            }
+        }
+        return value;
+    }
+
+    public static int maxValue(int value, ServerPlayerEntity player, List<String> permissionList) {
+        for (String permission : permissionList) {
+            if (UtilPermission.hasPermission(player, permission)) {
+                value = Math.max(value, Integer.parseInt(permission.substring(permission.lastIndexOf('.') + 1)));
+            }
+        }
+        return value;
+    }
+
     public static int minValue(int value, UUID playerUUID, String playerName, List<String> permissionList) {
         for (String permission : permissionList) {
             if (UtilPermission.hasPermission(playerUUID, playerName, permission)) {

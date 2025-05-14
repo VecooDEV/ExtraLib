@@ -6,6 +6,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.server.permission.PermissionAPI;
 import net.neoforged.neoforge.server.permission.nodes.PermissionNode;
+import net.neoforged.neoforge.server.permission.nodes.PermissionTypes;
 
 import java.util.List;
 import java.util.UUID;
@@ -33,17 +34,35 @@ public class UtilPermission {
         return false;
     }
 
-    public static boolean hasPermission(UUID playerUUID, PermissionNode<Boolean> node) {
+    public static boolean hasPermission(UUID playerUuid, PermissionNode<Boolean> node) {
         if (PermissionAPI.getRegisteredNodes().contains(node)) {
-            return PermissionAPI.getOfflinePermission(playerUUID, node);
+            return PermissionAPI.getOfflinePermission(playerUuid, node);
         }
 
         ExtraLib.getLogger().error("[ExtraLib] No permission found for node: " + node);
         return false;
     }
 
-    public static int minValue(int value, UUID playerUUID, List<PermissionNode<Boolean>> permissionList) {
-        for (PermissionNode<Boolean> permission : permissionList) {
+    public static int minValue(int value, ServerPlayer player, List<PermissionNode<Boolean>> nodeList) {
+        for (PermissionNode<Boolean> permission : nodeList) {
+            if (UtilPermission.hasPermission(player, permission)) {
+                value = Math.min(value, Integer.parseInt(permission.getNodeName().substring(permission.getNodeName().lastIndexOf('.') + 1)));
+            }
+        }
+        return value;
+    }
+
+    public static int maxValue(int value, ServerPlayer player, List<PermissionNode<Boolean>> nodeList) {
+        for (PermissionNode<Boolean> permission : nodeList) {
+            if (UtilPermission.hasPermission(player, permission)) {
+                value = Math.max(value, Integer.parseInt(permission.getNodeName().substring(permission.getNodeName().lastIndexOf('.') + 1)));
+            }
+        }
+        return value;
+    }
+
+    public static int minValue(int value, UUID playerUUID, List<PermissionNode<Boolean>> nodeList) {
+        for (PermissionNode<Boolean> permission : nodeList) {
             if (UtilPermission.hasPermission(playerUUID, permission)) {
                 value = Math.min(value, Integer.parseInt(permission.getNodeName().substring(permission.getNodeName().lastIndexOf('.') + 1)));
             }
@@ -51,12 +70,18 @@ public class UtilPermission {
         return value;
     }
 
-    public static int maxValue(int value, UUID playerUUID, List<PermissionNode<Boolean>> permissionList) {
-        for (PermissionNode<Boolean> permission : permissionList) {
+    public static int maxValue(int value, UUID playerUUID, List<PermissionNode<Boolean>> nodeList) {
+        for (PermissionNode<Boolean> permission : nodeList) {
             if (UtilPermission.hasPermission(playerUUID, permission)) {
                 value = Math.max(value, Integer.parseInt(permission.getNodeName().substring(permission.getNodeName().lastIndexOf('.') + 1)));
             }
         }
         return value;
+    }
+
+    public static PermissionNode<Boolean> getPermissionNode(String node) {
+        String[] nodeSplit = node.split("\\.", 2);
+
+        return new PermissionNode<>(nodeSplit[0], nodeSplit[1], PermissionTypes.BOOLEAN, (p, uuid, permissionDynamicContexts) -> false);
     }
 }

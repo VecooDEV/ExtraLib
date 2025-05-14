@@ -13,7 +13,7 @@ description = "Library for mods."
 [[dependencies.extralib]]
 modId = "neoforge"
 type = "required"
-versionRange = "[2,)"
+versionRange = "[21.1,)"
 ordering = "NONE"
 side = "BOTH"
 

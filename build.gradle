@@ -5,16 +5,12 @@ subprojects {
     group = 'com.vecoo.extralib'
     version = project_version
 
-    ext {
-        minecraftVersion = "none"
-    }
-
     jar {
         setArchiveBaseName("${rootProject.name}")
     }
 
     repositories {
-        maven { url = "https://cursemaven.com" }
+        maven { url = "https://oss.sonatype.org/content/repositories/snapshots" }
     }
 
     tasks.withType(JavaCompile) {
@@ -22,14 +18,16 @@ subprojects {
     }
 
     task versionedRelease(type: Copy) {
+        group "build"
+
         delete fileTree('../release/') {
             include '**/*.jar'
         }
-        group "build"
-        from("./build/libs/${rootProject.name}-${version}.jar")
-        into('../release/')
-        include '*.jar'
-        rename { filename -> "${rootProject.name}-${project.version}-${minecraftVersion}.jar"
+
+        from fileTree("/build/libs/") {
+            include '**/*.jar'
         }
+
+        into('../release/')
     }
 }
