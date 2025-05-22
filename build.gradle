@@ -28,10 +28,10 @@ subprojects {
             include '**/*.jar'
         }
 
+        into('../release/')
+
         doLast {
             delete "build/libs"
         }
-
-        into('../release/')
     }
 }
