@@ -17,7 +17,7 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 repositories {}
 
 dependencies {
-    minecraft "net.minecraftforge:forge:1.19.2-${forge_Version_19}"
+    minecraft "net.minecraftforge:forge:1.19.2-${forge_19}"
 }
 
 processResources {

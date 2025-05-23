@@ -5,6 +5,8 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class UtilPermission {
     public static boolean hasPermission(CommandSourceStack source, String node) {
@@ -13,6 +15,10 @@ public class UtilPermission {
 
     public static boolean hasPermission(ServerPlayer player, String node) {
         return Permissions.check(player, node) || player.hasPermissions(4);
+    }
+
+    public static CompletableFuture<Boolean> hasPermission(UUID uuid, String node) {
+        return Permissions.check(uuid, node);
     }
 
     public static int minValue(int value, ServerPlayer player, List<String> permissionList) {

@@ -1,5 +1,6 @@
 package com.vecoo.extralib.player;
 
+import com.mojang.authlib.GameProfile;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
@@ -8,25 +9,25 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.common.UsernameCache;
 
-import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class UtilPlayer {
-    public static UUID getUUID(String playerName) {
-        return UsernameCache.getMap().entrySet().stream().collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey)).get(playerName);
+    public static UUID getUUID(String playerName, MinecraftServer server) {
+        GameProfile gameProfile = server.getProfileCache().get(playerName).orElse(null);
+
+        return gameProfile != null ? gameProfile.getId() : null;
     }
 
-    public static boolean hasUUID(String playerName) {
-        return UsernameCache.getMap().values().stream().anyMatch(name -> name.equalsIgnoreCase(playerName));
+    public static boolean hasUUID(String playerName, MinecraftServer server) {
+        return server.getProfileCache().get(playerName).isPresent();
     }
 
-    public static String getPlayerName(UUID playerUUID) {
-        String name = UsernameCache.getLastKnownUsername(playerUUID);
-        return name != null ? name : "Undefined";
+    public static String getPlayerName(UUID playerUUID, MinecraftServer server) {
+        GameProfile gameProfile = server.getProfileCache().get(playerUUID).orElse(null);
+
+        return gameProfile != null ? gameProfile.getName() : "Undefined";
     }
 
     public static void sendMessageUuid(UUID playerUUID, Component message, MinecraftServer server) {
