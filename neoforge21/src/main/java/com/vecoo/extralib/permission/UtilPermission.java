@@ -34,9 +34,9 @@ public class UtilPermission {
         return false;
     }
 
-    public static boolean hasPermission(UUID playerUuid, PermissionNode<Boolean> node) {
+    public static boolean hasPermission(UUID playerUUID, PermissionNode<Boolean> node) {
         if (PermissionAPI.getRegisteredNodes().contains(node)) {
-            return PermissionAPI.getOfflinePermission(playerUuid, node);
+            return PermissionAPI.getOfflinePermission(playerUUID, node);
         }
 
         ExtraLib.getLogger().error("[ExtraLib] No permission found for node: " + node);

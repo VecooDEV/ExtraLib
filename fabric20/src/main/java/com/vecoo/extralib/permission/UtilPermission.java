@@ -17,8 +17,8 @@ public class UtilPermission {
         return Permissions.check(player, node) || player.hasPermissions(4);
     }
 
-    public static CompletableFuture<Boolean> hasPermission(UUID uuid, String node) {
-        return Permissions.check(uuid, node);
+    public static CompletableFuture<Boolean> hasPermission(UUID playerUUID, String node) {
+        return Permissions.check(playerUUID, node);
     }
 
     public static int minValue(int value, ServerPlayer player, List<String> permissionList) {

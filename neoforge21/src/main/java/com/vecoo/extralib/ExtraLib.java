@@ -1,18 +1,39 @@
 package com.vecoo.extralib;
 
-import com.mojang.logging.LogUtils;
+import com.vecoo.extralib.task.TaskTimer;
+import net.minecraft.server.MinecraftServer;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
-import org.slf4j.Logger;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-@Mod(ExtraLib.MODID)
+@Mod(ExtraLib.MOD_ID)
 public class ExtraLib {
-    public static final String MODID = "extralib";
-    private static final Logger LOGGER = LogUtils.getLogger();
+    public static final String MOD_ID = "extralib";
+    private static final Logger LOGGER = LogManager.getLogger("ExtraLib");
 
     private static ExtraLib instance;
 
+    private MinecraftServer server;
+
     public ExtraLib() {
         instance = this;
+
+        NeoForge.EVENT_BUS.register(this);
+        NeoForge.EVENT_BUS.register(new TaskTimer.EventHandler());
+    }
+
+    @SubscribeEvent
+    public void onServerStarting(ServerStartingEvent event) {
+        this.server = event.getServer();
+    }
+
+    @SubscribeEvent
+    public void onServerStopping(ServerStoppingEvent event) {
+        TaskTimer.cancelAll();
     }
 
     public static ExtraLib getInstance() {
@@ -21,5 +42,9 @@ public class ExtraLib {
 
     public static Logger getLogger() {
         return LOGGER;
+    }
+
+    public MinecraftServer getServer() {
+        return instance.server;
     }
 }

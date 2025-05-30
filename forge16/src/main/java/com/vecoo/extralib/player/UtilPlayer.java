@@ -1,5 +1,6 @@
 package com.vecoo.extralib.player;
 
+import com.vecoo.extralib.ExtraLib;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.PlayerContainer;
@@ -26,9 +27,10 @@ public class UtilPlayer {
 
     public static String getPlayerName(UUID playerUUID) {
         String name = UsernameCache.getLastKnownUsername(playerUUID);
-        return name != null ? name : "Undefined";
+        return name != null ? name : "Unknown";
     }
 
+    @Deprecated
     public static void sendMessageUuid(UUID playerUUID, StringTextComponent message, MinecraftServer server) {
         ServerPlayerEntity player = server.getPlayerList().getPlayer(playerUUID);
 
@@ -37,6 +39,15 @@ public class UtilPlayer {
         }
     }
 
+    public static void sendMessageUuid(UUID playerUUID, StringTextComponent message) {
+        ServerPlayerEntity player = ExtraLib.getInstance().getServer().getPlayerList().getPlayer(playerUUID);
+
+        if (player != null) {
+            player.sendMessage(message, Util.NIL_UUID);
+        }
+    }
+
+    @Deprecated
     public static void sendMessageUuid(UUID playerUUID, IFormattableTextComponent message, MinecraftServer server) {
         ServerPlayerEntity player = server.getPlayerList().getPlayer(playerUUID);
 
@@ -45,11 +56,32 @@ public class UtilPlayer {
         }
     }
 
+    public static void sendMessageUuid(UUID playerUUID, IFormattableTextComponent message) {
+        ServerPlayerEntity player = ExtraLib.getInstance().getServer().getPlayerList().getPlayer(playerUUID);
+
+        if (player != null) {
+            player.sendMessage(message, Util.NIL_UUID);
+        }
+    }
+
+    @Deprecated
     public static ServerPlayerEntity getPlayer(String playerName, MinecraftServer server) {
         return server.getPlayerList().getPlayerByName(playerName);
     }
 
+    public static ServerPlayerEntity getPlayer(String playerName) {
+        return ExtraLib.getInstance().getServer().getPlayerList().getPlayerByName(playerName);
+    }
+
+    @Deprecated
     public static CommandSource getSource(String sourceName, MinecraftServer server) {
+        ServerPlayerEntity player = server.getPlayerList().getPlayerByName(sourceName);
+        return player != null ? player.createCommandSourceStack() : server.createCommandSourceStack();
+    }
+
+    public static CommandSource getSource(String sourceName) {
+        MinecraftServer server = ExtraLib.getInstance().getServer();
+
         ServerPlayerEntity player = server.getPlayerList().getPlayerByName(sourceName);
         return player != null ? player.createCommandSourceStack() : server.createCommandSourceStack();
     }

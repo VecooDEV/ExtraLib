@@ -4,7 +4,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.vecoo.extralib.ExtraLib;
 import net.minecraft.command.CommandSource;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraftforge.server.permission.PermissionAPI;
 import net.minecraftforge.server.permission.context.Context;
 
@@ -25,7 +25,7 @@ public class UtilPermission {
         return false;
     }
 
-    public static boolean hasPermission(ServerPlayerEntity player, String node) {
+    public static boolean hasPermission(PlayerEntity player, String node) {
         if (PermissionAPI.getPermissionHandler().getRegisteredNodes().contains(node)) {
             return PermissionAPI.hasPermission(player, node) || player.hasPermissions(4);
         }
@@ -43,7 +43,7 @@ public class UtilPermission {
         return false;
     }
 
-    public static int minValue(int value, ServerPlayerEntity player, List<String> permissionList) {
+    public static int minValue(int value, PlayerEntity player, List<String> permissionList) {
         for (String permission : permissionList) {
             if (UtilPermission.hasPermission(player, permission)) {
                 value = Math.min(value, Integer.parseInt(permission.substring(permission.lastIndexOf('.') + 1)));
@@ -52,7 +52,7 @@ public class UtilPermission {
         return value;
     }
 
-    public static int maxValue(int value, ServerPlayerEntity player, List<String> permissionList) {
+    public static int maxValue(int value, PlayerEntity player, List<String> permissionList) {
         for (String permission : permissionList) {
             if (UtilPermission.hasPermission(player, permission)) {
                 value = Math.max(value, Integer.parseInt(permission.substring(permission.lastIndexOf('.') + 1)));

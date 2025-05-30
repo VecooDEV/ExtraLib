@@ -1,5 +1,6 @@
 package com.vecoo.extralib.world;
 
+import com.vecoo.extralib.ExtraLib;
 import net.minecraft.block.Block;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.chunk.ChunkSection;
@@ -8,8 +9,18 @@ import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.FolderName;
 
 public class UtilWorld {
+    @Deprecated
     public static ServerWorld getWorldByName(String worldName, MinecraftServer server) {
         for (ServerWorld world : server.getAllLevels()) {
+            if (world.dimension().location().getPath().equals(worldName.toLowerCase())) {
+                return world;
+            }
+        }
+        return null;
+    }
+
+    public static ServerWorld getWorldByName(String worldName) {
+        for (ServerWorld world : ExtraLib.getInstance().getServer().getAllLevels()) {
             if (world.dimension().location().getPath().equals(worldName.toLowerCase())) {
                 return world;
             }

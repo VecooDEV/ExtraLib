@@ -1,6 +1,12 @@
 package com.vecoo.extralib;
 
+import com.vecoo.extralib.task.TaskTimer;
+import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -11,8 +17,23 @@ public class ExtraLib {
 
     private static ExtraLib instance;
 
+    private MinecraftServer server;
+
     public ExtraLib() {
         instance = this;
+
+        MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(new TaskTimer.EventHandler());
+    }
+
+    @SubscribeEvent
+    public void onServerStarting(FMLServerStartingEvent event) {
+        this.server = event.getServer();
+    }
+
+    @SubscribeEvent
+    public void onServerStopping(FMLServerStoppingEvent event) {
+        TaskTimer.cancelAll();
     }
 
     public static ExtraLib getInstance() {
@@ -21,5 +42,9 @@ public class ExtraLib {
 
     public static Logger getLogger() {
         return LOGGER;
+    }
+
+    public MinecraftServer getServer() {
+        return instance.server;
     }
 }

@@ -5,6 +5,7 @@ pluginManagement {
         maven { url = 'https://maven.minecraftforge.net/' }
         maven { url = "https://maven.fabricmc.net/" }
         maven { url = "https://maven.neoforged.net/releases" }
+        maven { url = "https://maven.firstdark.dev/releases" }
     }
 }
 
@@ -14,4 +15,4 @@ plugins {
 
 rootProject.name = project_name
 
-include 'forge16', 'fabric16', 'forge19', 'fabric19', 'forge20', 'fabric20', 'fabric21', 'neoforge21'
+include 'forge16', 'forge19', 'forge20', 'fabric20', 'fabric21', 'neoforge21'

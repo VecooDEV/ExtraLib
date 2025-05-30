@@ -1,5 +1,6 @@
 package com.vecoo.extralib.world;
 
+import com.vecoo.extralib.ExtraLib;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Block;
@@ -10,9 +11,19 @@ import net.minecraft.world.level.chunk.PalettedContainer;
 import net.minecraft.world.level.storage.LevelResource;
 
 public class UtilWorld {
+    @Deprecated
     public static ServerLevel getWorldByName(String worldName, MinecraftServer server) {
         for (ServerLevel world : server.getAllLevels()) {
             if (world.dimension().location().getPath().equals(worldName.toLowerCase())) {
+                return world;
+            }
+        }
+        return null;
+    }
+
+    public static ServerLevel getLevelByName(String levelName) {
+        for (ServerLevel world : ExtraLib.getInstance().getServer().getAllLevels()) {
+            if (world.dimension().location().getPath().equals(levelName.toLowerCase())) {
                 return world;
             }
         }
