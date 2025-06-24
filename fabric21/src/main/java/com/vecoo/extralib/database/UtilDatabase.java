@@ -27,7 +27,7 @@ public class UtilDatabase {
                         throw new RuntimeException("MySQL driver not found", e);
                     }
 
-                    String ssl = useSSL ? "?useSSL=true" : "?useSSL=false";
+                    String ssl = useSSL ? "" : "?useSSL=false";
 
                     config.setJdbcUrl("jdbc:mysql://" + address + "/" + database + ssl);
                     break;
@@ -40,7 +40,7 @@ public class UtilDatabase {
                         throw new RuntimeException("MariaDB driver not found", e);
                     }
 
-                    String ssl = useSSL ? "?useSSL=true" : "?useSSL=false";
+                    String ssl = useSSL ? "" : "?useSSL=false";
 
                     config.setJdbcUrl("jdbc:mariadb://" + address + "/" + database + ssl);
                     break;
@@ -53,7 +53,7 @@ public class UtilDatabase {
                         throw new RuntimeException("PostgreSQL driver not found", e);
                     }
 
-                    String ssl = useSSL ? "?sslmode=allow" : "?sslmode=disable";
+                    String ssl = useSSL ? "" : "?sslmode=disable";
 
                     config.setJdbcUrl("jdbc:postgresql://" + address + "/" + database + ssl);
                     break;
@@ -84,6 +84,9 @@ public class UtilDatabase {
         }
 
         return dataSource;
+    }
+    public static boolean isDataSourceInitialized() {
+        return dataSource != null;
     }
 
     public static void close() {
