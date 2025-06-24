@@ -1,5 +1,6 @@
 package com.vecoo.extralib;
 
+import com.vecoo.extralib.database.UtilDatabase;
 import com.vecoo.extralib.task.TaskTimer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -22,7 +23,10 @@ public class ExtraLib implements ModInitializer {
 
         ServerLifecycleEvents.SERVER_STARTING.register(server -> this.server = server);
         ServerTickEvents.END_SERVER_TICK.register(server -> TaskTimer.onServerTick());
-        ServerLifecycleEvents.SERVER_STOPPING.register(server -> TaskTimer.cancelAll());
+        ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+            TaskTimer.cancelAll();
+            UtilDatabase.close();
+        });
     }
 
     public static ExtraLib getInstance() {

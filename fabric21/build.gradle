@@ -1,6 +1,7 @@
 plugins {
-    id 'fabric-loom' version '1.9.2'
+    id 'fabric-loom' version '1.0+'
     id 'com.modrinth.minotaur' version '2.8.7'
+    id 'com.gradleup.shadow' version '8+'
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
@@ -20,7 +21,45 @@ dependencies {
     modCompileOnly "net.fabricmc:fabric-loader:${fabric_loader_21}"
     modCompileOnly "net.fabricmc.fabric-api:fabric-api:${fabric_api_21}"
 
-    modImplementation (include "me.lucko:fabric-permissions-api:${fabric_permissions_api_21}")
+    modCompileOnly("me.lucko:fabric-permissions-api:${fabric_permissions_api_21}")
+
+    shadow("me.lucko:fabric-permissions-api:${fabric_permissions_api_21}") {
+        transitive = false
+    }
+    shadow 'com.zaxxer:HikariCP:6.3.0'
+    shadow 'com.mysql:mysql-connector-j:9.3.0'
+    shadow 'org.mariadb.jdbc:mariadb-java-client:3.5.3'
+    shadow 'org.postgresql:postgresql:42.7.7'
+}
+
+shadowJar {
+    configurations = [project.configurations.shadow]
+    archiveBaseName.set("${rootProject.name}")
+
+    relocate('me.lucko.fabric.api.permissions.v0', 'com.vecoo.extralib.shade.lucko.fabric.api.permissions.v0')
+    relocate('com.zaxxer.hikari', 'com.vecoo.extralib.shade.zaxxer.hiraki')
+    relocate('org.slf4j', 'com.vecoo.extralib.shade.slf4j')
+    relocate('com.mysql', 'com.vecoo.extralib.shade.mysql')
+    relocate('org.mariadb.jdbc', 'com.vecoo.extralib.shade.mariadb.jdbc')
+    relocate('org.postgresql', 'com.vecoo.extralib.shade.postgresql')
+
+    relocate('com.google.protobuf', 'com.vecoo.extralib.shade.google.protobuf')
+    relocate('org.checkerframework', 'com.vecoo.extralib.shade.checkerframework')
+
+    exclude 'META-INF/**'
+    exclude 'INFO_BIN/**'
+    exclude 'INFO_SRC/**'
+    exclude 'README/**'
+    exclude 'LICENSE/**'
+    exclude 'google/**'
+    exclude 'driver.properties'
+    exclude 'deprecated.properties'
+    exclude 'mariadb.properties'
+}
+
+remapJar {
+    dependsOn shadowJar
+    input.set(shadowJar.archiveFile)
 }
 
 processResources {
@@ -50,7 +89,5 @@ modrinth {
     gameVersions = ["1.21.1"]
     loaders = ["fabric"]
 }
-
-remapJar {}
 
 build.finalizedBy('versionedRelease')

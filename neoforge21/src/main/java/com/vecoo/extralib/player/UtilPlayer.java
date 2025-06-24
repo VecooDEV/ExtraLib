@@ -30,26 +30,8 @@ public class UtilPlayer {
         return name != null ? name : "Unknown";
     }
 
-    @Deprecated
-    public static void sendMessageUuid(UUID playerUUID, Component message, MinecraftServer server) {
-        ServerPlayer player = server.getPlayerList().getPlayer(playerUUID);
-
-        if (player != null) {
-            player.sendSystemMessage(message);
-        }
-    }
-
     public static void sendMessageUuid(UUID playerUUID, Component message) {
         ServerPlayer player = ExtraLib.getInstance().getServer().getPlayerList().getPlayer(playerUUID);
-
-        if (player != null) {
-            player.sendSystemMessage(message);
-        }
-    }
-
-    @Deprecated
-    public static void sendMessageUuid(UUID playerUUID, MutableComponent message, MinecraftServer server) {
-        ServerPlayer player = server.getPlayerList().getPlayer(playerUUID);
 
         if (player != null) {
             player.sendSystemMessage(message);
@@ -64,19 +46,8 @@ public class UtilPlayer {
         }
     }
 
-    @Deprecated
-    public static ServerPlayer getPlayer(String playerName, MinecraftServer server) {
-        return server.getPlayerList().getPlayerByName(playerName);
-    }
-
     public static ServerPlayer getPlayer(String playerName) {
         return ExtraLib.getInstance().getServer().getPlayerList().getPlayerByName(playerName);
-    }
-
-    @Deprecated
-    public static CommandSourceStack getSource(String sourceName, MinecraftServer server) {
-        ServerPlayer player = server.getPlayerList().getPlayerByName(sourceName);
-        return player != null ? player.createCommandSourceStack() : server.createCommandSourceStack();
     }
 
     public static CommandSourceStack getSource(String sourceName) {

@@ -18,7 +18,6 @@
     "fabricloader": "*",
     "fabric": "*",
     "minecraft": "<=1.21.1",
-    "java": ">=21",
-    "fabric-permissions-api-v0": "*"
+    "java": ">=21"
   }
 }

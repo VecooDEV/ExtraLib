@@ -11,16 +11,6 @@ import net.minecraft.world.level.chunk.PalettedContainer;
 import net.minecraft.world.level.storage.LevelResource;
 
 public class UtilWorld {
-    @Deprecated
-    public static ServerLevel getWorldByName(String worldName, MinecraftServer server) {
-        for (ServerLevel world : server.getAllLevels()) {
-            if (world.dimension().location().getPath().equals(worldName.toLowerCase())) {
-                return world;
-            }
-        }
-        return null;
-    }
-
     public static ServerLevel getLevelByName(String levelName) {
         for (ServerLevel world : ExtraLib.getInstance().getServer().getAllLevels()) {
             if (world.dimension().location().getPath().equals(levelName.toLowerCase())) {

@@ -15,19 +15,6 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class UtilPlayer {
-    @Deprecated
-    public static UUID getUUID(String playerName, MinecraftServer server) {
-        GameProfileCache profileCache = server.getProfileCache();
-
-        if (profileCache == null) {
-            return null;
-        }
-
-        GameProfile gameProfile = profileCache.get(playerName).orElse(null);
-
-        return gameProfile != null ? gameProfile.getId() : null;
-    }
-
     public static UUID getUUID(String playerName) {
         GameProfileCache profileCache = ExtraLib.getInstance().getServer().getProfileCache();
 
@@ -40,17 +27,6 @@ public class UtilPlayer {
         return gameProfile != null ? gameProfile.getId() : null;
     }
 
-    @Deprecated
-    public static boolean hasUUID(String playerName, MinecraftServer server) {
-        GameProfileCache profileCache = server.getProfileCache();
-
-        if (profileCache == null) {
-            return false;
-        }
-
-        return profileCache.get(playerName).isPresent();
-    }
-
     public static boolean hasUUID(String playerName) {
         GameProfileCache profileCache = ExtraLib.getInstance().getServer().getProfileCache();
 
@@ -59,19 +35,6 @@ public class UtilPlayer {
         }
 
         return profileCache.get(playerName).isPresent();
-    }
-
-    @Deprecated
-    public static String getPlayerName(UUID playerUUID, MinecraftServer server) {
-        GameProfileCache profileCache = server.getProfileCache();
-
-        if (profileCache == null) {
-            return "Unknown";
-        }
-
-        GameProfile gameProfile = profileCache.get(playerUUID).orElse(null);
-
-        return gameProfile != null ? gameProfile.getName() : "Unknown";
     }
 
     public static String getPlayerName(UUID playerUUID) {
@@ -86,26 +49,8 @@ public class UtilPlayer {
         return gameProfile != null ? gameProfile.getName() : "Unknown";
     }
 
-    @Deprecated
-    public static void sendMessageUuid(UUID playerUUID, Component message, MinecraftServer server) {
-        ServerPlayer player = server.getPlayerList().getPlayer(playerUUID);
-
-        if (player != null) {
-            player.sendSystemMessage(message);
-        }
-    }
-
     public static void sendMessageUuid(UUID playerUUID, Component message) {
         ServerPlayer player = ExtraLib.getInstance().getServer().getPlayerList().getPlayer(playerUUID);
-
-        if (player != null) {
-            player.sendSystemMessage(message);
-        }
-    }
-
-    @Deprecated
-    public static void sendMessageUuid(UUID playerUUID, MutableComponent message, MinecraftServer server) {
-        ServerPlayer player = server.getPlayerList().getPlayer(playerUUID);
 
         if (player != null) {
             player.sendSystemMessage(message);
@@ -120,19 +65,8 @@ public class UtilPlayer {
         }
     }
 
-    @Deprecated
-    public static ServerPlayer getPlayer(String playerName, MinecraftServer server) {
-        return server.getPlayerList().getPlayerByName(playerName);
-    }
-
     public static ServerPlayer getPlayer(String playerName) {
         return ExtraLib.getInstance().getServer().getPlayerList().getPlayerByName(playerName);
-    }
-
-    @Deprecated
-    public static CommandSourceStack getSource(String sourceName, MinecraftServer server) {
-        ServerPlayer player = server.getPlayerList().getPlayerByName(sourceName);
-        return player != null ? player.createCommandSourceStack() : server.createCommandSourceStack();
     }
 
     public static CommandSourceStack getSource(String sourceName) {

@@ -10,7 +10,7 @@ subprojects {
     }
 
     repositories {
-        maven { url = "https://oss.sonatype.org/content/repositories/snapshots" }
+        mavenCentral()
     }
 
     tasks.withType(JavaCompile) {
@@ -24,9 +24,11 @@ subprojects {
             include '**/*.jar'
         }
 
-        from fileTree("/build/libs/") {
-            include '**/*.jar'
-        }
+        from(fileTree("$buildDir/libs") {
+            include '*Forge.jar'
+            include '*Fabric.jar'
+            include '*NeoForge.jar'
+        })
 
         into('../release/')
 

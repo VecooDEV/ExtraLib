@@ -2,7 +2,6 @@ package com.vecoo.extralib.chat;
 
 import com.vecoo.extralib.ExtraLib;
 import net.minecraft.network.chat.*;
-import net.minecraft.server.MinecraftServer;
 
 public class UtilChat {
     public static MutableComponent formatMessage(String message) {
@@ -39,18 +38,8 @@ public class UtilChat {
                 new HoverEvent(HoverEvent.Action.SHOW_TEXT, formatMessage(text))));
     }
 
-    @Deprecated
-    public static void broadcast(String message, MinecraftServer server) {
-        server.getPlayerList().broadcastSystemMessage(formatMessage(message), false);
-    }
-
     public static void broadcast(String message) {
         ExtraLib.getInstance().getServer().getPlayerList().broadcastSystemMessage(formatMessage(message), false);
-    }
-
-    @Deprecated
-    public static void clickableBroadcastCommand(String message, String command, MinecraftServer server) {
-        server.getPlayerList().broadcastSystemMessage(clickableMessageCommand(message, command), false);
     }
 
     public static void clickableBroadcastCommand(String message, String command) {

@@ -1,5 +1,5 @@
-* Unsupported Fabric: 1.16.5/1.19.2.
-* Added TaskTimer class.
-* Change permission in ServerPlayer to Player.
-* Various improvements.
-* Various fixes
+* Updated version of mod loaders.
+* Added database support.
+* Removed obsolete methods.
+* Fix fabric 1.21.1 crash.
+* Improvements and fixes.

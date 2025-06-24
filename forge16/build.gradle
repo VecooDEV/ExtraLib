@@ -1,6 +1,7 @@
 plugins {
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
     id 'com.modrinth.minotaur' version '2.8.7'
+    id 'com.gradleup.shadow' version '8+'
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(8)
@@ -18,6 +19,45 @@ repositories {}
 
 dependencies {
     minecraft "net.minecraftforge:forge:1.16.5-${forge_16}"
+
+    shadow 'com.zaxxer:HikariCP:4.0.3'
+    shadow 'com.mysql:mysql-connector-j:9.3.0'
+    shadow 'org.mariadb.jdbc:mariadb-java-client:3.5.3'
+    shadow 'org.postgresql:postgresql:42.7.7'
+}
+
+shadowJar {
+    configurations = [project.configurations.shadow]
+    setArchiveBaseName("${rootProject.name}")
+    setArchiveClassifier('')
+
+    relocate ('com.zaxxer.hikari', 'com.vecoo.extralib.shade.zaxxer.hiraki')
+    relocate ('org.slf4j', 'com.vecoo.extralib.shade.slf4j')
+    relocate ('com.mysql', 'com.vecoo.extralib.shade.mysql')
+    relocate ('org.mariadb.jdbc', 'com.vecoo.extralib.shade.mariadb.jdbc')
+    relocate ('org.postgresql', 'com.vecoo.extralib.shade.postgresql')
+
+    relocate ('com.google.protobuf', 'com.vecoo.extralib.shade.google.protobuf')
+    relocate ('org.checkerframework', 'com.vecoo.extralib.shade.checkerframework')
+
+    exclude 'META-INF/licenses/**'
+    exclude 'META-INF/maven/**'
+    exclude 'META-INF/services/**'
+    exclude 'META-INF/versions/**'
+    exclude 'META-INF/LICENSE/**'
+    exclude 'META-INF/LICENSE.txt'
+    exclude 'INFO_BIN/**'
+    exclude 'INFO_SRC/**'
+    exclude 'README/**'
+    exclude 'LICENSE/**'
+    exclude 'google/**'
+    exclude 'driver.properties'
+    exclude 'deprecated.properties'
+    exclude 'mariadb.properties'
+}
+
+reobf {
+    shadowJar {}
 }
 
 processResources {
@@ -43,10 +83,11 @@ modrinth {
     versionNumber = project_version
     versionType = "release"
     changelog = rootProject.file("changelog.md").text
-    uploadFile = jar
+    uploadFile = shadowJar
     gameVersions = ["1.16.5"]
     loaders = ["forge"]
 }
 
-jar.finalizedBy('reobfJar')
+jar.finalizedBy('shadowJar')
+shadowJar.finalizedBy('reobfJar')
 build.finalizedBy('versionedRelease')

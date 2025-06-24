@@ -1,5 +1,6 @@
 package com.vecoo.extralib;
 
+import com.vecoo.extralib.database.UtilDatabase;
 import com.vecoo.extralib.task.TaskTimer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
@@ -34,6 +35,7 @@ public class ExtraLib {
     @SubscribeEvent
     public void onServerStopping(FMLServerStoppingEvent event) {
         TaskTimer.cancelAll();
+        UtilDatabase.close();
     }
 
     public static ExtraLib getInstance() {
