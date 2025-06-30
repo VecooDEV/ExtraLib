@@ -1,1 +1,1 @@
-* Fix load database.
+* Change init database.

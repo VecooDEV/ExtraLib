@@ -24,7 +24,7 @@ subprojects {
             include '**/*.jar'
         }
 
-        from(fileTree("$buildDir/libs") {
+        from(fileTree("build/libs") {
             include '*Forge.jar'
             include '*Fabric.jar'
             include '*NeoForge.jar'

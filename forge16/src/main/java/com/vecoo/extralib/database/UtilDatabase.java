@@ -10,10 +10,10 @@ import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
 public class UtilDatabase {
-    private static HikariDataSource dataSource;
-    private static final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
+    private final HikariDataSource dataSource;
+    private final ExecutorService executor;
 
-    public static void init(String type, String address, String database, String username, String password, String prefix, int maxPoolSize, int minimumIdle, long maxLifeTime, long keepaliveTime, long connectionTimeout, boolean useSSL) {
+    public UtilDatabase(String type, String address, String database, String username, String password, String prefix, int maxPoolSize, int minimumIdle, long maxLifeTime, long keepaliveTime, long connectionTimeout, boolean useSSL, int threadPool) {
         HikariConfig config = new HikariConfig();
 
         String normalizedType = type.toLowerCase();
@@ -72,40 +72,43 @@ public class UtilDatabase {
             config.setMaxLifetime(maxLifeTime);
             config.setKeepaliveTime(keepaliveTime);
             config.setConnectionTimeout(connectionTimeout);
-            dataSource = new HikariDataSource(config);
+
+            this.dataSource = new HikariDataSource(config);
+            this.executor = Executors.newFixedThreadPool(threadPool);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static DataSource getDataSource() {
-        if (dataSource == null) {
+    public DataSource getDataSource() {
+        if (this.dataSource == null) {
             throw new IllegalStateException("[ExtraLib] Database not initialized.");
         }
 
-        return dataSource;
-    }
-    public static boolean isDataSourceInitialized() {
-        return dataSource != null;
+        return this.dataSource;
     }
 
-    public static void close() {
-        if (dataSource != null) {
-            dataSource.close();
+    public boolean isDataSourceInitialized() {
+        return this.dataSource != null;
+    }
+
+    public void close() {
+        if (this.dataSource != null) {
+            this.dataSource.close();
         }
 
-        EXECUTOR.shutdown();
+        this.executor.shutdown();
     }
 
-    public static void async(Runnable task) {
-        EXECUTOR.execute(task);
+    public void async(Runnable task) {
+        this.executor.execute(task);
     }
 
-    public static <T> CompletableFuture<T> supplyAsync(Supplier<T> task) {
-        return CompletableFuture.supplyAsync(task, EXECUTOR);
+    public <T> CompletableFuture<T> supplyAsync(Supplier<T> task) {
+        return CompletableFuture.supplyAsync(task, this.executor);
     }
 
-    public static CompletableFuture<Void> runAsync(Runnable task) {
-        return CompletableFuture.runAsync(task, EXECUTOR);
+    public CompletableFuture<Void> runAsync(Runnable task) {
+        return CompletableFuture.runAsync(task, this.executor);
     }
 }
