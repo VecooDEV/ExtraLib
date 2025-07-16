@@ -12,8 +12,6 @@ version = "${project_version}-1.20.1-Fabric"
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
-repositories {}
-
 dependencies {
     minecraft "com.mojang:minecraft:1.20.1"
     mappings loom.officialMojangMappings()

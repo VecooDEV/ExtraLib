@@ -10,8 +10,6 @@ version = "${project_version}-1.21.1-NeoForge"
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
-repositories {}
-
 dependencies {
     implementation "net.neoforged:neoforge:${neoforge_21}"
 

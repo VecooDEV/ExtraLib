@@ -8,6 +8,7 @@
   "authors": [
     "Vecoo"
   ],
+  "license": "MIT",
   "environment": "*",
   "entrypoints": {
     "main": [

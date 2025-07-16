@@ -1,1 +1,1 @@
-* Change init database.
+* Change license.
