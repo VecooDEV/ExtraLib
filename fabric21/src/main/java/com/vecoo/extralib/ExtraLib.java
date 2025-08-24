@@ -22,9 +22,7 @@ public class ExtraLib implements ModInitializer {
 
         ServerLifecycleEvents.SERVER_STARTING.register(server -> this.server = server);
         ServerTickEvents.END_SERVER_TICK.register(server -> TaskTimer.onServerTick());
-        ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
-            TaskTimer.cancelAll();
-        });
+        ServerLifecycleEvents.SERVER_STOPPING.register(server -> TaskTimer.cancelAll());
     }
 
     public static ExtraLib getInstance() {

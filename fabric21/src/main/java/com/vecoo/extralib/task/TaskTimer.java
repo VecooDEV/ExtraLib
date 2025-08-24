@@ -15,7 +15,7 @@ public class TaskTimer {
     private long countdown;
     private volatile boolean expired;
 
-    private static final Set<TaskTimer> tasks = ConcurrentHashMap.newKeySet();
+    private static final Set<TaskTimer> TASKS = ConcurrentHashMap.newKeySet();
 
     private TaskTimer(Consumer<TaskTimer> consumer, long delay, long interval, long iterations) {
         this.consumer = consumer;
@@ -30,35 +30,35 @@ public class TaskTimer {
 
     public void cancel() {
         this.expired = true;
-        tasks.remove(this);
+        TASKS.remove(this);
     }
 
     public static void cancelAll() {
-        tasks.forEach(TaskTimer::cancel);
+        TASKS.forEach(TaskTimer::cancel);
     }
 
     private void tick() {
-        if (expired) {
+        if (this.expired) {
             return;
         }
 
-        if (countdown-- > 0) {
+        if (this.countdown-- > 0) {
             return;
         }
 
         try {
-            consumer.accept(this);
+            this.consumer.accept(this);
         } catch (Exception e) {
             ExtraLib.getLogger().error("[ExtraLib] Task execution failed", e);
             cancel();
             return;
         }
 
-        currentIteration++;
-        if (iterations == -1 || currentIteration < iterations) {
-            countdown = interval;
+        this.currentIteration++;
+        if (this.iterations == -1 || this.currentIteration < this.iterations) {
+            this.countdown = this.interval;
         } else {
-            expired = true;
+            this.expired = true;
         }
     }
 
@@ -117,21 +117,21 @@ public class TaskTimer {
         }
 
         public TaskTimer build() {
-            if (consumer == null) {
+            if (this.consumer == null) {
                 throw new IllegalStateException("[ExtraLib] Consumer must be set");
             }
-            if (interval < 0) {
+            if (this.interval < 0) {
                 throw new IllegalStateException("[ExtraLib] Interval must be set");
             }
 
-            TaskTimer task = new TaskTimer(consumer, delay, interval, iterations);
-            tasks.add(task);
+            TaskTimer task = new TaskTimer(this.consumer, this.delay, this.interval, this.iterations);
+            TASKS.add(task);
             return task;
         }
     }
 
     public static void onServerTick() {
-        Iterator<TaskTimer> iterator = tasks.iterator();
+        Iterator<TaskTimer> iterator = TASKS.iterator();
 
         while (iterator.hasNext()) {
             TaskTimer task = iterator.next();

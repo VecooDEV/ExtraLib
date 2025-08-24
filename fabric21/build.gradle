@@ -16,7 +16,7 @@ dependencies {
     minecraft "com.mojang:minecraft:1.21.1"
     mappings loom.officialMojangMappings()
 
-    modCompileOnly "net.fabricmc:fabric-loader:${fabric_loader_21}"
+    modCompileOnly "net.fabricmc:fabric-loader:${fabric_loader}"
     modCompileOnly "net.fabricmc.fabric-api:fabric-api:${fabric_api_21}"
 
     modCompileOnly("me.lucko:fabric-permissions-api:${fabric_permissions_api_21}")
