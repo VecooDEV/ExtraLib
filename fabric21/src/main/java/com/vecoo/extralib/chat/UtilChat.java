@@ -4,7 +4,7 @@ import com.vecoo.extralib.ExtraLib;
 import net.minecraft.network.chat.*;
 
 public class UtilChat {
-    public static MutableComponent formatMessage(String message) {
+    public static Component formatMessage(String message) {
         return Component.literal(message.replace("&", "\u00a7"));
     }
 

@@ -1,6 +1,6 @@
 plugins {
     id 'fabric-loom' version '1.0+'
-    id 'com.modrinth.minotaur' version '2.8.7'
+    id 'com.modrinth.minotaur' version '2.8.10'
     id 'com.gradleup.shadow' version '8+'
 }
 
@@ -83,7 +83,7 @@ modrinth {
     versionNumber = project_version
     versionType = "release"
     changelog = rootProject.file("changelog.md").text
-    uploadFile = shadowJar
+    uploadFile = remapJar
     gameVersions = ["1.20.1"]
     loaders = ["fabric"]
 }

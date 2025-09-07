@@ -55,6 +55,7 @@ public class TaskTimer {
         }
 
         this.currentIteration++;
+
         if (this.iterations == -1 || this.currentIteration < this.iterations) {
             this.countdown = this.interval;
         } else {
@@ -86,6 +87,7 @@ public class TaskTimer {
             if (delay < 0) {
                 throw new IllegalArgumentException("[ExtraLib] Delay must not be below 0");
             }
+
             this.delay = delay;
             return this;
         }
@@ -120,6 +122,7 @@ public class TaskTimer {
             if (this.consumer == null) {
                 throw new IllegalStateException("[ExtraLib] Consumer must be set");
             }
+
             if (this.interval < 0) {
                 throw new IllegalStateException("[ExtraLib] Interval must be set");
             }

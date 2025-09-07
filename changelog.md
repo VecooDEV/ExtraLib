@@ -1,1 +1,1 @@
-* Update depends.
+* Fix gradle fabric.
