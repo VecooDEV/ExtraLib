@@ -1,1 +1,1 @@
-* Added storage interface.
+* Added custom storage interface.
