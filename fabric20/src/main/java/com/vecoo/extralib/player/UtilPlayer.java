@@ -10,11 +10,13 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.GameProfileCache;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.UUID;
 
 public class UtilPlayer {
+    @Nullable
     public static UUID getUUID(String playerName) {
         GameProfileCache profileCache = ExtraLib.getInstance().getServer().getProfileCache();
 

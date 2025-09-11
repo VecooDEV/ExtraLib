@@ -1,1 +1,1 @@
-* Fix gradle fabric.
+* Added storage interface.

@@ -11,12 +11,14 @@ import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.common.UsernameCache;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class UtilPlayer {
+    @Nullable
     public static UUID getUUID(String playerName) {
         return UsernameCache.getMap().entrySet().stream().collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey)).get(playerName);
     }
@@ -45,6 +47,7 @@ public class UtilPlayer {
             player.sendMessage(message, Util.NIL_UUID);
         }
     }
+
     public static ServerPlayerEntity getPlayer(String playerName) {
         return ExtraLib.getInstance().getServer().getPlayerList().getPlayerByName(playerName);
     }
