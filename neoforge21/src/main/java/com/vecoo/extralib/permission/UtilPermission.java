@@ -8,7 +8,7 @@ import net.neoforged.neoforge.server.permission.PermissionAPI;
 import net.neoforged.neoforge.server.permission.nodes.PermissionNode;
 import net.neoforged.neoforge.server.permission.nodes.PermissionTypes;
 
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public class UtilPermission {
@@ -43,7 +43,7 @@ public class UtilPermission {
         return false;
     }
 
-    public static int minValue(int value, ServerPlayer player, List<PermissionNode<Boolean>> nodeList) {
+    public static int minValue(int value, ServerPlayer player, Set<PermissionNode<Boolean>> nodeList) {
         for (PermissionNode<Boolean> permission : nodeList) {
             if (UtilPermission.hasPermission(player, permission)) {
                 value = Math.min(value, Integer.parseInt(permission.getNodeName().substring(permission.getNodeName().lastIndexOf('.') + 1)));
@@ -52,7 +52,7 @@ public class UtilPermission {
         return value;
     }
 
-    public static int maxValue(int value, ServerPlayer player, List<PermissionNode<Boolean>> nodeList) {
+    public static int maxValue(int value, ServerPlayer player, Set<PermissionNode<Boolean>> nodeList) {
         for (PermissionNode<Boolean> permission : nodeList) {
             if (UtilPermission.hasPermission(player, permission)) {
                 value = Math.max(value, Integer.parseInt(permission.getNodeName().substring(permission.getNodeName().lastIndexOf('.') + 1)));
@@ -61,7 +61,7 @@ public class UtilPermission {
         return value;
     }
 
-    public static int minValue(int value, UUID playerUUID, List<PermissionNode<Boolean>> nodeList) {
+    public static int minValue(int value, UUID playerUUID, Set<PermissionNode<Boolean>> nodeList) {
         for (PermissionNode<Boolean> permission : nodeList) {
             if (UtilPermission.hasPermission(playerUUID, permission)) {
                 value = Math.min(value, Integer.parseInt(permission.getNodeName().substring(permission.getNodeName().lastIndexOf('.') + 1)));
@@ -70,7 +70,7 @@ public class UtilPermission {
         return value;
     }
 
-    public static int maxValue(int value, UUID playerUUID, List<PermissionNode<Boolean>> nodeList) {
+    public static int maxValue(int value, UUID playerUUID, Set<PermissionNode<Boolean>> nodeList) {
         for (PermissionNode<Boolean> permission : nodeList) {
             if (UtilPermission.hasPermission(playerUUID, permission)) {
                 value = Math.max(value, Integer.parseInt(permission.getNodeName().substring(permission.getNodeName().lastIndexOf('.') + 1)));

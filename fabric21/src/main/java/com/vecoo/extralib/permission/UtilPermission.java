@@ -4,7 +4,7 @@ import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -21,7 +21,7 @@ public class UtilPermission {
         return Permissions.check(playerUUID, node);
     }
 
-    public static int minValue(int value, ServerPlayer player, List<String> permissionList) {
+    public static int minValue(int value, ServerPlayer player, Set<String> permissionList) {
         for (String permission : permissionList) {
             if (UtilPermission.hasPermission(player, permission)) {
                 value = Math.min(value, Integer.parseInt(permission.substring(permission.lastIndexOf('.') + 1)));
@@ -30,7 +30,7 @@ public class UtilPermission {
         return value;
     }
 
-    public static int maxValue(int value, ServerPlayer player, List<String> permissionList) {
+    public static int maxValue(int value, ServerPlayer player, Set<String> permissionList) {
         for (String permission : permissionList) {
             if (UtilPermission.hasPermission(player, permission)) {
                 value = Math.max(value, Integer.parseInt(permission.substring(permission.lastIndexOf('.') + 1)));
