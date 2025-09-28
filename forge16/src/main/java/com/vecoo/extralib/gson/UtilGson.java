@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.vecoo.extralib.ExtraLib;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -23,7 +24,8 @@ import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
 public abstract class UtilGson {
-    public static CompletableFuture<Boolean> writeFileAsync(String filePath, String filename, String data) {
+    @Nonnull
+    public static CompletableFuture<Boolean> writeFileAsync(@Nonnull String filePath, @Nonnull String filename, @Nonnull String data) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
 
         Path path = Paths.get(new File("").getAbsolutePath() + filePath, filename);
@@ -40,11 +42,13 @@ public abstract class UtilGson {
                 @Override
                 public void completed(Integer result, ByteBuffer attachment) {
                     attachment.clear();
+
                     try {
                         fileChannel.close();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
+
                     future.complete(true);
                 }
 
@@ -56,10 +60,11 @@ public abstract class UtilGson {
         } catch (IOException | SecurityException e) {
             future.complete(future.complete(false));
         }
+
         return future;
     }
 
-    public static boolean writeFileSync(File file, String data) {
+    public static boolean writeFileSync(@Nonnull File file, @Nonnull String data) {
         try {
             FileWriter writer = new FileWriter(file);
             writer.write(data);
@@ -71,7 +76,8 @@ public abstract class UtilGson {
         }
     }
 
-    public static CompletableFuture<Boolean> readFileAsync(String filePath, String filename, Consumer<String> callback) {
+    @Nonnull
+    public static CompletableFuture<Boolean> readFileAsync(@Nonnull String filePath, @Nonnull String filename, @Nonnull Consumer<String> callback) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
         ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -107,7 +113,7 @@ public abstract class UtilGson {
         return future;
     }
 
-    public static boolean readFileSync(File file, Consumer<String> callback) {
+    public static boolean readFileSync(@Nonnull File file, @Nonnull Consumer<String> callback) {
         try {
             Scanner reader = new Scanner(file);
             StringBuilder data = new StringBuilder();
@@ -125,7 +131,8 @@ public abstract class UtilGson {
         }
     }
 
-    public static File checkForDirectory(String path) {
+    @Nonnull
+    public static File checkForDirectory(@Nonnull String path) {
         File dir = new File(new File("").getAbsolutePath() + path);
 
         if (!dir.exists()) {
@@ -135,6 +142,7 @@ public abstract class UtilGson {
         return dir;
     }
 
+    @Nonnull
     public static Gson newGson() {
         return new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     }

@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 public class ExtraLib implements ModInitializer {
     public static final String MOD_ID = "extralib";
-    private static final Logger LOGGER = LogManager.getLogger("ExtraLib");
+    private static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
     private static ExtraLib instance;
 

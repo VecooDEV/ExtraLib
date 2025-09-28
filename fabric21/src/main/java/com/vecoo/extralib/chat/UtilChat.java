@@ -2,47 +2,55 @@ package com.vecoo.extralib.chat;
 
 import com.vecoo.extralib.ExtraLib;
 import net.minecraft.network.chat.*;
+import org.jetbrains.annotations.NotNull;
 
 public class UtilChat {
-    public static Component formatMessage(String message) {
-        return Component.literal(message.replace("&", "\u00a7"));
+    @NotNull
+    public static Component formatMessage(@NotNull String message) {
+        return Component.literal(message.replace("&", "§"));
     }
 
-    public static Component clickableMessageCommand(String message, String command) {
+    @NotNull
+    public static Component clickableMessageCommand(@NotNull String message, @NotNull String command) {
         return Component.literal(formatMessage(message).getString()).setStyle(Style.EMPTY.withClickEvent(
                 new ClickEvent(ClickEvent.Action.RUN_COMMAND, command)));
     }
 
-    public static MutableComponent clickableMessageCommand(MutableComponent message, String command) {
+    @NotNull
+    public static MutableComponent clickableMessageCommand(@NotNull MutableComponent message, @NotNull String command) {
         return message.copy().setStyle(Style.EMPTY.withClickEvent(
                 new ClickEvent(ClickEvent.Action.RUN_COMMAND, command)));
     }
 
-    public static Component clickableMessageURL(String message, String url) {
+    @NotNull
+    public static Component clickableMessageURL(@NotNull String message, @NotNull String url) {
         return Component.literal(formatMessage(message).getString()).setStyle(Style.EMPTY.withClickEvent(
                 new ClickEvent(ClickEvent.Action.OPEN_URL, url)));
     }
 
-    public static MutableComponent clickableMessageURL(MutableComponent message, String url) {
+    @NotNull
+    public static MutableComponent clickableMessageURL(@NotNull MutableComponent message, @NotNull String url) {
         return message.copy().setStyle(Style.EMPTY.withClickEvent(
                 new ClickEvent(ClickEvent.Action.OPEN_URL, url)));
     }
 
-    public static Component hoverMessageText(String message, String text) {
+    @NotNull
+    public static Component hoverMessageText(@NotNull String message, @NotNull String text) {
         return Component.literal(formatMessage(message).getString()).setStyle(Style.EMPTY.withHoverEvent(
                 new HoverEvent(HoverEvent.Action.SHOW_TEXT, formatMessage(text))));
     }
 
-    public static MutableComponent hoverMessageText(MutableComponent message, String text) {
+    @NotNull
+    public static MutableComponent hoverMessageText(@NotNull MutableComponent message, @NotNull String text) {
         return message.copy().setStyle(Style.EMPTY.withHoverEvent(
                 new HoverEvent(HoverEvent.Action.SHOW_TEXT, formatMessage(text))));
     }
 
-    public static void broadcast(String message) {
+    public static void broadcast(@NotNull String message) {
         ExtraLib.getInstance().getServer().getPlayerList().broadcastSystemMessage(formatMessage(message), false);
     }
 
-    public static void clickableBroadcastCommand(String message, String command) {
+    public static void clickableBroadcastCommand(@NotNull String message, @NotNull String command) {
         ExtraLib.getInstance().getServer().getPlayerList().broadcastSystemMessage(clickableMessageCommand(message, command), false);
     }
 }

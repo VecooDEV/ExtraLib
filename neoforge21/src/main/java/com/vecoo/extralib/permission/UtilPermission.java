@@ -7,12 +7,13 @@ import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.server.permission.PermissionAPI;
 import net.neoforged.neoforge.server.permission.nodes.PermissionNode;
 import net.neoforged.neoforge.server.permission.nodes.PermissionTypes;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 import java.util.UUID;
 
 public class UtilPermission {
-    public static boolean hasPermission(CommandSourceStack source, PermissionNode<Boolean> node) {
+    public static boolean hasPermission(@NotNull CommandSourceStack source, @NotNull PermissionNode<Boolean> node) {
         try {
             if (PermissionAPI.getRegisteredNodes().contains(node)) {
                 return PermissionAPI.getPermission(source.getPlayerOrException(), node) || source.hasPermission(4);
@@ -25,7 +26,7 @@ public class UtilPermission {
         return false;
     }
 
-    public static boolean hasPermission(ServerPlayer player, PermissionNode<Boolean> node) {
+    public static boolean hasPermission(@NotNull ServerPlayer player, @NotNull PermissionNode<Boolean> node) {
         if (PermissionAPI.getRegisteredNodes().contains(node)) {
             return PermissionAPI.getPermission(player, node) || player.hasPermissions(4);
         }
@@ -34,7 +35,7 @@ public class UtilPermission {
         return false;
     }
 
-    public static boolean hasPermission(UUID playerUUID, PermissionNode<Boolean> node) {
+    public static boolean hasPermission(@NotNull UUID playerUUID, @NotNull PermissionNode<Boolean> node) {
         if (PermissionAPI.getRegisteredNodes().contains(node)) {
             return PermissionAPI.getOfflinePermission(playerUUID, node);
         }
@@ -43,7 +44,7 @@ public class UtilPermission {
         return false;
     }
 
-    public static int minValue(int value, ServerPlayer player, Set<PermissionNode<Boolean>> nodeList) {
+    public static int minValue(int value, @NotNull ServerPlayer player, @NotNull Set<PermissionNode<Boolean>> nodeList) {
         for (PermissionNode<Boolean> permission : nodeList) {
             if (UtilPermission.hasPermission(player, permission)) {
                 value = Math.min(value, Integer.parseInt(permission.getNodeName().substring(permission.getNodeName().lastIndexOf('.') + 1)));
@@ -52,7 +53,7 @@ public class UtilPermission {
         return value;
     }
 
-    public static int maxValue(int value, ServerPlayer player, Set<PermissionNode<Boolean>> nodeList) {
+    public static int maxValue(int value, @NotNull ServerPlayer player, @NotNull Set<PermissionNode<Boolean>> nodeList) {
         for (PermissionNode<Boolean> permission : nodeList) {
             if (UtilPermission.hasPermission(player, permission)) {
                 value = Math.max(value, Integer.parseInt(permission.getNodeName().substring(permission.getNodeName().lastIndexOf('.') + 1)));
@@ -61,7 +62,7 @@ public class UtilPermission {
         return value;
     }
 
-    public static int minValue(int value, UUID playerUUID, Set<PermissionNode<Boolean>> nodeList) {
+    public static int minValue(int value, @NotNull UUID playerUUID, @NotNull Set<PermissionNode<Boolean>> nodeList) {
         for (PermissionNode<Boolean> permission : nodeList) {
             if (UtilPermission.hasPermission(playerUUID, permission)) {
                 value = Math.min(value, Integer.parseInt(permission.getNodeName().substring(permission.getNodeName().lastIndexOf('.') + 1)));
@@ -70,7 +71,7 @@ public class UtilPermission {
         return value;
     }
 
-    public static int maxValue(int value, UUID playerUUID, Set<PermissionNode<Boolean>> nodeList) {
+    public static int maxValue(int value, @NotNull UUID playerUUID, @NotNull Set<PermissionNode<Boolean>> nodeList) {
         for (PermissionNode<Boolean> permission : nodeList) {
             if (UtilPermission.hasPermission(playerUUID, permission)) {
                 value = Math.max(value, Integer.parseInt(permission.getNodeName().substring(permission.getNodeName().lastIndexOf('.') + 1)));
@@ -79,9 +80,10 @@ public class UtilPermission {
         return value;
     }
 
-    public static PermissionNode<Boolean> getPermissionNode(String node) {
+    @NotNull
+    public static PermissionNode<Boolean> getPermissionNode(@NotNull String node) {
         String[] nodeSplit = node.split("\\.", 2);
 
-        return new PermissionNode<>(nodeSplit[0], nodeSplit[1], PermissionTypes.BOOLEAN, (p, uuid, permissionDynamicContexts) -> false);
+        return new PermissionNode<>(nodeSplit[0], nodeSplit[1], PermissionTypes.BOOLEAN, (player, uuid, permissionDynamicContexts) -> false);
     }
 }

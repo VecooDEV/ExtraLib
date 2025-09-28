@@ -3,25 +3,27 @@ package com.vecoo.extralib.permission;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public class UtilPermission {
-    public static boolean hasPermission(CommandSourceStack source, String node) {
+    public static boolean hasPermission(@NotNull CommandSourceStack source, @NotNull String node) {
         return Permissions.check(source, node) || source.hasPermission(4);
     }
 
-    public static boolean hasPermission(ServerPlayer player, String node) {
+    public static boolean hasPermission(@NotNull ServerPlayer player, @NotNull String node) {
         return Permissions.check(player, node) || player.hasPermissions(4);
     }
 
-    public static CompletableFuture<Boolean> hasPermission(UUID playerUUID, String node) {
+    @NotNull
+    public static CompletableFuture<Boolean> hasPermission(@NotNull UUID playerUUID, @NotNull String node) {
         return Permissions.check(playerUUID, node);
     }
 
-    public static int minValue(int value, ServerPlayer player, Set<String> permissionList) {
+    public static int minValue(int value, @NotNull ServerPlayer player, @NotNull Set<String> permissionList) {
         for (String permission : permissionList) {
             if (UtilPermission.hasPermission(player, permission)) {
                 value = Math.min(value, Integer.parseInt(permission.substring(permission.lastIndexOf('.') + 1)));
@@ -30,7 +32,7 @@ public class UtilPermission {
         return value;
     }
 
-    public static int maxValue(int value, ServerPlayer player, Set<String> permissionList) {
+    public static int maxValue(int value, @NotNull ServerPlayer player, @NotNull Set<String> permissionList) {
         for (String permission : permissionList) {
             if (UtilPermission.hasPermission(player, permission)) {
                 value = Math.max(value, Integer.parseInt(permission.substring(permission.lastIndexOf('.') + 1)));

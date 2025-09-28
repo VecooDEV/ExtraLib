@@ -6,8 +6,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import javax.annotation.Nonnull;
+
 public class UtilItem {
-    public static ItemStack parseItem(String itemId) {
+    @Nonnull
+    public static ItemStack parseItem(@Nonnull String itemId) {
         Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemId));
 
         if (item == null) {
@@ -17,7 +20,8 @@ public class UtilItem {
         return item.getDefaultInstance();
     }
 
-    public static ItemStack parseItemCustomModel(String itemId) {
+    @Nonnull
+    public static ItemStack parseItemCustomModel(@Nonnull String itemId) {
         String[] parts = itemId.split(":");
 
         ItemStack itemStack = parseItem(parts[0] + ":" + parts[1]);

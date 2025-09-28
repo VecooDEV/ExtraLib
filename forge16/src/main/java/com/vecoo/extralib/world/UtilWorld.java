@@ -8,17 +8,23 @@ import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.FolderName;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 public class UtilWorld {
-    public static ServerWorld getWorldByName(String worldName) {
+    @Nullable
+    public static ServerWorld getWorldByName(@Nonnull String worldName) {
         for (ServerWorld world : ExtraLib.getInstance().getServer().getAllLevels()) {
             if (world.dimension().location().getPath().equals(worldName.toLowerCase())) {
                 return world;
             }
         }
+
         return null;
     }
 
-    public static String worldDirectory(String file, MinecraftServer server) {
+    @Nonnull
+    public static String worldDirectory(@Nonnull String file, @Nonnull MinecraftServer server) {
         if (server.isDedicatedServer()) {
             return file.replace("%directory%", "world");
         }
@@ -26,7 +32,7 @@ public class UtilWorld {
         return file.replace("%directory%", "saves/" + server.getWorldPath(FolderName.LEVEL_DATA_FILE).normalize().getParent().getFileName().toString());
     }
 
-    public static int countBlocksInChunk(IChunk chunk, Block targetBlock) {
+    public static int countBlocksInChunk(@Nonnull IChunk chunk, @Nonnull Block targetBlock) {
         int[] count = {0};
 
         for (ChunkSection section : chunk.getSections()) {

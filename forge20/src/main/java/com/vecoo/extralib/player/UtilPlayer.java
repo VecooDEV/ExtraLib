@@ -9,29 +9,34 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.UsernameCache;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class UtilPlayer {
     @Nullable
-    public static UUID getUUID(String playerName) {
-        return UsernameCache.getMap().entrySet().stream().collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey)).get(playerName);
+    public static UUID getUUID(@NotNull String playerName) {
+        return UsernameCache.getMap().entrySet().stream()
+                .filter(entry -> entry.getValue().equalsIgnoreCase(playerName))
+                .map(Map.Entry::getKey)
+                .findFirst()
+                .orElse(null);
     }
 
-    public static boolean hasUUID(String playerName) {
-        return UsernameCache.getMap().entrySet().stream().collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey)).containsKey(playerName);
+    public static boolean hasUUID(@NotNull String playerName) {
+        return getUUID(playerName) != null;
     }
 
-    public static String getPlayerName(UUID playerUUID) {
+    @NotNull
+    public static String getPlayerName(@NotNull UUID playerUUID) {
         String name = UsernameCache.getLastKnownUsername(playerUUID);
         return name != null ? name : "Unknown";
     }
 
-    public static void sendMessageUuid(UUID playerUUID, Component message) {
+    public static void sendMessageUuid(@NotNull UUID playerUUID, @NotNull Component message) {
         ServerPlayer player = ExtraLib.getInstance().getServer().getPlayerList().getPlayer(playerUUID);
 
         if (player != null) {
@@ -39,7 +44,7 @@ public class UtilPlayer {
         }
     }
 
-    public static void sendMessageUuid(UUID playerUUID, MutableComponent message) {
+    public static void sendMessageUuid(@NotNull UUID playerUUID, @NotNull MutableComponent message) {
         ServerPlayer player = ExtraLib.getInstance().getServer().getPlayerList().getPlayer(playerUUID);
 
         if (player != null) {
@@ -47,18 +52,20 @@ public class UtilPlayer {
         }
     }
 
-    public static ServerPlayer getPlayer(String playerName) {
+    @Nullable
+    public static ServerPlayer getPlayer(@NotNull String playerName) {
         return ExtraLib.getInstance().getServer().getPlayerList().getPlayerByName(playerName);
     }
 
-    public static CommandSourceStack getSource(String sourceName) {
+    @NotNull
+    public static CommandSourceStack getSource(@NotNull String sourceName) {
         MinecraftServer server = ExtraLib.getInstance().getServer();
 
         ServerPlayer player = server.getPlayerList().getPlayerByName(sourceName);
         return player != null ? player.createCommandSourceStack() : server.createCommandSourceStack();
     }
 
-    public static int countItemStack(ServerPlayer player, ItemStack searchItemStack) {
+    public static int countItemStack(@NotNull ServerPlayer player, @NotNull ItemStack searchItemStack) {
         int count = 0;
 
         for (ItemStack itemStack : player.inventoryMenu.getItems()) {
@@ -72,7 +79,7 @@ public class UtilPlayer {
         return count;
     }
 
-    public static int countItemStackTag(ServerPlayer player, ItemStack searchItemStack, String tag) {
+    public static int countItemStackTag(@NotNull ServerPlayer player, @NotNull ItemStack searchItemStack, @NotNull String tag) {
         int count = 0;
 
         for (ItemStack itemStack : player.inventoryMenu.getItems()) {
@@ -99,7 +106,7 @@ public class UtilPlayer {
         return count;
     }
 
-    public static void removeItemStack(ServerPlayer player, ItemStack removeItemStack, int amount) {
+    public static void removeItemStack(@NotNull ServerPlayer player, @NotNull ItemStack removeItemStack, int amount) {
         int totalRemoved = 0;
 
         InventoryMenu playerContainer = player.inventoryMenu;
@@ -122,7 +129,7 @@ public class UtilPlayer {
         playerContainer.broadcastChanges();
     }
 
-    public static void removeItemStackTag(ServerPlayer player, ItemStack removeItemStack, String tag, int amount) {
+    public static void removeItemStackTag(@NotNull ServerPlayer player, @NotNull ItemStack removeItemStack, @NotNull String tag, int amount) {
         int totalRemoved = 0;
 
         InventoryMenu playerContainer = player.inventoryMenu;
@@ -159,7 +166,7 @@ public class UtilPlayer {
         playerContainer.broadcastChanges();
     }
 
-    public static boolean hasFreeSlot(ServerPlayer player) {
+    public static boolean hasFreeSlot(@NotNull ServerPlayer player) {
         return player.getInventory().getFreeSlot() != -1;
     }
 }

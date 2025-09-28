@@ -1,1 +1,2 @@
-* Fix load.
+* Added annotations.
+* Optimized get UUID.

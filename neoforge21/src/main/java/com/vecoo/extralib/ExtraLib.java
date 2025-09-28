@@ -2,6 +2,7 @@ package com.vecoo.extralib;
 
 import com.vecoo.extralib.task.TaskTimer;
 import net.minecraft.server.MinecraftServer;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
@@ -13,7 +14,7 @@ import org.apache.logging.log4j.Logger;
 @Mod(ExtraLib.MOD_ID)
 public class ExtraLib {
     public static final String MOD_ID = "extralib";
-    private static final Logger LOGGER = LogManager.getLogger("ExtraLib");
+    private static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
     private static ExtraLib instance;
 
@@ -31,7 +32,7 @@ public class ExtraLib {
         this.server = event.getServer();
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onServerStopping(ServerStoppingEvent event) {
         TaskTimer.cancelAll();
     }

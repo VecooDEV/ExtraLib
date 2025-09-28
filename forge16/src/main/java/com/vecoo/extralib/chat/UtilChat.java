@@ -9,46 +9,55 @@ import net.minecraft.util.text.Style;
 import net.minecraft.util.text.event.ClickEvent;
 import net.minecraft.util.text.event.HoverEvent;
 
+import javax.annotation.Nonnull;
+
 public class UtilChat {
-    public static StringTextComponent formatMessage(String message) {
-        return new StringTextComponent(message.replace("&", "\u00a7"));
+    @Nonnull
+    public static StringTextComponent formatMessage(@Nonnull String message) {
+        return new StringTextComponent(message.replace("&", "§"));
     }
 
-    public static StringTextComponent clickableMessageCommand(String message, String command) {
+    @Nonnull
+    public static StringTextComponent clickableMessageCommand(@Nonnull String message, @Nonnull String command) {
         return (StringTextComponent) formatMessage(message).setStyle(Style.EMPTY.withClickEvent(
                 new ClickEvent(ClickEvent.Action.RUN_COMMAND, command)));
     }
 
-    public static ITextComponent clickableMessageCommand(ITextComponent message, String command) {
+    @Nonnull
+    public static ITextComponent clickableMessageCommand(@Nonnull ITextComponent message, @Nonnull String command) {
         return message.copy().setStyle(Style.EMPTY.withClickEvent(
                 new ClickEvent(ClickEvent.Action.RUN_COMMAND, command)));
     }
 
-    public static StringTextComponent clickableMessageURL(String message, String url) {
+    @Nonnull
+    public static StringTextComponent clickableMessageURL(@Nonnull String message, @Nonnull String url) {
         return (StringTextComponent) formatMessage(message).setStyle(Style.EMPTY.withClickEvent(
                 new ClickEvent(ClickEvent.Action.OPEN_URL, url)));
     }
 
-    public static ITextComponent clickableMessageURL(ITextComponent message, String url) {
+    @Nonnull
+    public static ITextComponent clickableMessageURL(@Nonnull ITextComponent message, @Nonnull String url) {
         return message.copy().setStyle(Style.EMPTY.withClickEvent(
                 new ClickEvent(ClickEvent.Action.OPEN_URL, url)));
     }
 
-    public static StringTextComponent hoverMessageText(String message, String text) {
+    @Nonnull
+    public static StringTextComponent hoverMessageText(@Nonnull String message, @Nonnull String text) {
         return (StringTextComponent) formatMessage(message).setStyle(Style.EMPTY.withHoverEvent(
                 new HoverEvent(HoverEvent.Action.SHOW_TEXT, formatMessage(text))));
     }
 
-    public static ITextComponent hoverMessageText(ITextComponent message, String text) {
+    @Nonnull
+    public static ITextComponent hoverMessageText(@Nonnull ITextComponent message, @Nonnull String text) {
         return message.copy().setStyle(Style.EMPTY.withHoverEvent(
                 new HoverEvent(HoverEvent.Action.SHOW_TEXT, formatMessage(text))));
     }
 
-    public static void broadcast(String message) {
+    public static void broadcast(@Nonnull String message) {
         ExtraLib.getInstance().getServer().getPlayerList().broadcastMessage(formatMessage(message), ChatType.CHAT, Util.NIL_UUID);
     }
 
-    public static void clickableBroadcastCommand(String message, String command) {
+    public static void clickableBroadcastCommand(@Nonnull String message, @Nonnull String command) {
         ExtraLib.getInstance().getServer().getPlayerList().broadcastMessage(clickableMessageCommand(message, command), ChatType.CHAT, Util.NIL_UUID);
     }
 }

@@ -3,6 +3,7 @@ package com.vecoo.extralib.database;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import javax.annotation.Nonnull;
 import javax.sql.DataSource;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -13,7 +14,9 @@ public class UtilDatabase {
     private final HikariDataSource dataSource;
     private final ExecutorService executor;
 
-    public UtilDatabase(String type, String address, String database, String username, String password, String prefix, int maxPoolSize, int minimumIdle, long maxLifeTime, long keepaliveTime, long connectionTimeout, boolean useSSL, int threadPool) {
+    public UtilDatabase(@Nonnull String type, @Nonnull String address, @Nonnull String database, @Nonnull String username,
+                        @Nonnull String password, @Nonnull String prefix, int maxPoolSize, int minimumIdle, long maxLifeTime,
+                        long keepaliveTime, long connectionTimeout, boolean useSSL, int threadPool) {
         HikariConfig config = new HikariConfig();
 
         String normalizedType = type.toLowerCase();
@@ -80,6 +83,7 @@ public class UtilDatabase {
         }
     }
 
+    @Nonnull
     public DataSource getDataSource() {
         if (this.dataSource == null) {
             throw new IllegalStateException("[ExtraLib] Database not initialized.");
@@ -104,10 +108,12 @@ public class UtilDatabase {
         this.executor.execute(task);
     }
 
+    @Nonnull
     public <T> CompletableFuture<T> supplyAsync(Supplier<T> task) {
         return CompletableFuture.supplyAsync(task, this.executor);
     }
 
+    @Nonnull
     public CompletableFuture<Void> runAsync(Runnable task) {
         return CompletableFuture.runAsync(task, this.executor);
     }

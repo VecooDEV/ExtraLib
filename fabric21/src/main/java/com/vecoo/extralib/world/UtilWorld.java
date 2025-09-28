@@ -7,18 +7,23 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.storage.LevelResource;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class UtilWorld {
-    public static ServerLevel getLevelByName(String levelName) {
-        for (ServerLevel world : ExtraLib.getInstance().getServer().getAllLevels()) {
-            if (world.dimension().location().getPath().equals(levelName.toLowerCase())) {
-                return world;
+    @Nullable
+    public static ServerLevel getLevelByName(@NotNull String levelName) {
+        for (ServerLevel level : ExtraLib.getInstance().getServer().getAllLevels()) {
+            if (level.dimension().location().getPath().equals(levelName.toLowerCase())) {
+                return level;
             }
         }
+
         return null;
     }
 
-    public static String worldDirectory(String file, MinecraftServer server) {
+    @NotNull
+    public static String worldDirectory(@NotNull String file, @NotNull MinecraftServer server) {
         if (server.isDedicatedServer()) {
             return file.replace("%directory%", "world");
         }
@@ -26,7 +31,7 @@ public class UtilWorld {
         return file.replace("%directory%", "saves/" + server.getWorldPath(LevelResource.LEVEL_DATA_FILE).normalize().getParent().getFileName().toString());
     }
 
-    public static int countBlocksInChunk(LevelChunk chunk, Block targetBlock) {
+    public static int countBlocksInChunk(@NotNull LevelChunk chunk, @NotNull Block targetBlock) {
         int[] count = {0};
 
         for (LevelChunkSection section : chunk.getSections()) {

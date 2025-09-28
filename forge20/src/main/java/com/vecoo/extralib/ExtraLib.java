@@ -5,6 +5,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
@@ -13,7 +14,7 @@ import org.apache.logging.log4j.Logger;
 @Mod(ExtraLib.MOD_ID)
 public class ExtraLib {
     public static final String MOD_ID = "extralib";
-    private static final Logger LOGGER = LogManager.getLogger("ExtraLib");
+    private static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
     private static ExtraLib instance;
 
@@ -31,7 +32,7 @@ public class ExtraLib {
         this.server = event.getServer();
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onServerStopping(ServerStoppingEvent event) {
         TaskTimer.cancelAll();
     }

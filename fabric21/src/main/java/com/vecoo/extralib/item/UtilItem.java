@@ -8,9 +8,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomModelData;
+import org.jetbrains.annotations.NotNull;
 
 public class UtilItem {
-    public static ItemStack parseItem(String itemId) {
+    @NotNull
+    public static ItemStack parseItem(@NotNull String itemId) {
         Item item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(itemId));
 
         if (item == Items.AIR) {
@@ -20,7 +22,8 @@ public class UtilItem {
         return item.getDefaultInstance();
     }
 
-    public static ItemStack parseItemCustomModel(String itemId) {
+    @NotNull
+    public static ItemStack parseItemCustomModel(@NotNull String itemId) {
         String[] parts = itemId.split(":");
 
         ItemStack itemStack = parseItem(parts[0] + ":" + parts[1]);
