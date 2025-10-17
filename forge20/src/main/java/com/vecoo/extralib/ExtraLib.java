@@ -1,5 +1,6 @@
 package com.vecoo.extralib;
 
+import com.mojang.logging.LogUtils;
 import com.vecoo.extralib.task.TaskTimer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
@@ -8,13 +9,12 @@ import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 @Mod(ExtraLib.MOD_ID)
 public class ExtraLib {
     public static final String MOD_ID = "extralib";
-    private static final Logger LOGGER = LogManager.getLogger(MOD_ID);
+    private static final Logger LOGGER = LogUtils.getLogger();
 
     private static ExtraLib instance;
 

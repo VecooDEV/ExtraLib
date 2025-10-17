@@ -33,7 +33,7 @@ public class UtilItem {
             try {
                 itemStack.getOrCreateTag().putInt("CustomModelData", Integer.parseInt(parts[2]));
             } catch (NumberFormatException e) {
-                ExtraLib.getLogger().error("[ExtraLib] Invalid CustomModelData value in item: " + itemId);
+                ExtraLib.getLogger().error("Invalid CustomModelData value in item: " + itemId);
             }
         }
 

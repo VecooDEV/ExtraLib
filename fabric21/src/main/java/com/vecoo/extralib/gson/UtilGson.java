@@ -24,6 +24,8 @@ import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
 public abstract class UtilGson {
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+
     @NotNull
     public static CompletableFuture<Boolean> writeFileAsync(@NotNull String filePath, @NotNull String filename, @NotNull String data) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
@@ -71,7 +73,7 @@ public abstract class UtilGson {
             writer.close();
             return true;
         } catch (Exception e) {
-            ExtraLib.getLogger().error("[ExtraLib] Write file sync error");
+            ExtraLib.getLogger().error("Write file sync error");
             return false;
         }
     }
@@ -126,7 +128,7 @@ public abstract class UtilGson {
             callback.accept(data.toString());
             return true;
         } catch (Exception e) {
-            ExtraLib.getLogger().error("[ExtraLib] Read file sync error");
+            ExtraLib.getLogger().error("Read file sync error");
             return false;
         }
     }
@@ -144,6 +146,6 @@ public abstract class UtilGson {
 
     @NotNull
     public static Gson newGson() {
-        return new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+        return GSON;
     }
 }

@@ -1,16 +1,16 @@
 package com.vecoo.extralib;
 
+import com.mojang.logging.LogUtils;
 import com.vecoo.extralib.task.TaskTimer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.server.MinecraftServer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class ExtraLib implements ModInitializer {
     public static final String MOD_ID = "extralib";
-    private static final Logger LOGGER = LogManager.getLogger(MOD_ID);
+    private static final Logger LOGGER = LogUtils.getLogger();
 
     private static ExtraLib instance;
 

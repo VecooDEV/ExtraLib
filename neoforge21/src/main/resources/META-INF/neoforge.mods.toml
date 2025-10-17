@@ -11,15 +11,15 @@ authors = "Vecoo"
 description = "Library for mods."
 
 [[dependencies.extralib]]
-modId = "neoforge"
+modId = "minecraft"
 type = "required"
-versionRange = "[21.1,)"
+versionRange = "[1.21,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.extralib]]
-modId = "minecraft"
+modId = "neoforge"
 type = "required"
-versionRange = "[1.21,)"
+versionRange = "[21.1,)"
 ordering = "NONE"
 side = "BOTH"

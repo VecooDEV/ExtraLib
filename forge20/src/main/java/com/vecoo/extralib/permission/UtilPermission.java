@@ -22,7 +22,7 @@ public class UtilPermission {
             return true;
         }
 
-        ExtraLib.getLogger().error("[ExtraLib] No permission found for node: " + node);
+        ExtraLib.getLogger().error("No permission found for node: " + node);
         return false;
     }
 
@@ -31,7 +31,7 @@ public class UtilPermission {
             return PermissionAPI.getPermission(player, node) || player.hasPermissions(4);
         }
 
-        ExtraLib.getLogger().error("[ExtraLib] No permission found for node: " + node);
+        ExtraLib.getLogger().error("No permission found for node: " + node);
         return false;
     }
 
@@ -40,7 +40,7 @@ public class UtilPermission {
             return PermissionAPI.getOfflinePermission(playerUUID, node);
         }
 
-        ExtraLib.getLogger().error("[ExtraLib] No permission found for node: " + node);
+        ExtraLib.getLogger().error("No permission found for node: " + node);
         return false;
     }
 

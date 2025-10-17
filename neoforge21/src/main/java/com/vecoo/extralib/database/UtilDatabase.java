@@ -27,7 +27,7 @@ public class UtilDatabase {
                     try {
                         Class.forName("com.vecoo.extralib.shade.mysql.jdbc.Driver");
                     } catch (ClassNotFoundException e) {
-                        throw new RuntimeException("[ExtraLib] MySQL driver not found", e);
+                        throw new RuntimeException("MySQL driver not found", e);
                     }
 
                     String ssl = useSSL ? "" : "?useSSL=false";
@@ -40,7 +40,7 @@ public class UtilDatabase {
                     try {
                         Class.forName("com.vecoo.extralib.shade.mariadb.jdbc.Driver");
                     } catch (ClassNotFoundException e) {
-                        throw new RuntimeException("[ExtraLib] MariaDB driver not found", e);
+                        throw new RuntimeException("MariaDB driver not found", e);
                     }
 
                     String ssl = useSSL ? "" : "?useSSL=false";
@@ -53,7 +53,7 @@ public class UtilDatabase {
                     try {
                         Class.forName("com.vecoo.extralib.shade.postgresql.Driver");
                     } catch (ClassNotFoundException e) {
-                        throw new RuntimeException("[ExtraLib] PostgreSQL driver not found", e);
+                        throw new RuntimeException("PostgreSQL driver not found", e);
                     }
 
                     String ssl = useSSL ? "" : "?sslmode=disable";
@@ -63,7 +63,7 @@ public class UtilDatabase {
                 }
 
                 default: {
-                    throw new IllegalStateException("[ExtraLib] Unsupported database type: " + type);
+                    throw new IllegalStateException("Unsupported database type: " + type);
                 }
             }
 
@@ -86,7 +86,7 @@ public class UtilDatabase {
     @NotNull
     public DataSource getDataSource() {
         if (this.dataSource == null) {
-            throw new IllegalStateException("[ExtraLib] Database not initialized.");
+            throw new IllegalStateException("Database not initialized.");
         }
 
         return this.dataSource;
