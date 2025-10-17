@@ -34,6 +34,7 @@ shadowJar {
     configurations = [project.configurations.shadow]
     setArchiveBaseName("${rootProject.name}")
 
+    relocate('me.lucko.fabric.api.permissions.v0', 'com.vecoo.extralib.shade.lucko.fabric.api.permissions.v0')
     relocate('com.zaxxer.hikari', 'com.vecoo.extralib.shade.zaxxer.hikari')
     relocate('com.mysql', 'com.vecoo.extralib.shade.mysql')
     relocate('org.mariadb.jdbc', 'com.vecoo.extralib.shade.mariadb.jdbc')
