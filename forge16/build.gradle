@@ -1,0 +1,89 @@
+plugins {
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'com.modrinth.minotaur' version '2.8.10'
+    id 'com.gradleup.shadow' version '9.2.2'
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+
+version = "${project_version}-1.16.5-Forge"
+
+minecraft {
+    mappings channel: 'official', version: '1.16.5'
+    copyIdeResources = true
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:1.16.5-${forge_16}"
+
+    shadow("com.zaxxer:HikariCP:${hikari_cp}") {
+        exclude group: 'org.slf4j'
+    }
+    shadow "com.mysql:mysql-connector-j:${mysql_connector_j}"
+    shadow "org.mariadb.jdbc:mariadb-java-client:${mariadb_connector_j}"
+    shadow "org.postgresql:postgresql:${postgresql_jdbc_driver}"
+}
+
+shadowJar {
+    configurations = [project.configurations.shadow]
+    setArchiveBaseName("${rootProject.name}")
+    setArchiveClassifier('')
+
+    relocate('com.zaxxer.hikari', 'com.vecoo.extralib.shade.zaxxer.hikari')
+    relocate('com.mysql', 'com.vecoo.extralib.shade.mysql')
+    relocate('org.mariadb.jdbc', 'com.vecoo.extralib.shade.mariadb.jdbc')
+    relocate('org.postgresql', 'com.vecoo.extralib.shade.postgresql')
+    relocate('com.google.protobuf', 'com.vecoo.extralib.shade.google.protobuf')
+    relocate('org.checkerframework', 'com.vecoo.extralib.shade.checkerframework')
+
+    exclude 'META-INF/licenses/**'
+    exclude 'META-INF/maven/**'
+    exclude 'META-INF/services/**'
+    exclude 'META-INF/versions/**'
+    exclude 'META-INF/LICENSE/**'
+    exclude 'META-INF/LICENSE.txt'
+    exclude 'INFO_BIN/**'
+    exclude 'INFO_SRC/**'
+    exclude 'README/**'
+    exclude 'LICENSE/**'
+    exclude 'google/**'
+    exclude 'driver.properties'
+    exclude 'deprecated.properties'
+    exclude 'mariadb.properties'
+}
+
+reobf {
+    shadowJar {}
+}
+
+processResources {
+    filesMatching('META-INF/mods.toml') {
+        expand(
+                'project_name': project_name,
+                'project_version': project_version
+        )
+    }
+}
+
+def gradleProperties = new Properties()
+def gradlePropertiesFile = new File(rootProject.file("/.gradle/gradle.properties").path)
+
+if (gradlePropertiesFile.exists()) {
+    gradlePropertiesFile.withInputStream { gradleProperties.load(it) }
+}
+
+modrinth {
+    token = gradleProperties.getProperty("MODRINTH_API_KEY")
+    projectId = "extralib"
+    versionName = "${project_name}-${version}"
+    versionNumber = project_version
+    versionType = "release"
+    changelog = rootProject.file("changelog.md").text
+    uploadFile = shadowJar
+    gameVersions = ["1.16.5"]
+    loaders = ["forge"]
+}
+
+jar.finalizedBy('shadowJar')
+shadowJar.finalizedBy('reobfJar')
+build.finalizedBy('versionedRelease')
