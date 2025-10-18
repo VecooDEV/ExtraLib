@@ -86,7 +86,7 @@ public class UtilDatabase {
     @NotNull
     public DataSource getDataSource() {
         if (this.dataSource == null) {
-            throw new IllegalStateException("[ExtraLib] Database not initialized.");
+            throw new IllegalStateException("Database not initialized.");
         }
 
         return this.dataSource;
