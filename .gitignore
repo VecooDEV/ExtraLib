@@ -2,16 +2,5 @@
 /.gradle/
 /forge16/build/
 /release/
-/forge20/build/
-/forge19/build/
-/forge21/build/
-/fabric20/run/
-/fabric20/build/
-/fabric20/.gradle/
-/fabric21/build/
-/fabric21/.gradle/
-/fabric21/run/
-/neoforge21/.gradle/
-/neoforge21/build/
-/neoforge21/runs/
 /build/
+/forge12/build/

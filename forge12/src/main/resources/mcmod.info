@@ -1,0 +1,11 @@
+[
+  {
+    "modid": "extralib",
+    "name": "${project_name}",
+    "description": "Library for mods.",
+    "version": "${project_version}",
+    "mcversion": "1.12.2",
+    "authorList": ["Vecoo"],
+    "logoFile": "logo.png"
+  }
+]

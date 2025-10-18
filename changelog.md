@@ -1,1 +1,1 @@
-* Fix permission api fabric.
+* Port to 1.12.2/1.16.5/1.19.2/1.20.1 (Fabric)
