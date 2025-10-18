@@ -1,10 +1,10 @@
 /.idea/
 /.gradle/
-/forge16/build/
 /release/
-/forge20/build/
+/forge12/build/
+/forge16/build/
 /forge19/build/
-/forge21/build/
+/forge20/build/
 /fabric20/run/
 /fabric20/build/
 /fabric20/.gradle/
