@@ -1,1 +1,1 @@
-* Fix check player permission.
+* Fix load mod.
