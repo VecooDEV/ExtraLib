@@ -1,1 +1,1 @@
-* Fix permission api fabric.
+* Fix check player permission.

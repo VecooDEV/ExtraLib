@@ -16,7 +16,9 @@ public class UtilPermission {
     public static boolean hasPermission(@NotNull CommandSourceStack source, @NotNull PermissionNode<Boolean> node) {
         try {
             if (PermissionAPI.getRegisteredNodes().contains(node)) {
-                return PermissionAPI.getPermission(source.getPlayerOrException(), node) || source.hasPermission(4);
+                ServerPlayer player = source.getPlayerOrException();
+
+                return PermissionAPI.getPermission(player, node) || player.hasPermissions(4);
             }
         } catch (CommandSyntaxException e) {
             return true;
