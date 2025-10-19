@@ -1,5 +1,6 @@
 package com.vecoo.extralib.permission;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
@@ -11,7 +12,11 @@ import java.util.concurrent.CompletableFuture;
 
 public class UtilPermission {
     public static boolean hasPermission(@NotNull CommandSourceStack source, @NotNull String node) {
-        return Permissions.check(source, node) || source.hasPermission(4);
+        try {
+            return Permissions.check(source, node) || source.getPlayerOrException().hasPermissions(4);
+        } catch (CommandSyntaxException e) {
+            return true;
+        }
     }
 
     public static boolean hasPermission(@NotNull ServerPlayer player, @NotNull String node) {
