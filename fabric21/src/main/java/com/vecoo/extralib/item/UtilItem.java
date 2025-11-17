@@ -1,9 +1,12 @@
 package com.vecoo.extralib.item;
 
+import com.google.gson.JsonElement;
+import com.mojang.serialization.JsonOps;
 import com.vecoo.extralib.ExtraLib;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -41,5 +44,17 @@ public class UtilItem {
         }
 
         return itemStack;
+    }
+
+    @NotNull
+    public static JsonElement serialize(@NotNull ItemStack itemStack, @NotNull MinecraftServer server) {
+        return ItemStack.CODEC.encodeStart(server.registryAccess().createSerializationContext(JsonOps.INSTANCE),
+                itemStack).getOrThrow();
+    }
+
+    @NotNull
+    public static ItemStack deserialize(@NotNull JsonElement jsonElement, @NotNull MinecraftServer server) {
+        return ItemStack.CODEC.decode(server.registryAccess().createSerializationContext(JsonOps.INSTANCE),
+                jsonElement).getOrThrow().getFirst();
     }
 }

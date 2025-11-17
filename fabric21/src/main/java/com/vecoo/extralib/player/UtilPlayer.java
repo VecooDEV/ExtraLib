@@ -77,6 +77,10 @@ public class UtilPlayer {
         return player != null ? player.createCommandSourceStack() : server.createCommandSourceStack();
     }
 
+    public void executeCommand(@NotNull ServerPlayer player, @NotNull String command) {
+        ExtraLib.getInstance().getServer().getCommands().performPrefixedCommand(player.createCommandSourceStack(), command);
+    }
+
     public static int countItemStack(@NotNull ServerPlayer player, @NotNull ItemStack searchItemStack) {
         int count = 0;
 

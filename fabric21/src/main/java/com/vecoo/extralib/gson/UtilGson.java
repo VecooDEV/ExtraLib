@@ -40,7 +40,7 @@ public abstract class UtilGson {
         try (AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
             ByteBuffer buffer = ByteBuffer.wrap(data.getBytes(StandardCharsets.UTF_8));
 
-            fileChannel.write(buffer, 0, buffer, new CompletionHandler<Integer, ByteBuffer>() {
+            fileChannel.write(buffer, 0, buffer, new CompletionHandler<>() {
                 @Override
                 public void completed(Integer result, ByteBuffer attachment) {
                     attachment.clear();
@@ -73,7 +73,7 @@ public abstract class UtilGson {
             writer.close();
             return true;
         } catch (Exception e) {
-            ExtraLib.getLogger().error("Write file sync error");
+            ExtraLib.getLogger().error("Write file sync error.");
             return false;
         }
     }
@@ -128,7 +128,7 @@ public abstract class UtilGson {
             callback.accept(data.toString());
             return true;
         } catch (Exception e) {
-            ExtraLib.getLogger().error("Read file sync error");
+            ExtraLib.getLogger().error("Read file sync error.");
             return false;
         }
     }

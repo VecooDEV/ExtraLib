@@ -1,9 +1,13 @@
 package com.vecoo.extralib.item;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.vecoo.extralib.ExtraLib;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,5 +42,20 @@ public class UtilItem {
         }
 
         return itemStack;
+    }
+
+    @NotNull
+    public static String serialize(@NotNull ItemStack itemStack) {
+        return itemStack.save(new CompoundTag()).getAsString();
+    }
+
+    @NotNull
+    public static ItemStack deserialize(@NotNull String itemStack) {
+        try {
+            return ItemStack.of(TagParser.parseTag(itemStack));
+        } catch (CommandSyntaxException e) {
+            ExtraLib.getLogger().error("Invalid tag item.");
+            return Items.STONE.getDefaultInstance();
+        }
     }
 }

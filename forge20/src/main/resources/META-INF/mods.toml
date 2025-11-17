@@ -11,15 +11,15 @@ authors = "Vecoo"
 description = "Library for mods."
 
 [[dependencies.extralib]]
-modId = "forge"
+modId = "minecraft"
 mandatory = true
-versionRange = "[47,)"
+versionRange = "[1.20,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.extralib]]
-modId = "minecraft"
+modId = "forge"
 mandatory = true
-versionRange = "[1.20,)"
+versionRange = "[47,)"
 ordering = "NONE"
 side = "BOTH"

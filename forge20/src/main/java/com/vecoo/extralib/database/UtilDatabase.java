@@ -27,7 +27,7 @@ public class UtilDatabase {
                     try {
                         Class.forName("com.vecoo.extralib.shade.mysql.jdbc.Driver");
                     } catch (ClassNotFoundException e) {
-                        throw new RuntimeException("MySQL driver not found", e);
+                        throw new RuntimeException("MySQL driver not found.", e);
                     }
 
                     String ssl = useSSL ? "" : "?useSSL=false";
@@ -40,7 +40,7 @@ public class UtilDatabase {
                     try {
                         Class.forName("com.vecoo.extralib.shade.mariadb.jdbc.Driver");
                     } catch (ClassNotFoundException e) {
-                        throw new RuntimeException("MariaDB driver not found", e);
+                        throw new RuntimeException("MariaDB driver not found.", e);
                     }
 
                     String ssl = useSSL ? "" : "?useSSL=false";
@@ -53,7 +53,7 @@ public class UtilDatabase {
                     try {
                         Class.forName("com.vecoo.extralib.shade.postgresql.Driver");
                     } catch (ClassNotFoundException e) {
-                        throw new RuntimeException("PostgreSQL driver not found", e);
+                        throw new RuntimeException("PostgreSQL driver not found.", e);
                     }
 
                     String ssl = useSSL ? "" : "?sslmode=disable";
@@ -104,17 +104,17 @@ public class UtilDatabase {
         this.executor.shutdown();
     }
 
-    public void async(Runnable task) {
+    public void async(@NotNull Runnable task) {
         this.executor.execute(task);
     }
 
     @NotNull
-    public <T> CompletableFuture<T> supplyAsync(Supplier<T> task) {
+    public <T> CompletableFuture<T> supplyAsync(@NotNull Supplier<T> task) {
         return CompletableFuture.supplyAsync(task, this.executor);
     }
 
     @NotNull
-    public CompletableFuture<Void> runAsync(Runnable task) {
+    public CompletableFuture<Void> runAsync(@NotNull Runnable task) {
         return CompletableFuture.runAsync(task, this.executor);
     }
 }

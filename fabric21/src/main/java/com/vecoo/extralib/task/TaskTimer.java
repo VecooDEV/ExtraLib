@@ -49,7 +49,7 @@ public class TaskTimer {
         try {
             this.consumer.accept(this);
         } catch (Exception e) {
-            ExtraLib.getLogger().error("Task execution failed", e);
+            ExtraLib.getLogger().error("Task execution failed.", e);
             cancel();
             return;
         }
@@ -85,7 +85,7 @@ public class TaskTimer {
 
         public Builder delay(long delay) {
             if (delay < 0) {
-                throw new IllegalArgumentException("Delay must not be below 0");
+                throw new IllegalArgumentException("Delay must not be below 0.");
             }
 
             this.delay = delay;
@@ -94,7 +94,7 @@ public class TaskTimer {
 
         public Builder interval(long interval) {
             if (interval < 0) {
-                throw new IllegalArgumentException("Interval must not be below 0");
+                throw new IllegalArgumentException("Interval must not be below 0.");
             }
 
             this.interval = interval;
@@ -103,7 +103,7 @@ public class TaskTimer {
 
         public Builder iterations(long iterations) {
             if (iterations < -1) {
-                throw new IllegalArgumentException("Iterations must not be below -1");
+                throw new IllegalArgumentException("Iterations must not be below -1.");
             }
 
             this.iterations = iterations;
@@ -120,11 +120,11 @@ public class TaskTimer {
 
         public TaskTimer build() {
             if (this.consumer == null) {
-                throw new IllegalStateException("Consumer must be set");
+                throw new IllegalStateException("Consumer must be set.");
             }
 
             if (this.interval < 0) {
-                throw new IllegalStateException("Interval must be set");
+                throw new IllegalStateException("Interval must be set.");
             }
 
             TaskTimer task = new TaskTimer(this.consumer, this.delay, this.interval, this.iterations);
