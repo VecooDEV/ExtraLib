@@ -32,7 +32,7 @@ public class UtilCommand {
     }
 
     @NotNull
-    public static SuggestionProvider<CommandSourceStack> suggestOnlinePlayers(@NotNull Collection<Integer> collection) {
+    public static SuggestionProvider<CommandSourceStack> suggestAmount(@NotNull Collection<Integer> collection) {
         return (context, builder) -> {
             for (int amount : collection) {
                 builder.suggest(amount);
