@@ -1,5 +1,5 @@
 plugins {
-    id 'net.neoforged.gradle.userdev' version '7.1.4'
+    id 'net.neoforged.moddev' version '2.0.119'
     id 'com.modrinth.minotaur' version '2.8.10'
     id 'com.gradleup.shadow' version '8+'
 }
@@ -8,9 +8,11 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 version = "${project_version}-1.21.1-NeoForge"
 
-dependencies {
-    implementation "net.neoforged:neoforge:${neoforge_21}"
+neoForge {
+    version = "${neoforge_21}"
+}
 
+dependencies {
     shadow("com.zaxxer:HikariCP:${hikari_cp}") {
         exclude group: 'org.slf4j'
     }
