@@ -21,19 +21,19 @@ public class ExtraLib implements ModInitializer {
         instance = this;
 
         ServerLifecycleEvents.SERVER_STARTING.register(server -> this.server = server);
-        ServerTickEvents.END_SERVER_TICK.register(server -> TaskTimer.onServerTick());
+        ServerTickEvents.END_SERVER_TICK.register(server -> TaskTimer.onServerTickEnd());
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> TaskTimer.cancelAll());
     }
 
-    public static ExtraLib getInstance() {
+    public static ExtraLib instance() {
         return instance;
     }
 
-    public static Logger getLogger() {
+    public static Logger logger() {
         return LOGGER;
     }
 
-    public MinecraftServer getServer() {
+    public MinecraftServer server() {
         return instance.server;
     }
 }

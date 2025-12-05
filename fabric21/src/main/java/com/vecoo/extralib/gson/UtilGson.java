@@ -26,6 +26,15 @@ import java.util.function.Consumer;
 public abstract class UtilGson {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
+    /**
+     * Writes the specified data to a file asynchronously.
+     * The file is created if it does not exist, and overwritten if it does.
+     *
+     * @param filePath the directory path relative to the working directory
+     * @param filename the target filename
+     * @param data     the text content to write
+     * @return a CompletableFuture that completes with {@code true} on success, {@code false} on failure
+     */
     @NotNull
     public static CompletableFuture<Boolean> writeFileAsync(@NotNull String filePath, @NotNull String filename, @NotNull String data) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
@@ -66,6 +75,13 @@ public abstract class UtilGson {
         return future;
     }
 
+    /**
+     * Writes text to a file synchronously using a FileWriter.
+     *
+     * @param file the target file
+     * @param data the text to write
+     * @return {@code true} if the write succeeded, {@code false} otherwise
+     */
     public static boolean writeFileSync(@NotNull File file, @NotNull String data) {
         try {
             FileWriter writer = new FileWriter(file);
@@ -73,11 +89,19 @@ public abstract class UtilGson {
             writer.close();
             return true;
         } catch (Exception e) {
-            ExtraLib.getLogger().error("Write file sync error.");
+            ExtraLib.logger().error("Write file sync error.");
             return false;
         }
     }
 
+    /**
+     * Reads the contents of a file asynchronously and supplies the text to the given callback.
+     *
+     * @param filePath the directory path relative to the working directory
+     * @param filename the file to read
+     * @param callback a consumer that receives the file content as a String
+     * @return a CompletableFuture that completes with {@code true} if read succeeded, {@code false} otherwise
+     */
     @NotNull
     public static CompletableFuture<Boolean> readFileAsync(@NotNull String filePath, @NotNull String filename, @NotNull Consumer<String> callback) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
@@ -115,6 +139,13 @@ public abstract class UtilGson {
         return future;
     }
 
+    /**
+     * Reads a file synchronously and supplies the contents to the given callback.
+     *
+     * @param file     the file to read
+     * @param callback consumer receiving the file content
+     * @return {@code true} if successful, {@code false} otherwise
+     */
     public static boolean readFileSync(@NotNull File file, @NotNull Consumer<String> callback) {
         try {
             Scanner reader = new Scanner(file);
@@ -128,11 +159,17 @@ public abstract class UtilGson {
             callback.accept(data.toString());
             return true;
         } catch (Exception e) {
-            ExtraLib.getLogger().error("Read file sync error.");
+            ExtraLib.logger().error("Read file sync error.");
             return false;
         }
     }
 
+    /**
+     * Ensures that a directory exists; creates it if missing.
+     *
+     * @param path the directory path relative to the working directory
+     * @return the File object representing the directory
+     */
     @NotNull
     public static File checkForDirectory(@NotNull String path) {
         File dir = new File(new File("").getAbsolutePath() + path);
@@ -144,8 +181,13 @@ public abstract class UtilGson {
         return dir;
     }
 
+    /**
+     * Returns the shared Gson instance used by ExtraLib.
+     *
+     * @return the Gson instance
+     */
     @NotNull
-    public static Gson newGson() {
+    public static Gson gson() {
         return GSON;
     }
 }

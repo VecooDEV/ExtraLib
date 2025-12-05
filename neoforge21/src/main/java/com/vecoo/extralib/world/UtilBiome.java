@@ -3,8 +3,15 @@ package com.vecoo.extralib.world;
 import org.jetbrains.annotations.NotNull;
 
 public class UtilBiome {
+    /**
+     * Converts a biome ID into a human-readable biome name.
+     * For example, "minecraft:dark_forest" becomes "Dark Forest".
+     *
+     * @param biomeId the biome ID in the format "namespace:biome_name"
+     * @return a formatted, human-readable biome name with each word capitalized
+     */
     @NotNull
-    public static String getBiomeName(@NotNull String biomeId) {
+    public static String formatBiomeName(@NotNull String biomeId) {
         String[] split = biomeId.split(":");
         StringBuilder name = new StringBuilder();
 

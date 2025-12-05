@@ -15,6 +15,9 @@
       "com.vecoo.extralib.ExtraLib"
     ]
   },
+  "mixins": [
+    "extralib.mixins.json"
+  ],
   "depends": {
     "fabricloader": "*",
     "fabric": "*",
