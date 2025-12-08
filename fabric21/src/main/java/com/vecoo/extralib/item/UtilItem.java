@@ -58,7 +58,7 @@ public class UtilItem {
             try {
                 itemStack.set(DataComponents.CUSTOM_MODEL_DATA, new CustomModelData(Integer.parseInt(parts[2])));
             } catch (NumberFormatException e) {
-                ExtraLib.logger().error("Invalid CustomModelData value in item: {}.", itemId);
+                ExtraLib.getLogger().error("Invalid CustomModelData value in item: {}.", itemId);
             }
         }
 

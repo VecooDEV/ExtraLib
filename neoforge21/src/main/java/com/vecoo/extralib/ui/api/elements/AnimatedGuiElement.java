@@ -45,7 +45,7 @@ public class AnimatedGuiElement implements GuiElementInterface {
     @Override
     public ItemStack getItemStackForDisplay(@NotNull GuiInterface gui) {
         int copyFrame = this.frame;
-        int tickCount = ExtraLib.instance().server().getTickCount();
+        int tickCount = ExtraLib.getInstance().getServer().getTickCount();
 
         if (this.lastTick != tickCount) {
             this.tick += 1;

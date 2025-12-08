@@ -50,7 +50,7 @@ public class UtilPlayer {
      * @return the last known username, or "Unknown" if not found
      */
     @NotNull
-    public static String findPlayerName(@NotNull UUID playerUUID) {
+    public static String getPlayerName(@NotNull UUID playerUUID) {
         String name = UsernameCache.getLastKnownUsername(playerUUID);
         return name != null ? name : "Unknown";
     }
@@ -66,7 +66,7 @@ public class UtilPlayer {
      * @param message    the message to send
      */
     public static void sendMessageUuid(@NotNull UUID playerUUID, @NotNull Component message) {
-        ServerPlayer player = ExtraLib.instance().server().getPlayerList().getPlayer(playerUUID);
+        ServerPlayer player = ExtraLib.getInstance().getServer().getPlayerList().getPlayer(playerUUID);
 
         if (player != null) {
             player.sendSystemMessage(message);
@@ -84,7 +84,7 @@ public class UtilPlayer {
      * @param message    the mutable message to send
      */
     public static void sendMessageUuid(@NotNull UUID playerUUID, @NotNull MutableComponent message) {
-        ServerPlayer player = ExtraLib.instance().server().getPlayerList().getPlayer(playerUUID);
+        ServerPlayer player = ExtraLib.getInstance().getServer().getPlayerList().getPlayer(playerUUID);
 
         if (player != null) {
             player.sendSystemMessage(message);
@@ -99,7 +99,7 @@ public class UtilPlayer {
      */
     @Nullable
     public static ServerPlayer findPlayer(@NotNull String playerName) {
-        return ExtraLib.instance().server().getPlayerList().getPlayerByName(playerName);
+        return ExtraLib.getInstance().getServer().getPlayerList().getPlayerByName(playerName);
     }
 
     /**
@@ -112,8 +112,8 @@ public class UtilPlayer {
      * @return the command source stack
      */
     @NotNull
-    public static CommandSourceStack findSource(@NotNull String sourceName) {
-        MinecraftServer server = ExtraLib.instance().server();
+    public static CommandSourceStack getSource(@NotNull String sourceName) {
+        MinecraftServer server = ExtraLib.getInstance().getServer();
         ServerPlayer player = server.getPlayerList().getPlayerByName(sourceName);
 
         return player != null ? player.createCommandSourceStack() : server.createCommandSourceStack();
@@ -126,7 +126,7 @@ public class UtilPlayer {
      * @param command the command string
      */
     public static void executeCommand(@NotNull ServerPlayer player, @NotNull String command) {
-        ExtraLib.instance().server().getCommands().performPrefixedCommand(player.createCommandSourceStack(), command);
+        ExtraLib.getInstance().getServer().getCommands().performPrefixedCommand(player.createCommandSourceStack(), command);
     }
 
     /**

@@ -37,15 +37,15 @@ public class ExtraLib {
         TaskTimer.cancelAll();
     }
 
-    public static ExtraLib instance() {
+    public static ExtraLib getInstance() {
         return instance;
     }
 
-    public static Logger logger() {
+    public static Logger getLogger() {
         return LOGGER;
     }
 
-    public MinecraftServer server() {
+    public MinecraftServer getServer() {
         return instance.server;
     }
 }

@@ -80,7 +80,7 @@ public class TaskTimer {
         try {
             this.consumer.accept(this);
         } catch (Exception e) {
-            ExtraLib.logger().error("Task execution failed.", e);
+            ExtraLib.getLogger().error("Task execution failed.", e);
             cancel();
             return;
         }

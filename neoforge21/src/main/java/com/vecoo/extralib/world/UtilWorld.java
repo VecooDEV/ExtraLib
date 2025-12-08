@@ -22,7 +22,7 @@ public class UtilWorld {
      */
     @Nullable
     public static ServerLevel findLevelByName(@NotNull String levelName) {
-        for (ServerLevel level : ExtraLib.instance().server().getAllLevels()) {
+        for (ServerLevel level : ExtraLib.getInstance().getServer().getAllLevels()) {
             if (level.dimension().location().getPath().equals(levelName.toLowerCase())) {
                 return level;
             }

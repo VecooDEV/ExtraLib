@@ -178,7 +178,7 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
 
     @NotNull
     public GuiElementBuilder enchant(@NotNull ResourceKey<Enchantment> enchantment, int level) {
-        return enchant(ExtraLib.instance().server().registryAccess(), enchantment, level);
+        return enchant(ExtraLib.getInstance().getServer().registryAccess(), enchantment, level);
     }
 
     @NotNull
@@ -213,8 +213,8 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
 
     @NotNull
     public GuiElementBuilder setSkullOwner(@NotNull GameProfile profile) {
-        if (ExtraLib.instance().server().getSessionService().getTextures(profile) == MinecraftProfileTextures.EMPTY) {
-            ProfileResult profileResult = ExtraLib.instance().server().getSessionService().fetchProfile(profile.getId(), false);
+        if (ExtraLib.getInstance().getServer().getSessionService().getTextures(profile) == MinecraftProfileTextures.EMPTY) {
+            ProfileResult profileResult = ExtraLib.getInstance().getServer().getSessionService().fetchProfile(profile.getId(), false);
 
             if (profileResult != null) {
                 profile = profileResult.profile();

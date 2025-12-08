@@ -25,15 +25,15 @@ public class ExtraLib implements ModInitializer {
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> TaskTimer.cancelAll());
     }
 
-    public static ExtraLib instance() {
+    public static ExtraLib getInstance() {
         return instance;
     }
 
-    public static Logger logger() {
+    public static Logger getLogger() {
         return LOGGER;
     }
 
-    public MinecraftServer server() {
+    public MinecraftServer getServer() {
         return instance.server;
     }
 }

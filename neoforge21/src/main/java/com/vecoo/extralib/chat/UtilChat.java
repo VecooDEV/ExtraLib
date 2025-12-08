@@ -101,7 +101,7 @@ public class UtilChat {
      * @param message the message to broadcast
      */
     public static void broadcast(@NotNull String message) {
-        ExtraLib.instance().server().getPlayerList().broadcastSystemMessage(formatMessage(message), false);
+        ExtraLib.getInstance().getServer().getPlayerList().broadcastSystemMessage(formatMessage(message), false);
     }
 
     /**
@@ -111,6 +111,6 @@ public class UtilChat {
      * @param command the command to execute when clicked
      */
     public static void clickableBroadcastCommand(@NotNull String message, @NotNull String command) {
-        ExtraLib.instance().server().getPlayerList().broadcastSystemMessage(clickableMessageCommand(message, command), false);
+        ExtraLib.getInstance().getServer().getPlayerList().broadcastSystemMessage(clickableMessageCommand(message, command), false);
     }
 }

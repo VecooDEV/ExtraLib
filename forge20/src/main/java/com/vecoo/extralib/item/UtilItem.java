@@ -56,7 +56,7 @@ public class UtilItem {
             try {
                 itemStack.getOrCreateTag().putInt("CustomModelData", Integer.parseInt(parts[2]));
             } catch (NumberFormatException e) {
-                ExtraLib.logger().error("Invalid CustomModelData value in item: {}.", itemId);
+                ExtraLib.getLogger().error("Invalid CustomModelData value in item: {}.", itemId);
             }
         }
 
@@ -85,7 +85,7 @@ public class UtilItem {
         try {
             return ItemStack.of(TagParser.parseTag(itemStack));
         } catch (CommandSyntaxException e) {
-            ExtraLib.logger().error("Invalid tag item.");
+            ExtraLib.getLogger().error("Invalid tag item.");
             return Items.STONE.getDefaultInstance();
         }
     }

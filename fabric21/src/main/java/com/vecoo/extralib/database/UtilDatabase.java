@@ -27,7 +27,7 @@ import java.util.function.Supplier;
  * </p>
  *
  * <p>The database connection is initialized during construction, and can be accessed via
- * {@link #dataSource()}. The executor service is exposed through helper methods for running
+ * {@link #getDataSource()}. The executor service is exposed through helper methods for running
  * tasks asynchronously.</p>
  */
 public class UtilDatabase {
@@ -122,7 +122,7 @@ public class UtilDatabase {
      * @throws IllegalStateException if the data source is not initialized
      */
     @NotNull
-    public DataSource dataSource() {
+    public DataSource getDataSource() {
         if (this.dataSource == null) {
             throw new IllegalStateException("Database not initialized.");
         }

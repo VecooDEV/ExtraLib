@@ -14,7 +14,7 @@ public class UtilServer {
      * @param command the command to execute, without a leading slash
      */
     public static void executeCommand(@NotNull String command) {
-        ExtraLib.instance().server().getCommands().performPrefixedCommand(
-                ExtraLib.instance().server().createCommandSourceStack(), command);
+        ExtraLib.getInstance().getServer().getCommands().performPrefixedCommand(
+                ExtraLib.getInstance().getServer().createCommandSourceStack(), command);
     }
 }

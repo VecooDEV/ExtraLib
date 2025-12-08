@@ -89,7 +89,7 @@ public abstract class UtilGson {
             writer.close();
             return true;
         } catch (Exception e) {
-            ExtraLib.logger().error("Write file sync error.");
+            ExtraLib.getLogger().error("Write file sync error.");
             return false;
         }
     }
@@ -159,7 +159,7 @@ public abstract class UtilGson {
             callback.accept(data.toString());
             return true;
         } catch (Exception e) {
-            ExtraLib.logger().error("Read file sync error.");
+            ExtraLib.getLogger().error("Read file sync error.");
             return false;
         }
     }
@@ -187,7 +187,7 @@ public abstract class UtilGson {
      * @return the Gson instance
      */
     @NotNull
-    public static Gson gson() {
+    public static Gson getGson() {
         return GSON;
     }
 }
