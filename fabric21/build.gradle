@@ -25,6 +25,7 @@ dependencies {
     shadow("com.zaxxer:HikariCP:${hikari_cp}") {
         exclude group: 'org.slf4j'
     }
+    shadow("org.spongepowered:configurate-yaml:${configurate_yaml}")
     shadow "com.mysql:mysql-connector-j:${mysql_connector_j}"
     shadow "org.mariadb.jdbc:mariadb-java-client:${mariadb_connector_j}"
     shadow "org.postgresql:postgresql:${postgresql_jdbc_driver}"
@@ -36,6 +37,9 @@ shadowJar {
 
     relocate('me.lucko.fabric.api.permissions.v0', 'com.vecoo.extralib.shade.lucko.fabric.api.permissions.v0')
     relocate('com.zaxxer.hikari', 'com.vecoo.extralib.shade.zaxxer.hikari')
+    relocate('io.leangen.geantyref', 'com.vecoo.extralib.shade.leangen.geantyref')
+    relocate('net.kyori.option', 'com.vecoo.extralib.shade.kyori.option')
+    relocate('org.spongepowered.configurate', 'com.vecoo.extralib.shade.spongepowered.configurate')
     relocate('com.mysql', 'com.vecoo.extralib.shade.mysql')
     relocate('org.mariadb.jdbc', 'com.vecoo.extralib.shade.mariadb.jdbc')
     relocate('org.postgresql', 'com.vecoo.extralib.shade.postgresql')

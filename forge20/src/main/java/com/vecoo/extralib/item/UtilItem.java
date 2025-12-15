@@ -11,7 +11,7 @@ import net.minecraft.world.item.Items;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
-public class UtilItem {
+public final class UtilItem {
     /**
      * Parses an item ID into an {@link ItemStack}. If the item does not exist,
      * returns {@link ItemStack#EMPTY}.

@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
-public class UtilCommand {
+public final class UtilCommand {
     /**
      * Provides a suggestion provider for online player names.
      * <p>

@@ -16,7 +16,7 @@ import java.util.function.Consumer;
  * Tasks are automatically managed in a static set and can be ticked on server tick events.
  * </p>
  */
-public class TaskTimer {
+public final class TaskTimer {
     private final Consumer<TaskTimer> consumer;
     private final long interval;
     private long currentIteration;

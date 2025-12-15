@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-public class UtilPermission {
+public final class UtilPermission {
     /**
      * Checks whether the given command source has the specified permission.
      * <p>

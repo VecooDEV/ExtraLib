@@ -3,7 +3,7 @@ package com.vecoo.extralib.server;
 import com.vecoo.extralib.ExtraLib;
 import org.jetbrains.annotations.NotNull;
 
-public class UtilServer {
+public final class UtilServer {
     /**
      * Executes a server command as if it was run by the console.
      * <p>

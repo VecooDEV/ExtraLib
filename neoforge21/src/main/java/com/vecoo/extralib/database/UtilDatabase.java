@@ -30,7 +30,7 @@ import java.util.function.Supplier;
  * {@link #getDataSource()}. The executor service is exposed through helper methods for running
  * tasks asynchronously.</p>
  */
-public class UtilDatabase {
+public final class UtilDatabase {
     private final HikariDataSource dataSource;
     private final ExecutorService executor;
 
@@ -62,7 +62,7 @@ public class UtilDatabase {
             switch (normalizedType) {
                 case "mysql" -> {
                     try {
-                        Class.forName("com.vecoo.extralib.shade.mysql.jdbc.Driver");
+                        Class.forName("com.vecoo.extralib.shade.mysql.cj.jdbc.Driver");
                     } catch (ClassNotFoundException e) {
                         throw new RuntimeException("MySQL driver not found.", e);
                     }

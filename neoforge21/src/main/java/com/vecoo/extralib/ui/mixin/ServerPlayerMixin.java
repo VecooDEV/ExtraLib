@@ -42,14 +42,14 @@ public abstract class ServerPlayerMixin extends Player implements PlayerExtensio
                     target = "Lnet/minecraft/server/level/ServerPlayer;closeContainer()V",
                     shift = At.Shift.BEFORE)
     )
-    private void sgui$dontForceCloseFor(MenuProvider factory, @Nullable Consumer<RegistryFriendlyByteBuf> extraDataWriter, CallbackInfoReturnable<OptionalInt> cir) {
+    private void openMenu(MenuProvider factory, @Nullable Consumer<RegistryFriendlyByteBuf> extraDataWriter, CallbackInfoReturnable<OptionalInt> cir) {
         if (factory instanceof SguiScreenHandlerFactory<?> sguiScreenHandlerFactory && !sguiScreenHandlerFactory.gui().resetMousePosition()) {
             this.sgui$ignoreNext = true;
         }
     }
 
     @Inject(method = "closeContainer", at = @At("HEAD"), cancellable = true)
-    private void sgui$ignoreClosing(CallbackInfo ci) {
+    private void closeContainer(CallbackInfo ci) {
         if (this.sgui$ignoreNext) {
             this.sgui$ignoreNext = false;
             this.doCloseContainer();
@@ -58,7 +58,7 @@ public abstract class ServerPlayerMixin extends Player implements PlayerExtensio
     }
 
     @Inject(method = "die", at = @At("TAIL"))
-    private void sgui$onDeath(DamageSource source, CallbackInfo ci) {
+    private void die(DamageSource source, CallbackInfo ci) {
         if (this.containerMenu instanceof VirtualScreenHandlerInterface handler) {
             handler.getGui().close(true);
         }

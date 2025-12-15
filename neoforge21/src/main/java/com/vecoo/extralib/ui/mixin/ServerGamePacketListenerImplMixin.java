@@ -49,7 +49,7 @@ public abstract class ServerGamePacketListenerImplMixin extends ServerCommonPack
             ),
             cancellable = true
     )
-    private void updateClicks(ServerboundContainerClickPacket packet, CallbackInfo ci) {
+    private void handleContainerClickTime(ServerboundContainerClickPacket packet, CallbackInfo ci) {
         if (this.player.containerMenu instanceof VirtualScreenHandler handler) {
             try {
                 SlotGuiInterface gui = handler.getGui();
@@ -102,7 +102,7 @@ public abstract class ServerGamePacketListenerImplMixin extends ServerCommonPack
                     target = "Lnet/minecraft/server/level/ServerPlayer;isSpectator()Z"
             )
     )
-    private boolean canSpectatorClickSlot(boolean isSpectator) {
+    private boolean handleContainerClick(boolean isSpectator) {
         return isSpectator && !(this.player.containerMenu instanceof VirtualScreenHandler handler && handler.getGui().canSpectatorsClick());
     }
 
@@ -133,7 +133,7 @@ public abstract class ServerGamePacketListenerImplMixin extends ServerCommonPack
             ),
             cancellable = true
     )
-    private void sgui$storeScreenHandler(ServerboundContainerClosePacket packet, CallbackInfo info) {
+    private void handleContainerCloseServerLevel(ServerboundContainerClosePacket packet, CallbackInfo info) {
         if (this.player.containerMenu instanceof VirtualScreenHandlerInterface handler) {
             if (handler.getGui().canPlayerClose()) {
                 this.previousMenu = this.player.containerMenu;
@@ -154,7 +154,7 @@ public abstract class ServerGamePacketListenerImplMixin extends ServerCommonPack
     }
 
     @Inject(method = "handleContainerClose", at = @At("TAIL"))
-    private void sgui$executeClosing(ServerboundContainerClosePacket packet, CallbackInfo info) {
+    private void handleContainerClose(ServerboundContainerClosePacket packet, CallbackInfo info) {
         try {
             if (this.previousMenu != null) {
                 if (this.previousMenu instanceof VirtualScreenHandlerInterface screenHandler) {
@@ -179,7 +179,7 @@ public abstract class ServerGamePacketListenerImplMixin extends ServerCommonPack
                     target = "Lnet/minecraft/server/level/ServerPlayer;resetLastActionTime()V",
                     shift = At.Shift.BEFORE)
     )
-    private void sgui$catchRecipeRequests(ServerboundPlaceRecipePacket packet, CallbackInfo ci) {
+    private void handlePlaceRecipe(ServerboundPlaceRecipePacket packet, CallbackInfo ci) {
         if (this.player.containerMenu instanceof VirtualScreenHandler handler && handler.getGui() instanceof SimpleGui gui) {
             try {
                 gui.onCraftRequest(packet.getRecipe(), packet.isShiftDown());
@@ -190,7 +190,7 @@ public abstract class ServerGamePacketListenerImplMixin extends ServerCommonPack
     }
 
     @Inject(method = "updateSignText", at = @At("HEAD"), cancellable = true)
-    private void sgui$catchSignUpdate(ServerboundSignUpdatePacket packet, List<FilteredText> signComponent, CallbackInfo ci) {
+    private void updateSignText(ServerboundSignUpdatePacket packet, List<FilteredText> signComponent, CallbackInfo ci) {
         try {
             if (this.player.containerMenu instanceof FakeScreenHandler fake && fake.getGui() instanceof SignGui gui) {
                 for (int i = 0; i < packet.getLines().length; i++) {
@@ -216,7 +216,7 @@ public abstract class ServerGamePacketListenerImplMixin extends ServerCommonPack
                     target = "Lnet/minecraft/network/protocol/PacketUtils;ensureRunningOnSameThread(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketListener;Lnet/minecraft/server/level/ServerLevel;)V"),
             cancellable = true
     )
-    private void sgui$cancelCreativeAction(ServerboundSetCreativeModeSlotPacket packet, CallbackInfo ci) {
+    private void handleSetCreativeModeSlot(ServerboundSetCreativeModeSlotPacket packet, CallbackInfo ci) {
         if (this.player.containerMenu instanceof VirtualScreenHandlerInterface) {
             ci.cancel();
         }

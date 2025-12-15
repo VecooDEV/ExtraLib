@@ -3,9 +3,9 @@ package com.vecoo.extralib.player;
 import com.vecoo.extralib.ExtraLib;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.UsernameCache;
@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-public class UtilPlayer {
+public final class UtilPlayer {
     /**
      * Finds the UUID of a player by their username.
      *
@@ -73,24 +73,6 @@ public class UtilPlayer {
     }
 
     /**
-     * Sends a mutable system message to a player identified by UUID.
-     * <p>
-     * Use this method when the player's online status is unknown.
-     * If the player is offline, the message is silently ignored.
-     * </p>
-     *
-     * @param playerUUID the UUID of the player
-     * @param message    the mutable message to send
-     */
-    public static void sendMessageUuid(@NotNull UUID playerUUID, @NotNull MutableComponent message) {
-        ServerPlayer player = ExtraLib.getInstance().getServer().getPlayerList().getPlayer(playerUUID);
-
-        if (player != null) {
-            player.sendSystemMessage(message);
-        }
-    }
-
-    /**
      * Finds a {@link ServerPlayer} object by player name.
      *
      * @param playerName the name of the player
@@ -124,7 +106,7 @@ public class UtilPlayer {
      * @param player  the player executing the command
      * @param command the command string
      */
-    public static void executeCommand(@NotNull ServerPlayer player, @NotNull String command) {
+    public static void executeCommand(@NotNull Player player, @NotNull String command) {
         ExtraLib.getInstance().getServer().getCommands().performPrefixedCommand(player.createCommandSourceStack(), command);
     }
 
@@ -136,7 +118,7 @@ public class UtilPlayer {
      * @param searchItemStack the item stack to search for
      * @return the total count of matching items
      */
-    public static int countItemStack(@NotNull ServerPlayer player, @NotNull ItemStack searchItemStack) {
+    public static int countItemStack(@NotNull Player player, @NotNull ItemStack searchItemStack) {
         int count = 0;
 
         for (ItemStack itemStack : player.inventoryMenu.getItems()) {
@@ -159,7 +141,7 @@ public class UtilPlayer {
      * @param tag             the string tag
      * @return the total count of matching items
      */
-    public static int countItemStackTag(@NotNull ServerPlayer player, @NotNull ItemStack searchItemStack, @NotNull String tag) {
+    public static int countItemStackTag(@NotNull Player player, @NotNull ItemStack searchItemStack, @NotNull String tag) {
         int count = 0;
 
         for (ItemStack itemStack : player.inventoryMenu.getItems()) {
@@ -193,7 +175,7 @@ public class UtilPlayer {
      * @param removeItemStack the item stack to remove
      * @param amount          the number of items to remove
      */
-    public static void removeItemStack(@NotNull ServerPlayer player, @NotNull ItemStack removeItemStack, int amount) {
+    public static void removeItemStack(@NotNull Player player, @NotNull ItemStack removeItemStack, int amount) {
         int totalRemoved = 0;
 
         InventoryMenu playerContainer = player.inventoryMenu;
@@ -225,7 +207,7 @@ public class UtilPlayer {
      * @param tag             string tag
      * @param amount          the number of items to remove
      */
-    public static void removeItemStackTag(@NotNull ServerPlayer player, @NotNull ItemStack removeItemStack, @NotNull String tag, int amount) {
+    public static void removeItemStackTag(@NotNull Player player, @NotNull ItemStack removeItemStack, @NotNull String tag, int amount) {
         int totalRemoved = 0;
 
         InventoryMenu playerContainer = player.inventoryMenu;
@@ -268,7 +250,7 @@ public class UtilPlayer {
      * @param player the player to check
      * @return true if the player has a free slot, false otherwise
      */
-    public static boolean hasFreeSlot(@NotNull ServerPlayer player) {
+    public static boolean hasFreeSlot(@NotNull Player player) {
         return player.getInventory().getFreeSlot() != -1;
     }
 }

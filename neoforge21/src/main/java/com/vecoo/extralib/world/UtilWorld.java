@@ -10,7 +10,7 @@ import net.minecraft.world.level.storage.LevelResource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class UtilWorld {
+public final class UtilWorld {
     /**
      * Finds for a level by its name.
      *

@@ -88,6 +88,12 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
     }
 
     @NotNull
+    public GuiElementBuilder removeRarity() {
+        this.itemStack.set(DataComponents.RARITY, Rarity.COMMON);
+        return this;
+    }
+
+    @NotNull
     public GuiElementBuilder setCount(int count) {
         this.itemStack.setCount(count);
         return this;

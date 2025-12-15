@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Set;
 import java.util.UUID;
 
-public class UtilPermission {
+public final class UtilPermission {
     /**
      * Checks whether the given command source has the specified permission.
      * <p>
