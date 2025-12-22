@@ -2,6 +2,7 @@ package com.vecoo.extralib;
 
 import com.mojang.logging.LogUtils;
 import com.vecoo.extralib.task.TaskTimer;
+import com.vecoo.extralib.ui.listener.GuiListener;
 import net.minecraft.server.MinecraftServer;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -24,6 +25,7 @@ public class ExtraLib {
         instance = this;
 
         NeoForge.EVENT_BUS.register(this);
+        NeoForge.EVENT_BUS.register(new GuiListener());
         NeoForge.EVENT_BUS.register(new TaskTimer.EventHandler());
     }
 

@@ -1,1 +1,1 @@
-* Added missing yaml factory (Fabric).
+* Fixes not work safe open ui.
