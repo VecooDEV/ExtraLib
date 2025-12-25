@@ -1,6 +1,7 @@
 package com.vecoo.extralib.item;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import com.vecoo.extralib.ExtraLib;
 import net.minecraft.core.component.DataComponents;
@@ -74,6 +75,14 @@ public final class UtilItem {
      */
     @NotNull
     public static JsonElement serialize(@NotNull ItemStack itemStack, @NotNull MinecraftServer server) {
+        if (itemStack.isEmpty()) {
+            JsonObject air = new JsonObject();
+
+            air.addProperty("id", "minecraft:air");
+            air.addProperty("count", 0);
+            return air;
+        }
+
         return ItemStack.CODEC.encodeStart(server.registryAccess().createSerializationContext(JsonOps.INSTANCE),
                 itemStack).getOrThrow();
     }
@@ -87,6 +96,14 @@ public final class UtilItem {
      */
     @NotNull
     public static ItemStack deserialize(@NotNull JsonElement jsonElement, @NotNull MinecraftServer server) {
+        if (jsonElement.isJsonObject()) {
+            JsonObject object = jsonElement.getAsJsonObject();
+
+            if ("minecraft:air".equals(object.get("id").getAsString())) {
+                return ItemStack.EMPTY;
+            }
+        }
+
         return ItemStack.CODEC.decode(server.registryAccess().createSerializationContext(JsonOps.INSTANCE),
                 jsonElement).getOrThrow().getFirst();
     }
