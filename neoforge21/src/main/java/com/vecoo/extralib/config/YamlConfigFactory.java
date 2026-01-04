@@ -12,6 +12,10 @@ public final class YamlConfigFactory {
     private YamlConfigFactory() {
     }
 
+    public static <T> T load(@NotNull Class<T> clazz, @NotNull String path) {
+        return load(clazz, Path.of(path));
+    }
+
     /**
      * Loads a YAML configuration file into a strongly-typed configuration object.
      * <p>
@@ -30,7 +34,6 @@ public final class YamlConfigFactory {
      * @param clazz the configuration class to deserialize into
      * @param path  the path to the YAML configuration file
      * @return a populated configuration instance
-     *
      * @throws RuntimeException if the configuration cannot be loaded or saved
      */
     public static <T> T load(@NotNull Class<T> clazz, @NotNull Path path) {

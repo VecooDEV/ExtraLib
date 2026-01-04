@@ -2,6 +2,7 @@ package com.vecoo.extralib.player;
 
 import com.mojang.authlib.GameProfile;
 import com.vecoo.extralib.ExtraLib;
+import com.vecoo.extralib.chat.UtilChat;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
@@ -64,6 +65,24 @@ public final class UtilPlayer {
         GameProfile gameProfile = profileCache.get(playerUUID).orElse(null);
 
         return gameProfile != null ? gameProfile.getName() : "Unknown";
+    }
+
+    /**
+     * Sends a system formatted message to a player identified by UUID.
+     * <p>
+     * Use this method when the player's online status is unknown.
+     * If the player is offline, the message is silently ignored.
+     * </p>
+     *
+     * @param playerUUID the UUID of the player
+     * @param message    the message to send
+     */
+    public static void sendMessageUuid(@NotNull UUID playerUUID, @NotNull String message) {
+        ServerPlayer player = ExtraLib.getInstance().getServer().getPlayerList().getPlayer(playerUUID);
+
+        if (player != null) {
+            player.sendSystemMessage(UtilChat.formatMessage(message));
+        }
     }
 
     /**

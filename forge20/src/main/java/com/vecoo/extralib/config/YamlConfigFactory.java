@@ -12,6 +12,10 @@ public final class YamlConfigFactory {
     private YamlConfigFactory() {
     }
 
+    public static <T> T load(@NotNull Class<T> clazz, @NotNull String path) {
+        return load(clazz, Path.of(path));
+    }
+
     /**
      * Loads a YAML configuration file into a strongly-typed configuration object.
      * <p>
