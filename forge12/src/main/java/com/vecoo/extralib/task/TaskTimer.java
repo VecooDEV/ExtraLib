@@ -4,12 +4,13 @@ import com.vecoo.extralib.ExtraLib;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
+import javax.annotation.Nonnull;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
-public class TaskTimer {
+public final class TaskTimer {
     private final Consumer<TaskTimer> consumer;
     private final long interval;
     private long currentIteration;
@@ -19,7 +20,7 @@ public class TaskTimer {
 
     private static final Set<TaskTimer> TASKS = ConcurrentHashMap.newKeySet();
 
-    private TaskTimer(Consumer<TaskTimer> consumer, long delay, long interval, long iterations) {
+    private TaskTimer(@Nonnull Consumer<TaskTimer> consumer, long delay, long interval, long iterations) {
         this.consumer = consumer;
         this.countdown = delay;
         this.interval = interval;
@@ -51,7 +52,7 @@ public class TaskTimer {
         try {
             this.consumer.accept(this);
         } catch (Exception e) {
-            ExtraLib.getLogger().error("Task execution failed", e);
+            ExtraLib.getLogger().error("Task execution failed.", e);
             cancel();
             return;
         }
@@ -65,6 +66,7 @@ public class TaskTimer {
         }
     }
 
+    @Nonnull
     public static Builder builder() {
         return new Builder();
     }
@@ -75,58 +77,66 @@ public class TaskTimer {
         private long interval;
         private long iterations = 1;
 
-        public Builder execute(Runnable runnable) {
+        @Nonnull
+        public Builder execute(@Nonnull Runnable runnable) {
             this.consumer = task -> runnable.run();
             return this;
         }
 
-        public Builder consume(Consumer<TaskTimer> consumer) {
+        @Nonnull
+        public Builder consume(@Nonnull Consumer<TaskTimer> consumer) {
             this.consumer = consumer;
             return this;
         }
 
+        @Nonnull
         public Builder delay(long delay) {
             if (delay < 0) {
-                throw new IllegalArgumentException("Delay must not be below 0");
+                throw new IllegalArgumentException("Delay must not be below 0.");
             }
 
             this.delay = delay;
             return this;
         }
 
+        @Nonnull
         public Builder interval(long interval) {
             if (interval < 0) {
-                throw new IllegalArgumentException("Interval must not be below 0");
+                throw new IllegalArgumentException("Interval must not be below 0.");
             }
 
             this.interval = interval;
             return this;
         }
 
+        @Nonnull
         public Builder iterations(long iterations) {
             if (iterations < -1) {
-                throw new IllegalArgumentException("Iterations must not be below -1");
+                throw new IllegalArgumentException("Iterations must not be below -1.");
             }
 
             this.iterations = iterations;
             return this;
         }
 
+        @Nonnull
         public Builder infinite() {
             return iterations(-1);
         }
 
+        @Nonnull
         public Builder withoutDelay() {
             return delay(0);
         }
 
+        @Nonnull
         public TaskTimer build() {
             if (this.consumer == null) {
-                throw new IllegalStateException("Consumer must be set");
+                throw new IllegalStateException("Consumer must be set.");
             }
 
             if (this.interval < 0) {
-                throw new IllegalStateException("Interval must be set");
+                throw new IllegalStateException("Interval must be set.");
             }
 
             TaskTimer task = new TaskTimer(this.consumer, this.delay, this.interval, this.iterations);

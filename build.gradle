@@ -1,6 +1,6 @@
 subprojects {
-    apply plugin: 'java'
     apply plugin: 'idea'
+    apply plugin: 'java'
 
     group = 'com.vecoo.extralib'
     version = project_version
@@ -26,8 +26,8 @@ subprojects {
 
         from(fileTree("build/libs") {
             include '*Forge.jar'
-            include '*Fabric.jar'
             include '*NeoForge.jar'
+            include '*Fabric.jar'
         })
 
         into('../release/')

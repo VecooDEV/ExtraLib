@@ -10,7 +10,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
-public class UtilDatabase {
+public final class UtilDatabase {
     private final HikariDataSource dataSource;
     private final ExecutorService executor;
 
@@ -18,16 +18,15 @@ public class UtilDatabase {
                         @Nonnull String password, @Nonnull String prefix, int maxPoolSize, int minimumIdle, long maxLifeTime,
                         long keepaliveTime, long connectionTimeout, boolean useSSL, int threadPool) {
         HikariConfig config = new HikariConfig();
-
         String normalizedType = type.toLowerCase();
 
         try {
             switch (normalizedType) {
                 case "mysql": {
                     try {
-                        Class.forName("com.vecoo.extralib.shade.mysql.jdbc.Driver");
+                        Class.forName("com.vecoo.extralib.shade.mysql.cj.jdbc.Driver");
                     } catch (ClassNotFoundException e) {
-                        throw new RuntimeException("MySQL driver not found", e);
+                        throw new RuntimeException("MySQL driver not found.", e);
                     }
 
                     String ssl = useSSL ? "" : "?useSSL=false";
@@ -40,7 +39,7 @@ public class UtilDatabase {
                     try {
                         Class.forName("com.vecoo.extralib.shade.mariadb.jdbc.Driver");
                     } catch (ClassNotFoundException e) {
-                        throw new RuntimeException("MariaDB driver not found", e);
+                        throw new RuntimeException("MariaDB driver not found.", e);
                     }
 
                     String ssl = useSSL ? "" : "?useSSL=false";
@@ -53,7 +52,7 @@ public class UtilDatabase {
                     try {
                         Class.forName("com.vecoo.extralib.shade.postgresql.Driver");
                     } catch (ClassNotFoundException e) {
-                        throw new RuntimeException("PostgreSQL driver not found", e);
+                        throw new RuntimeException("PostgreSQL driver not found.", e);
                     }
 
                     String ssl = useSSL ? "" : "?sslmode=disable";
@@ -104,17 +103,17 @@ public class UtilDatabase {
         this.executor.shutdown();
     }
 
-    public void async(Runnable task) {
+    public void async(@Nonnull Runnable task) {
         this.executor.execute(task);
     }
 
     @Nonnull
-    public <T> CompletableFuture<T> supplyAsync(Supplier<T> task) {
+    public <T> CompletableFuture<T> supplyAsync(@Nonnull Supplier<T> task) {
         return CompletableFuture.supplyAsync(task, this.executor);
     }
 
     @Nonnull
-    public CompletableFuture<Void> runAsync(Runnable task) {
+    public CompletableFuture<Void> runAsync(@Nonnull Runnable task) {
         return CompletableFuture.runAsync(task, this.executor);
     }
 }

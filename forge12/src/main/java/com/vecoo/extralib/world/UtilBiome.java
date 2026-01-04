@@ -2,14 +2,15 @@ package com.vecoo.extralib.world;
 
 import javax.annotation.Nonnull;
 
-public class UtilBiome {
+public final class UtilBiome {
     @Nonnull
-    public static String getBiomeName(@Nonnull String biomeId) {
+    public static String formatBiomeName(@Nonnull String biomeId) {
         String[] split = biomeId.split(":");
         StringBuilder name = new StringBuilder();
 
         if (split[1].contains("_")) {
             String[] fullName = split[1].split("_");
+
             for (String s : fullName) {
                 String word = s.substring(0, 1).toUpperCase() + s.substring(1);
                 name.append(word).append(" ");

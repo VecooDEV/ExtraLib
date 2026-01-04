@@ -1,14 +1,17 @@
 package com.vecoo.extralib.item;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.vecoo.extralib.ExtraLib;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.NotNull;
 
-public class UtilItem {
+public final class UtilItem {
     @NotNull
     public static ItemStack parseItem(@NotNull String itemId) {
         Item item = BuiltInRegistries.ITEM.get(new ResourceLocation(itemId));
@@ -34,10 +37,25 @@ public class UtilItem {
             try {
                 itemStack.getOrCreateTag().putInt("CustomModelData", Integer.parseInt(parts[2]));
             } catch (NumberFormatException e) {
-                ExtraLib.getLogger().error("Invalid CustomModelData value in item: " + itemId);
+                ExtraLib.getLogger().error("Invalid CustomModelData value in item: {}.", itemId);
             }
         }
 
         return itemStack;
+    }
+
+    @NotNull
+    public static String serialize(@NotNull ItemStack itemStack) {
+        return itemStack.save(new CompoundTag()).getAsString();
+    }
+
+    @NotNull
+    public static ItemStack deserialize(@NotNull String itemStack) {
+        try {
+            return ItemStack.of(TagParser.parseTag(itemStack));
+        } catch (CommandSyntaxException e) {
+            ExtraLib.getLogger().error("Invalid tag item.");
+            return Items.STONE.getDefaultInstance();
+        }
     }
 }

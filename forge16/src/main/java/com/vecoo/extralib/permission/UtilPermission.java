@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
 import java.util.Set;
 import java.util.UUID;
 
-public class UtilPermission {
+public final class UtilPermission {
     public static boolean hasPermission(@Nonnull CommandSource source, @Nonnull String node) {
         try {
             if (PermissionAPI.getPermissionHandler().getRegisteredNodes().contains(node)) {
@@ -22,7 +22,7 @@ public class UtilPermission {
             return true;
         }
 
-        ExtraLib.getLogger().error("No permission found for node: " + node);
+        ExtraLib.getLogger().error("No permission found for node: {}.", node);
         return false;
     }
 
@@ -31,7 +31,7 @@ public class UtilPermission {
             return PermissionAPI.hasPermission(player, node) || player.hasPermissions(4);
         }
 
-        ExtraLib.getLogger().error("No permission found for node: " + node);
+        ExtraLib.getLogger().error("No permission found for node: {}.", node);
         return false;
     }
 
@@ -40,7 +40,7 @@ public class UtilPermission {
             return PermissionAPI.hasPermission(new GameProfile(playerUUID, playerName), node, new Context());
         }
 
-        ExtraLib.getLogger().error("No permission found for node: " + node);
+        ExtraLib.getLogger().error("No permission found for node: {}.", node);
         return false;
     }
 

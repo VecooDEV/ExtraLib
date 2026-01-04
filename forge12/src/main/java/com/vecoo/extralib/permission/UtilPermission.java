@@ -11,7 +11,7 @@ import javax.annotation.Nonnull;
 import java.util.Set;
 import java.util.UUID;
 
-public class UtilPermission {
+public final class UtilPermission {
     public static boolean hasPermission(@Nonnull ICommandSender source, @Nonnull String node) {
         if (!(source instanceof EntityPlayer)) {
             return true;
@@ -21,7 +21,7 @@ public class UtilPermission {
             return PermissionAPI.hasPermission((EntityPlayer) source, node) || source.canUseCommand(4, node);
         }
 
-        ExtraLib.getLogger().error("No permission found for node: " + node);
+        ExtraLib.getLogger().error("No permission found for node: {}.", node);
         return false;
     }
 
@@ -30,7 +30,7 @@ public class UtilPermission {
             return PermissionAPI.hasPermission(player, node) || player.canUseCommand(4, node);
         }
 
-        ExtraLib.getLogger().error("No permission found for node: " + node);
+        ExtraLib.getLogger().error("No permission found for node: {}.", node);
         return false;
     }
 
@@ -39,7 +39,7 @@ public class UtilPermission {
             return PermissionAPI.hasPermission(new GameProfile(playerUUID, playerName), node, new Context());
         }
 
-        ExtraLib.getLogger().error("No permission found for node: " + node);
+        ExtraLib.getLogger().error("No permission found for node: {}.", node);
         return false;
     }
 

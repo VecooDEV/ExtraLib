@@ -9,7 +9,7 @@ import net.minecraft.util.text.event.HoverEvent;
 
 import javax.annotation.Nonnull;
 
-public class UtilChat {
+public final class UtilChat {
     @Nonnull
     public static TextComponentString formatMessage(@Nonnull String message) {
         return new TextComponentString(message.replace("&", "§"));
@@ -46,7 +46,7 @@ public class UtilChat {
     }
 
     @Nonnull
-    public static TextComponentString hoverMessageText(@Nonnull TextComponentString message, @Nonnull String text) {
+    public static TextComponentString hoverMessageText(@Nonnull ITextComponent message, @Nonnull String text) {
         return (TextComponentString) message.createCopy().setStyle(new Style().setHoverEvent(
                 new HoverEvent(HoverEvent.Action.SHOW_TEXT, formatMessage(text))));
     }

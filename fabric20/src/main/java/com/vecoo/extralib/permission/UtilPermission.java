@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-public class UtilPermission {
+public final class UtilPermission {
     public static boolean hasPermission(@NotNull CommandSourceStack source, @NotNull String node) {
         try {
             return Permissions.check(source, node) || source.getPlayerOrException().hasPermissions(4);

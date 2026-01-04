@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Set;
 import java.util.UUID;
 
-public class UtilPermission {
+public final class UtilPermission {
     public static boolean hasPermission(@NotNull CommandSourceStack source, @NotNull PermissionNode<Boolean> node) {
         try {
             if (PermissionAPI.getRegisteredNodes().contains(node)) {
@@ -24,7 +24,7 @@ public class UtilPermission {
             return true;
         }
 
-        ExtraLib.getLogger().error("No permission found for node: " + node);
+        ExtraLib.getLogger().error("No permission found for node: {}.", node);
         return false;
     }
 
@@ -33,7 +33,7 @@ public class UtilPermission {
             return PermissionAPI.getPermission(player, node) || player.hasPermissions(4);
         }
 
-        ExtraLib.getLogger().error("No permission found for node: " + node);
+        ExtraLib.getLogger().error("No permission found for node: {}.", node);
         return false;
     }
 
@@ -42,7 +42,7 @@ public class UtilPermission {
             return PermissionAPI.getOfflinePermission(playerUUID, node);
         }
 
-        ExtraLib.getLogger().error("No permission found for node: " + node);
+        ExtraLib.getLogger().error("No permission found for node: {}.", node);
         return false;
     }
 
@@ -83,9 +83,10 @@ public class UtilPermission {
     }
 
     @NotNull
-    public static PermissionNode<Boolean> getPermissionNode(@NotNull String node) {
-        String[] nodeSplit = node.split("\\.", 2);
+    public static PermissionNode<Boolean> getPermissionNode(@NotNull String nodeName) {
+        String[] nodeSplit = nodeName.split("\\.", 2);
 
-        return new PermissionNode<>(nodeSplit[0], nodeSplit[1], PermissionTypes.BOOLEAN, (player, uuid, permissionDynamicContexts) -> false);
+        return new PermissionNode<>(nodeSplit[0], nodeSplit[1], PermissionTypes.BOOLEAN,
+                (player, uuid, permissionDynamicContexts) -> false);
     }
 }

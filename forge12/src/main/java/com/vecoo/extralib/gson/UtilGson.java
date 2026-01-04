@@ -23,7 +23,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
-public abstract class UtilGson {
+public final class UtilGson {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
     @Nonnull
@@ -145,7 +145,7 @@ public abstract class UtilGson {
     }
 
     @Nonnull
-    public static Gson newGson() {
+    public static Gson getGson() {
         return GSON;
     }
 }

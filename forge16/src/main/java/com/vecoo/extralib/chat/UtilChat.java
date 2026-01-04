@@ -11,7 +11,7 @@ import net.minecraft.util.text.event.HoverEvent;
 
 import javax.annotation.Nonnull;
 
-public class UtilChat {
+public final class UtilChat {
     @Nonnull
     public static StringTextComponent formatMessage(@Nonnull String message) {
         return new StringTextComponent(message.replace("&", "§"));

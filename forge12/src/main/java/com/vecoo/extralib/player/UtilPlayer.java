@@ -1,13 +1,14 @@
 package com.vecoo.extralib.player;
 
 import com.vecoo.extralib.ExtraLib;
+import com.vecoo.extralib.chat.UtilChat;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.UsernameCache;
 
 import javax.annotation.Nonnull;
@@ -16,9 +17,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-public class UtilPlayer {
+public final class UtilPlayer {
     @Nullable
-    public static UUID getUUID(@Nonnull String playerName) {
+    public static UUID findUUID(@Nonnull String playerName) {
         return UsernameCache.getMap().entrySet().stream()
                 .filter(entry -> entry.getValue().equalsIgnoreCase(playerName))
                 .map(Map.Entry::getKey)
@@ -27,7 +28,7 @@ public class UtilPlayer {
     }
 
     public static boolean hasUUID(@Nonnull String playerName) {
-        return getUUID(playerName) != null;
+        return findUUID(playerName) != null;
     }
 
     @Nonnull
@@ -36,8 +37,9 @@ public class UtilPlayer {
         return name != null ? name : "Unknown";
     }
 
-    public static void sendMessageUuid(@Nonnull UUID playerUUID, @Nonnull TextComponentString message) {
-        ExtraLib.getInstance().getServer().getPlayerList().getPlayerByUUID(playerUUID).sendMessage(message);
+    public static void sendMessageUuid(@Nonnull UUID playerUUID, @Nonnull String message) {
+        ExtraLib.getInstance().getServer().getPlayerList().getPlayerByUUID(playerUUID).sendMessage(
+                UtilChat.formatMessage(message));
     }
 
     public static void sendMessageUuid(@Nonnull UUID playerUUID, @Nonnull ITextComponent message) {
@@ -45,19 +47,23 @@ public class UtilPlayer {
     }
 
     @Nullable
-    public static EntityPlayerMP getPlayer(@Nonnull String playerName) {
+    public static EntityPlayerMP findPlayer(@Nonnull String playerName) {
         return ExtraLib.getInstance().getServer().getPlayerList().getPlayerByUsername(playerName);
     }
 
     @Nonnull
     public static ICommandSender getSource(@Nonnull String sourceName) {
         MinecraftServer server = ExtraLib.getInstance().getServer();
-
         EntityPlayerMP player = server.getPlayerList().getPlayerByUsername(sourceName);
+
         return player != null ? player.getCommandSenderEntity() : server;
     }
 
-    public static int countItemStack(@Nonnull EntityPlayerMP player, @Nonnull ItemStack searchItemStack) {
+    public static void executeCommand(@Nonnull EntityPlayer player, @Nonnull String command) {
+        ExtraLib.getInstance().getServer().getCommandManager().executeCommand(player, command);
+    }
+
+    public static int countItemStack(@Nonnull EntityPlayer player, @Nonnull ItemStack searchItemStack) {
         int count = 0;
 
         for (ItemStack itemStack : player.inventory.mainInventory) {
@@ -71,7 +77,7 @@ public class UtilPlayer {
         return count;
     }
 
-    public static int countItemStackTag(@Nonnull EntityPlayerMP player, @Nonnull ItemStack searchItemStack, @Nonnull String tag) {
+    public static int countItemStackTag(@Nonnull EntityPlayer player, @Nonnull ItemStack searchItemStack, @Nonnull String tag) {
         int count = 0;
 
         for (ItemStack itemStack : player.inventory.mainInventory) {
@@ -160,7 +166,7 @@ public class UtilPlayer {
         player.sendContainerToPlayer(player.inventoryContainer);
     }
 
-    public static boolean hasFreeSlot(@Nullable EntityPlayerMP player) {
+    public static boolean hasFreeSlot(@Nullable EntityPlayer player) {
         if (player == null || player.inventory == null) {
             return false;
         }

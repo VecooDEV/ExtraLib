@@ -1,13 +1,14 @@
 package com.vecoo.extralib.task;
 
 import com.vecoo.extralib.ExtraLib;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
-public class TaskTimer {
+public final class TaskTimer {
     private final Consumer<TaskTimer> consumer;
     private final long interval;
     private long currentIteration;
@@ -17,7 +18,7 @@ public class TaskTimer {
 
     private static final Set<TaskTimer> TASKS = ConcurrentHashMap.newKeySet();
 
-    private TaskTimer(Consumer<TaskTimer> consumer, long delay, long interval, long iterations) {
+    private TaskTimer(@NotNull Consumer<TaskTimer> consumer, long delay, long interval, long iterations) {
         this.consumer = consumer;
         this.countdown = delay;
         this.interval = interval;
@@ -25,7 +26,7 @@ public class TaskTimer {
     }
 
     public boolean isExpired() {
-        return expired;
+        return this.expired;
     }
 
     public void cancel() {
@@ -49,7 +50,7 @@ public class TaskTimer {
         try {
             this.consumer.accept(this);
         } catch (Exception e) {
-            ExtraLib.getLogger().error("Task execution failed", e);
+            ExtraLib.getLogger().error("Task execution failed.", e);
             cancel();
             return;
         }
@@ -63,6 +64,7 @@ public class TaskTimer {
         }
     }
 
+    @NotNull
     public static Builder builder() {
         return new Builder();
     }
@@ -73,58 +75,66 @@ public class TaskTimer {
         private long interval;
         private long iterations = 1;
 
-        public Builder execute(Runnable runnable) {
+        @NotNull
+        public Builder execute(@NotNull Runnable runnable) {
             this.consumer = task -> runnable.run();
             return this;
         }
 
-        public Builder consume(Consumer<TaskTimer> consumer) {
+        @NotNull
+        public Builder consume(@NotNull Consumer<TaskTimer> consumer) {
             this.consumer = consumer;
             return this;
         }
 
+        @NotNull
         public Builder delay(long delay) {
             if (delay < 0) {
-                throw new IllegalArgumentException("Delay must not be below 0");
+                throw new IllegalArgumentException("Delay must not be below 0.");
             }
 
             this.delay = delay;
             return this;
         }
 
+        @NotNull
         public Builder interval(long interval) {
             if (interval < 0) {
-                throw new IllegalArgumentException("Interval must not be below 0");
+                throw new IllegalArgumentException("Interval must not be below 0.");
             }
 
             this.interval = interval;
             return this;
         }
 
+        @NotNull
         public Builder iterations(long iterations) {
             if (iterations < -1) {
-                throw new IllegalArgumentException("Iterations must not be below -1");
+                throw new IllegalArgumentException("Iterations must not be below -1.");
             }
 
             this.iterations = iterations;
             return this;
         }
 
+        @NotNull
         public Builder infinite() {
             return iterations(-1);
         }
 
+        @NotNull
         public Builder withoutDelay() {
             return delay(0);
         }
 
+        @NotNull
         public TaskTimer build() {
             if (this.consumer == null) {
-                throw new IllegalStateException("Consumer must be set");
+                throw new IllegalStateException("Consumer must be set.");
             }
 
             if (this.interval < 0) {
-                throw new IllegalStateException("Interval must be set");
+                throw new IllegalStateException("Interval must be set.");
             }
 
             TaskTimer task = new TaskTimer(this.consumer, this.delay, this.interval, this.iterations);
@@ -133,7 +143,7 @@ public class TaskTimer {
         }
     }
 
-    public static void onServerTick() {
+    public static void onServerTickEnd() {
         Iterator<TaskTimer> iterator = TASKS.iterator();
 
         while (iterator.hasNext()) {

@@ -10,9 +10,9 @@ import net.minecraft.world.level.storage.LevelResource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class UtilWorld {
+public final class UtilWorld {
     @Nullable
-    public static ServerLevel getLevelByName(@NotNull String levelName) {
+    public static ServerLevel findLevelByName(@NotNull String levelName) {
         for (ServerLevel level : ExtraLib.getInstance().getServer().getAllLevels()) {
             if (level.dimension().location().getPath().equals(levelName.toLowerCase())) {
                 return level;
@@ -23,12 +23,13 @@ public class UtilWorld {
     }
 
     @NotNull
-    public static String worldDirectory(@NotNull String file, @NotNull MinecraftServer server) {
+    public static String resolveWorldDirectory(@NotNull String file, @NotNull MinecraftServer server) {
         if (server.isDedicatedServer()) {
             return file.replace("%directory%", "world");
         }
 
-        return file.replace("%directory%", "saves/" + server.getWorldPath(LevelResource.LEVEL_DATA_FILE).normalize().getParent().getFileName().toString());
+        return file.replace("%directory%", "saves/" + server.getWorldPath(LevelResource.LEVEL_DATA_FILE)
+                .normalize().getParent().getFileName().toString());
     }
 
     public static int countBlocksInChunk(@NotNull LevelChunk chunk, @NotNull Block targetBlock) {

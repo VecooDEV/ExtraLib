@@ -2,9 +2,9 @@ package com.vecoo.extralib.world;
 
 import javax.annotation.Nonnull;
 
-public class UtilBiome {
+public final class UtilBiome {
     @Nonnull
-    public static String getBiomeName(@Nonnull String biomeId) {
+    public static String formatBiomeName(@Nonnull String biomeId) {
         String[] split = biomeId.split(":");
         StringBuilder name = new StringBuilder();
 

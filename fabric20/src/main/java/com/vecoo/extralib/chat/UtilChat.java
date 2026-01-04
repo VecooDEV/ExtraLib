@@ -1,10 +1,13 @@
 package com.vecoo.extralib.chat;
 
 import com.vecoo.extralib.ExtraLib;
-import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.Style;
 import org.jetbrains.annotations.NotNull;
 
-public class UtilChat {
+public final class UtilChat {
     @NotNull
     public static Component formatMessage(@NotNull String message) {
         return Component.literal(message.replace("&", "§"));
@@ -17,7 +20,7 @@ public class UtilChat {
     }
 
     @NotNull
-    public static MutableComponent clickableMessageCommand(@NotNull MutableComponent message, @NotNull String command) {
+    public static Component clickableMessageCommand(@NotNull Component message, @NotNull String command) {
         return message.copy().setStyle(Style.EMPTY.withClickEvent(
                 new ClickEvent(ClickEvent.Action.RUN_COMMAND, command)));
     }
@@ -29,7 +32,7 @@ public class UtilChat {
     }
 
     @NotNull
-    public static MutableComponent clickableMessageURL(@NotNull MutableComponent message, @NotNull String url) {
+    public static Component clickableMessageURL(@NotNull Component message, @NotNull String url) {
         return message.copy().setStyle(Style.EMPTY.withClickEvent(
                 new ClickEvent(ClickEvent.Action.OPEN_URL, url)));
     }
@@ -41,7 +44,7 @@ public class UtilChat {
     }
 
     @NotNull
-    public static MutableComponent hoverMessageText(@NotNull MutableComponent message, @NotNull String text) {
+    public static Component hoverMessageText(@NotNull Component message, @NotNull String text) {
         return message.copy().setStyle(Style.EMPTY.withHoverEvent(
                 new HoverEvent(HoverEvent.Action.SHOW_TEXT, formatMessage(text))));
     }

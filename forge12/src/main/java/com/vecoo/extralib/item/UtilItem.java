@@ -5,7 +5,7 @@ import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
 
-public class UtilItem {
+public final class UtilItem {
     @Nonnull
     public static ItemStack parseItem(@Nonnull String itemId) {
         Item item = Item.getByNameOrId(itemId);

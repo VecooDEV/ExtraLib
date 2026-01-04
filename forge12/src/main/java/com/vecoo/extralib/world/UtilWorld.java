@@ -5,12 +5,13 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldServer;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-public class UtilWorld {
-    @javax.annotation.Nullable
-    public static WorldServer getWorldByName(@Nonnull String worldName) {
+public final class UtilWorld {
+    @Nullable
+    public static WorldServer findWorldByName(@Nonnull String worldName) {
         for (WorldServer world : ExtraLib.getInstance().getServer().worlds) {
-            if (world.getWorldInfo().getWorldName().equalsIgnoreCase(worldName)) {
+            if (world.getWorldInfo().getWorldName().equals(worldName.toLowerCase())) {
                 return world;
             }
         }
@@ -19,7 +20,7 @@ public class UtilWorld {
     }
 
     @Nonnull
-    public static String worldDirectory(@Nonnull String file, @Nonnull MinecraftServer server) {
+    public static String resolveWorldDirectory(@Nonnull String file, @Nonnull MinecraftServer server) {
         if (server.isDedicatedServer()) {
             return file.replace("%directory%", "world");
         }

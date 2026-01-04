@@ -27,12 +27,12 @@ public class ExtraLib {
     }
 
     @Mod.EventHandler
-    public void onServerStarting(FMLServerStartingEvent event) {
+    public void onFMLServerStarting(FMLServerStartingEvent event) {
         this.server = event.getServer();
     }
 
     @Mod.EventHandler
-    public void onServerStopping(FMLServerStoppingEvent event) {
+    public void onFMLServerStopping(FMLServerStoppingEvent event) {
         TaskTimer.cancelAll();
     }
 

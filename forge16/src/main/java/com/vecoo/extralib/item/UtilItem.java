@@ -8,7 +8,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 
-public class UtilItem {
+public final class UtilItem {
     @Nonnull
     public static ItemStack parseItem(@Nonnull String itemId) {
         Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemId));
@@ -34,7 +34,7 @@ public class UtilItem {
             try {
                 itemStack.getOrCreateTag().putInt("CustomModelData", Integer.parseInt(parts[2]));
             } catch (NumberFormatException e) {
-                ExtraLib.getLogger().error("Invalid CustomModelData value in item: " + itemId);
+                ExtraLib.getLogger().error("Invalid CustomModelData value in item: {}.", itemId);
             }
         }
 

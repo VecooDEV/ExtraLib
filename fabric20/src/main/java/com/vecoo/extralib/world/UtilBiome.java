@@ -2,9 +2,9 @@ package com.vecoo.extralib.world;
 
 import org.jetbrains.annotations.NotNull;
 
-public class UtilBiome {
+public final class UtilBiome {
     @NotNull
-    public static String getBiomeName(@NotNull String biomeId) {
+    public static String formatBiomeName(@NotNull String biomeId) {
         String[] split = biomeId.split(":");
         StringBuilder name = new StringBuilder();
 
