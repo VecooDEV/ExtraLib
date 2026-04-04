@@ -1,6 +1,8 @@
-package com.vecoo.extralib.task;
+package com.vecoo.extralib.scheduler;
 
 import com.vecoo.extralib.ExtraLib;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
@@ -225,17 +227,25 @@ public final class TaskTimer {
     }
 
     /**
-     * Handles server tick events and updates all tasks.
+     * Event handler that ticks all registered {@link TaskTimer} instances on each server tick.
      */
-    public static void onServerTickEnd() {
-        Iterator<TaskTimer> iterator = TASKS.iterator();
+    public static class EventHandler {
+        /**
+         * Handles server tick events and updates all tasks.
+         *
+         * @param event the server tick post event
+         */
+        @SubscribeEvent
+        public void onServerTickPost(ServerTickEvent.Post event) {
+            Iterator<TaskTimer> iterator = TASKS.iterator();
 
-        while (iterator.hasNext()) {
-            TaskTimer task = iterator.next();
-            task.tick();
+            while (iterator.hasNext()) {
+                TaskTimer task = iterator.next();
+                task.tick();
 
-            if (task.expired) {
-                iterator.remove();
+                if (task.expired) {
+                    iterator.remove();
+                }
             }
         }
     }

@@ -1,4 +1,4 @@
-package com.vecoo.extralib.permission;
+package com.vecoo.extralib.util;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.lucko.fabric.api.permissions.v0.Permissions;
@@ -10,7 +10,10 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-public final class UtilPermission {
+public final class PermissionUtil {
+    private PermissionUtil() {
+    }
+
     /**
      * Checks whether the given command source has the specified permission.
      * <p>
@@ -75,7 +78,7 @@ public final class UtilPermission {
      */
     public static int minValue(int value, @NotNull ServerPlayer player, @NotNull Set<String> nodeList) {
         for (String permission : nodeList) {
-            if (UtilPermission.hasPermission(player, permission)) {
+            if (PermissionUtil.hasPermission(player, permission)) {
                 value = Math.min(value, Integer.parseInt(permission.substring(permission.lastIndexOf('.') + 1)));
             }
         }
@@ -95,7 +98,7 @@ public final class UtilPermission {
      */
     public static int maxValue(int value, @NotNull ServerPlayer player, @NotNull Set<String> nodeList) {
         for (String permission : nodeList) {
-            if (UtilPermission.hasPermission(player, permission)) {
+            if (PermissionUtil.hasPermission(player, permission)) {
                 value = Math.max(value, Integer.parseInt(permission.substring(permission.lastIndexOf('.') + 1)));
             }
         }

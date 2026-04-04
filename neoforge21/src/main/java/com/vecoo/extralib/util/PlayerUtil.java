@@ -1,24 +1,26 @@
-package com.vecoo.extralib.player;
+package com.vecoo.extralib.util;
 
-import com.mojang.authlib.GameProfile;
 import com.vecoo.extralib.ExtraLib;
-import com.vecoo.extralib.chat.UtilChat;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.players.GameProfileCache;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.UsernameCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-public final class UtilPlayer {
+public final class PlayerUtil {
+    private PlayerUtil() {
+    }
+
     /**
      * Finds the UUID of a player by their username.
      *
@@ -27,15 +29,11 @@ public final class UtilPlayer {
      */
     @Nullable
     public static UUID findUUID(@NotNull String playerName) {
-        GameProfileCache profileCache = ExtraLib.getInstance().getServer().getProfileCache();
-
-        if (profileCache == null) {
-            return null;
-        }
-
-        GameProfile gameProfile = profileCache.get(playerName).orElse(null);
-
-        return gameProfile != null ? gameProfile.getId() : null;
+        return UsernameCache.getMap().entrySet().stream()
+                .filter(entry -> entry.getValue().equalsIgnoreCase(playerName))
+                .map(Map.Entry::getKey)
+                .findFirst()
+                .orElse(null);
     }
 
     /**
@@ -56,33 +54,8 @@ public final class UtilPlayer {
      */
     @NotNull
     public static String getPlayerName(@NotNull UUID playerUUID) {
-        GameProfileCache profileCache = ExtraLib.getInstance().getServer().getProfileCache();
-
-        if (profileCache == null) {
-            return "Unknown";
-        }
-
-        GameProfile gameProfile = profileCache.get(playerUUID).orElse(null);
-
-        return gameProfile != null ? gameProfile.getName() : "Unknown";
-    }
-
-    /**
-     * Sends a system formatted message to a player identified by UUID.
-     * <p>
-     * Use this method when the player's online status is unknown.
-     * If the player is offline, the message is silently ignored.
-     * </p>
-     *
-     * @param playerUUID the UUID of the player
-     * @param message    the message to send
-     */
-    public static void sendMessageUuid(@NotNull UUID playerUUID, @NotNull String message) {
-        ServerPlayer player = ExtraLib.getInstance().getServer().getPlayerList().getPlayer(playerUUID);
-
-        if (player != null) {
-            player.sendSystemMessage(UtilChat.formatMessage(message));
-        }
+        String name = UsernameCache.getLastKnownUsername(playerUUID);
+        return name != null ? name : "Unknown";
     }
 
     /**
@@ -100,6 +73,24 @@ public final class UtilPlayer {
 
         if (player != null) {
             player.sendSystemMessage(message);
+        }
+    }
+
+    /**
+     * Sends a system formatted message to a player identified by UUID.
+     * <p>
+     * Use this method when the player's online status is unknown.
+     * If the player is offline, the message is silently ignored.
+     * </p>
+     *
+     * @param playerUUID the UUID of the player
+     * @param message    the message to send
+     */
+    public static void sendMessageUuid(@NotNull UUID playerUUID, @NotNull String message) {
+        ServerPlayer player = ExtraLib.getInstance().getServer().getPlayerList().getPlayer(playerUUID);
+
+        if (player != null) {
+            player.sendSystemMessage(TextUtil.formatMessage(message));
         }
     }
 

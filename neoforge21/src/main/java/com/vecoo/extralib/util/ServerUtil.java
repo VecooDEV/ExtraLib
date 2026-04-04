@@ -1,9 +1,12 @@
-package com.vecoo.extralib.server;
+package com.vecoo.extralib.util;
 
 import com.vecoo.extralib.ExtraLib;
 import org.jetbrains.annotations.NotNull;
 
-public final class UtilServer {
+public final class ServerUtil {
+    private ServerUtil() {
+    }
+
     /**
      * Executes a server command as if it was run by the console.
      * <p>

@@ -30,7 +30,7 @@ import java.util.function.Supplier;
  * {@link #getDataSource()}. The executor service is exposed through helper methods for running
  * tasks asynchronously.</p>
  */
-public final class UtilDatabase {
+public class DatabaseUtil {
     private final HikariDataSource dataSource;
     private final ExecutorService executor;
 
@@ -52,7 +52,7 @@ public final class UtilDatabase {
      * @param threadPool        size of the async executor thread pool
      * @throws RuntimeException if database driver is missing or configuration fails
      */
-    public UtilDatabase(@NotNull String type, @NotNull String address, @NotNull String database, @NotNull String username,
+    public DatabaseUtil(@NotNull String type, @NotNull String address, @NotNull String database, @NotNull String username,
                         @NotNull String password, @NotNull String prefix, int maxPoolSize, int minimumIdle, long maxLifeTime,
                         long keepaliveTime, long connectionTimeout, boolean useSSL, int threadPool) {
         HikariConfig config = new HikariConfig();

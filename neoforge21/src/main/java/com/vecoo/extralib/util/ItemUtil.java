@@ -1,4 +1,4 @@
-package com.vecoo.extralib.item;
+package com.vecoo.extralib.util;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -14,7 +14,10 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomModelData;
 import org.jetbrains.annotations.NotNull;
 
-public final class UtilItem {
+public final class ItemUtil {
+    private ItemUtil() {
+    }
+
     /**
      * Parses an item ID into an {@link ItemStack}. If the item does not exist,
      * returns {@link ItemStack#EMPTY}.

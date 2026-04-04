@@ -1,8 +1,11 @@
-package com.vecoo.extralib.world;
+package com.vecoo.extralib.util;
 
 import org.jetbrains.annotations.NotNull;
 
-public final class UtilBiome {
+public final class BiomeUtil {
+    private BiomeUtil() {
+    }
+
     /**
      * Converts a biome ID into a human-readable biome name.
      * For example, "minecraft:dark_forest" becomes "Dark Forest".

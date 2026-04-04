@@ -1,4 +1,4 @@
-package com.vecoo.extralib.world;
+package com.vecoo.extralib.util;
 
 import com.vecoo.extralib.ExtraLib;
 import net.minecraft.server.MinecraftServer;
@@ -10,7 +10,10 @@ import net.minecraft.world.level.storage.LevelResource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class UtilWorld {
+public final class WorldUtil {
+    private WorldUtil() {
+    }
+
     /**
      * Finds for a level by its name.
      *

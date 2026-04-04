@@ -1,7 +1,7 @@
 package com.vecoo.extralib;
 
 import com.mojang.logging.LogUtils;
-import com.vecoo.extralib.task.TaskTimer;
+import com.vecoo.extralib.scheduler.TaskTimer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;

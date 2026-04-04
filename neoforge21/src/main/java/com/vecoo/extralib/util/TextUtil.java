@@ -1,10 +1,13 @@
-package com.vecoo.extralib.chat;
+package com.vecoo.extralib.util;
 
 import com.vecoo.extralib.ExtraLib;
 import net.minecraft.network.chat.*;
 import org.jetbrains.annotations.NotNull;
 
-public final class UtilChat {
+public final class TextUtil {
+    private TextUtil() {
+    }
+
     /**
      * Formats a string into a Minecraft {@link Component} and replaces
      * color codes from '&' to '§'.

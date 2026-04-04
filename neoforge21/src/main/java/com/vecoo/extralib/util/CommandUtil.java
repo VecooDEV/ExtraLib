@@ -1,4 +1,4 @@
-package com.vecoo.extralib.server;
+package com.vecoo.extralib.util;
 
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import net.minecraft.commands.CommandSourceStack;
@@ -6,7 +6,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
-public final class UtilCommand {
+public final class CommandUtil {
+    private CommandUtil() {
+    }
+
     /**
      * Provides a suggestion provider for online player names.
      * <p>
