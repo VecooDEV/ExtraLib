@@ -12,6 +12,26 @@ public final class YamlConfigFactory {
     private YamlConfigFactory() {
     }
 
+    /**
+     * Loads a YAML configuration file into a strongly-typed configuration object.
+     * <p>
+     * This method performs the following steps:
+     * <ul>
+     *   <li>Loads the YAML file from the specified path.</li>
+     *   <li>Deserializes its contents into an instance of the given class.</li>
+     *   <li>Automatically inserts any missing configuration fields using default values
+     *       defined in the class.</li>
+     *   <li>Saves the updated configuration back to disk.</li>
+     * </ul>
+     * <p>
+     * Existing user-defined values are preserved and are never overwritten.
+     *
+     * @param <T>   the configuration class type
+     * @param clazz the configuration class to deserialize into
+     * @param path  the string path to the YAML configuration file
+     * @return a populated configuration instance
+     * @throws RuntimeException if the configuration cannot be loaded or saved
+     */
     public static <T> T load(@NotNull Class<T> clazz, @NotNull String path) {
         return load(clazz, Path.of(path));
     }
@@ -52,7 +72,7 @@ public final class YamlConfigFactory {
 
             return config;
         } catch (Exception e) {
-            throw new RuntimeException(String.format("Failed to load config: %s", path), e);
+            throw new RuntimeException(String.format("Failed to load file: %s.", path), e);
         }
     }
 }
