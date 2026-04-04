@@ -1,4 +1,4 @@
-package com.vecoo.extralib.database;
+package com.vecoo.extralib.sql;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -70,6 +70,10 @@ public final class UtilDatabase {
                     String ssl = useSSL ? "" : "?useSSL=false";
 
                     config.setJdbcUrl("jdbc:mysql://" + address + "/" + database + ssl);
+                    config.addDataSourceProperty("cachePrepStmts", "true");
+                    config.addDataSourceProperty("prepStmtCacheSize", "250");
+                    config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+                    config.addDataSourceProperty("useServerPrepStmts", "true");
                 }
 
                 case "mariadb" -> {
@@ -82,6 +86,10 @@ public final class UtilDatabase {
                     String ssl = useSSL ? "" : "?useSSL=false";
 
                     config.setJdbcUrl("jdbc:mariadb://" + address + "/" + database + ssl);
+                    config.addDataSourceProperty("cachePrepStmts", "true");
+                    config.addDataSourceProperty("prepStmtCacheSize", "250");
+                    config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+                    config.addDataSourceProperty("useServerPrepStmts", "true");
                 }
 
                 case "postgresql" -> {
