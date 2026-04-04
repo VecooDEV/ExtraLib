@@ -2,7 +2,6 @@ pluginManagement {
     repositories {
         mavenCentral()
         gradlePluginPortal()
-        maven { url = 'https://maven.minecraftforge.net/' }
         maven { url = "https://maven.neoforged.net/releases" }
         maven { url = "https://maven.fabricmc.net/" }
     }
@@ -10,4 +9,4 @@ pluginManagement {
 
 rootProject.name = project_name
 
-include 'forge20', 'neoforge21', 'fabric21'
+include 'neoforge21', 'fabric21'
