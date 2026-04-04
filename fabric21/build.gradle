@@ -1,12 +1,14 @@
 plugins {
-    id 'fabric-loom' version '1.13+'
-    id 'com.modrinth.minotaur' version '2.8.10'
-    id 'com.gradleup.shadow' version '8+'
+    id 'fabric-loom' version '1.15+'
+    id 'com.modrinth.minotaur' version '2.9.0'
+    id 'com.gradleup.shadow' version '9.4.1'
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
-archivesBaseName = "${project_name}"
+base {
+    archivesName = "${project_name}"
+}
 
 version = "${project_version}-1.21.1-Fabric"
 
@@ -17,7 +19,7 @@ dependencies {
     modCompileOnly "net.fabricmc:fabric-loader:${fabric_loader}"
     modCompileOnly "net.fabricmc.fabric-api:fabric-api:${fabric_api_21}"
 
-    modCompileOnly("me.lucko:fabric-permissions-api:${fabric_permissions_api_21}")
+    modCompileOnly "me.lucko:fabric-permissions-api:${fabric_permissions_api_21}"
 
     shadow("me.lucko:fabric-permissions-api:${fabric_permissions_api_21}") {
         transitive = false
@@ -25,7 +27,7 @@ dependencies {
     shadow("com.zaxxer:HikariCP:${hikari_cp}") {
         exclude group: 'org.slf4j'
     }
-    shadow("org.spongepowered:configurate-yaml:${configurate_yaml}")
+    shadow "org.spongepowered:configurate-yaml:${configurate_yaml}"
     shadow "com.mysql:mysql-connector-j:${mysql_connector_j}"
     shadow "org.mariadb.jdbc:mariadb-java-client:${mariadb_connector_j}"
     shadow "org.postgresql:postgresql:${postgresql_jdbc_driver}"
@@ -33,7 +35,8 @@ dependencies {
 
 shadowJar {
     configurations = [project.configurations.shadow]
-    setArchiveBaseName("${rootProject.name}")
+    archiveClassifier.set('shadow')
+    archiveBaseName.set("${project_name}")
 
     relocate('me.lucko.fabric.api.permissions.v0', 'com.vecoo.extralib.shade.lucko.fabric.api.permissions.v0')
     relocate('com.zaxxer.hikari', 'com.vecoo.extralib.shade.zaxxer.hikari')
@@ -87,8 +90,8 @@ modrinth {
     token = gradleProperties.getProperty("MODRINTH_API_KEY")
     projectId = "extralib"
     versionName = "${project_name}-${version}"
-    versionNumber = project_version
-    versionType = "release"
+    versionNumber = '0.0.0'
+    versionType = "beta"
     changelog = rootProject.file("changelog.md").text
     uploadFile = remapJar
     gameVersions = ["1.21.1"]
