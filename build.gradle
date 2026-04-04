@@ -9,13 +9,13 @@ subprojects {
         setArchiveBaseName("${rootProject.name}")
     }
 
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+    }
+
     repositories {
         mavenCentral()
         maven { url = "https://repo.opencollab.dev/maven-snapshots" }
-    }
-
-    tasks.withType(JavaCompile).configureEach {
-        options.encoding = 'UTF-8'
     }
 
     tasks.register('versionedRelease', Copy) {
