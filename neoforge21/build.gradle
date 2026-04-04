@@ -73,8 +73,8 @@ modrinth {
     token = gradleProperties.getProperty("MODRINTH_API_KEY")
     projectId = "extralib"
     versionName = "${project_name}-${version}"
-    versionNumber = '0.0.0'
-    versionType = "beta"
+    versionNumber = project_version
+    versionType = "release"
     changelog = rootProject.file("changelog.md").text
     uploadFile = shadowJar
     gameVersions = ["1.21.1"]
