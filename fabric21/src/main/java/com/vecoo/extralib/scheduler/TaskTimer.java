@@ -240,6 +240,7 @@ public final class TaskTimer {
 
         while (iterator.hasNext()) {
             TaskTimer task = iterator.next();
+
             task.tick();
 
             if (task.expired) {
