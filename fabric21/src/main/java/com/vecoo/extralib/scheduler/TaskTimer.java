@@ -15,6 +15,7 @@ import java.util.function.Consumer;
  * </p>
  */
 public final class TaskTimer {
+    @NotNull
     private final Consumer<TaskTimer> consumer;
     private final long interval;
     private long currentIteration;
@@ -22,6 +23,7 @@ public final class TaskTimer {
     private long countdown;
     private volatile boolean expired;
 
+    @NotNull
     private static final Set<TaskTimer> TASKS = ConcurrentHashMap.newKeySet();
 
     /**
@@ -53,6 +55,7 @@ public final class TaskTimer {
      */
     public void cancel() {
         this.expired = true;
+
         TASKS.remove(this);
     }
 
@@ -67,11 +70,7 @@ public final class TaskTimer {
      * Ticks the task, decrementing its countdown and executing the consumer if ready.
      */
     private void tick() {
-        if (this.expired) {
-            return;
-        }
-
-        if (this.countdown-- > 0) {
+        if (this.expired || this.countdown-- > 0) {
             return;
         }
 
@@ -79,7 +78,9 @@ public final class TaskTimer {
             this.consumer.accept(this);
         } catch (Exception e) {
             ExtraLib.getLogger().error("Task execution failed.", e);
+
             cancel();
+
             return;
         }
 
@@ -120,6 +121,7 @@ public final class TaskTimer {
         @NotNull
         public Builder execute(@NotNull Runnable runnable) {
             this.consumer = task -> runnable.run();
+
             return this;
         }
 
@@ -132,6 +134,7 @@ public final class TaskTimer {
         @NotNull
         public Builder consume(@NotNull Consumer<TaskTimer> consumer) {
             this.consumer = consumer;
+
             return this;
         }
 
@@ -148,6 +151,7 @@ public final class TaskTimer {
             }
 
             this.delay = delay;
+
             return this;
         }
 
@@ -164,6 +168,7 @@ public final class TaskTimer {
             }
 
             this.interval = interval;
+
             return this;
         }
 
@@ -180,6 +185,7 @@ public final class TaskTimer {
             }
 
             this.iterations = iterations;
+
             return this;
         }
 
@@ -219,7 +225,9 @@ public final class TaskTimer {
             }
 
             TaskTimer task = new TaskTimer(this.consumer, this.delay, this.interval, this.iterations);
+
             TASKS.add(task);
+
             return task;
         }
     }
