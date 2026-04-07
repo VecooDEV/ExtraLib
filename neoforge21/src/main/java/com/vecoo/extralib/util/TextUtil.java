@@ -1,23 +1,65 @@
 package com.vecoo.extralib.util;
 
-import com.vecoo.extralib.ExtraLib;
 import net.minecraft.network.chat.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public final class TextUtil {
+    private static final Pattern HEX_PATTERN = Pattern.compile("&#([a-fA-F0-9]{6})");
+
     private TextUtil() {
     }
 
     /**
-     * Formats a string into a Minecraft {@link Component} and replaces
-     * color codes from '&' to '§'.
+     * Formats a string into a Minecraft {@link Component}, replacing
+     * standard color codes from '&' to '§' and parsing '&#RRGGBB' HEX codes.
      *
-     * @param message the raw message string with '&' color codes
+     * @param message the raw message string with color codes
      * @return a {@link Component} with color codes applied
      */
     @NotNull
     public static Component formatMessage(@NotNull String message) {
-        return Component.literal(message.replace("&", "§"));
+        Matcher matcher = HEX_PATTERN.matcher(message);
+        MutableComponent result = Component.empty();
+
+        int lastEnd = 0;
+        TextColor currentColor = null;
+
+        while (matcher.find()) {
+            String textSegment = message.substring(lastEnd, matcher.start());
+
+            if (!textSegment.isEmpty()) {
+                MutableComponent part = Component.literal(textSegment.replace("&", "§"));
+
+                if (currentColor != null) {
+                    part.withStyle(Style.EMPTY.withColor(currentColor));
+                }
+
+                result.append(part);
+            }
+
+            int rgb = Integer.parseInt(matcher.group(1), 16);
+
+            currentColor = TextColor.fromRgb(rgb);
+
+            lastEnd = matcher.end();
+        }
+
+        String tail = message.substring(lastEnd);
+
+        if (!tail.isEmpty()) {
+            MutableComponent part = Component.literal(tail.replace("&", "§"));
+
+            if (currentColor != null) {
+                part.withStyle(Style.EMPTY.withColor(currentColor));
+            }
+
+            result.append(part);
+        }
+
+        return result;
     }
 
     /**
@@ -96,24 +138,5 @@ public final class TextUtil {
     public static Component hoverMessageText(@NotNull Component message, @NotNull String text) {
         return message.copy().setStyle(Style.EMPTY.withHoverEvent(
                 new HoverEvent(HoverEvent.Action.SHOW_TEXT, formatMessage(text))));
-    }
-
-    /**
-     * Broadcasts a formatted message to all online players.
-     *
-     * @param message the message to broadcast
-     */
-    public static void broadcast(@NotNull String message) {
-        ExtraLib.getInstance().getServer().getPlayerList().broadcastSystemMessage(formatMessage(message), false);
-    }
-
-    /**
-     * Broadcasts a clickable command message to all online players.
-     *
-     * @param message the message text
-     * @param command the command to execute when clicked
-     */
-    public static void clickableBroadcastCommand(@NotNull String message, @NotNull String command) {
-        ExtraLib.getInstance().getServer().getPlayerList().broadcastSystemMessage(clickableMessageCommand(message, command), false);
     }
 }
