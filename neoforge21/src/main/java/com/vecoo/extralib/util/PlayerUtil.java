@@ -55,6 +55,7 @@ public final class PlayerUtil {
     @NotNull
     public static String getPlayerName(@NotNull UUID playerUUID) {
         String name = UsernameCache.getLastKnownUsername(playerUUID);
+
         return name != null ? name : "Unknown";
     }
 
@@ -68,7 +69,7 @@ public final class PlayerUtil {
      * @param playerUUID the UUID of the player
      * @param message    the message to send
      */
-    public static void sendMessageUuid(@NotNull UUID playerUUID, @NotNull Component message) {
+    public static void sendMessageUUID(@NotNull UUID playerUUID, @NotNull Component message) {
         ServerPlayer player = ExtraLib.getInstance().getServer().getPlayerList().getPlayer(playerUUID);
 
         if (player != null) {
@@ -86,7 +87,7 @@ public final class PlayerUtil {
      * @param playerUUID the UUID of the player
      * @param message    the message to send
      */
-    public static void sendMessageUuid(@NotNull UUID playerUUID, @NotNull String message) {
+    public static void sendMessageUUID(@NotNull UUID playerUUID, @NotNull String message) {
         ServerPlayer player = ExtraLib.getInstance().getServer().getPlayerList().getPlayer(playerUUID);
 
         if (player != null) {
