@@ -106,6 +106,17 @@ public final class PlayerUtil {
     }
 
     /**
+     * Finds a {@link ServerPlayer} object by player UUID.
+     *
+     * @param playerUUID the UUID of the player
+     * @return the {@link ServerPlayer} instance, or null if not online
+     */
+    @Nullable
+    public static ServerPlayer findPlayer(@NotNull UUID playerUUID) {
+        return ExtraLib.getInstance().getServer().getPlayerList().getPlayer(playerUUID);
+    }
+
+    /**
      * Finds a {@link ServerPlayer} object by player name.
      *
      * @param playerName the name of the player
