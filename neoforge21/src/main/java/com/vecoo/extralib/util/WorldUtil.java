@@ -10,6 +10,8 @@ import net.minecraft.world.level.storage.LevelResource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Locale;
+
 public final class WorldUtil {
     private WorldUtil() {
     }
@@ -26,7 +28,7 @@ public final class WorldUtil {
     @Nullable
     public static ServerLevel findLevelByName(@NotNull String levelName) {
         for (ServerLevel level : ExtraLib.getInstance().getServer().getAllLevels()) {
-            if (level.dimension().location().getPath().equals(levelName.toLowerCase())) {
+            if (level.dimension().location().getPath().equals(levelName.toLowerCase(Locale.ROOT))) {
                 return level;
             }
         }

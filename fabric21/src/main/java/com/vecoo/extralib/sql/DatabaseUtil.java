@@ -5,6 +5,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.jetbrains.annotations.NotNull;
 
 import javax.sql.DataSource;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -56,7 +57,7 @@ public final class DatabaseUtil {
                         @NotNull String password, @NotNull String prefix, int maxPoolSize, int minimumIdle, long maxLifeTime,
                         long keepaliveTime, long connectionTimeout, boolean useSSL, int threadPool) {
         HikariConfig config = new HikariConfig();
-        String normalizedType = type.toLowerCase();
+        String normalizedType = type.toLowerCase(Locale.ROOT);
 
         try {
             switch (normalizedType) {
