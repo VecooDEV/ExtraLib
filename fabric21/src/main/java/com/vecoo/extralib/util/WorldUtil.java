@@ -3,10 +3,13 @@ package com.vecoo.extralib.util;
 import com.vecoo.extralib.ExtraLib;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.border.WorldBorder;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.storage.LevelResource;
+import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -114,5 +117,22 @@ public final class WorldUtil {
         }
 
         return name.toString();
+    }
+
+    /**
+     * Calculates the three-dimensional boundaries of the level as an {@link AABB}.
+     * <p>
+     * This combines the horizontal limits defined by the {@link WorldBorder} with the
+     * vertical build height limits of the specific dimension.
+     *
+     * @param level the level whose boundaries are being calculated. Must not be null.
+     * @return a new {@link AABB} representing the total playable volume of the world.
+     */
+    @NotNull
+    public static AABB getWorldBounds(@NotNull Level level) {
+        WorldBorder worldBorder = level.getWorldBorder();
+
+        return new AABB(worldBorder.getMinX(), level.getMinBuildHeight(), worldBorder.getMinZ(),
+                worldBorder.getMaxX(), level.getMaxBuildHeight(), worldBorder.getMaxZ());
     }
 }
