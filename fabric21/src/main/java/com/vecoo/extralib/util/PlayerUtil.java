@@ -1,9 +1,11 @@
 package com.vecoo.extralib.util;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.yggdrasil.ProfileResult;
 import com.vecoo.extralib.ExtraLib;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -11,6 +13,8 @@ import net.minecraft.server.players.GameProfileCache;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.ResolvableProfile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -152,6 +156,34 @@ public final class PlayerUtil {
      */
     public static void executeCommand(@NotNull Player player, @NotNull String command) {
         ExtraLib.getInstance().getServer().getCommands().performPrefixedCommand(player.createCommandSourceStack(), command);
+    }
+
+    /**
+     * Creates an {@link ItemStack} of a player's head (skull) with the specified skin data.
+     * <p>
+     * This method attempts to fetch the full {@link GameProfile} from the Mojang session
+     * service to ensure the skin textures are correctly applied to the item.
+     *
+     * @param playerUUID the {@link UUID} of the player whose skin should be used.
+     * @param playerName the name of the player. If set to "Unknown", a default Steve/Alex head is returned.
+     * @return a {@link DataComponents#PROFILE} modified {@link ItemStack} of a player head.
+     */
+    @NotNull
+    public static ItemStack getPlayerSkull(@NotNull UUID playerUUID, @NotNull String playerName) {
+        ItemStack itemStack = Items.PLAYER_HEAD.getDefaultInstance();
+
+        if (!playerName.equals("Unknown")) {
+            GameProfile profile = new GameProfile(playerUUID, playerName);
+            ProfileResult profileResult = ExtraLib.getInstance().getServer().getSessionService().fetchProfile(profile.getId(), false);
+
+            if (profileResult != null) {
+                profile = profileResult.profile();
+            }
+
+            itemStack.set(DataComponents.PROFILE, new ResolvableProfile(profile));
+        }
+
+        return itemStack;
     }
 
     /**
