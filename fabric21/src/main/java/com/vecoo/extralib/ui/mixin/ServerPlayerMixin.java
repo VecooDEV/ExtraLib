@@ -62,7 +62,7 @@ public abstract class ServerPlayerMixin extends Player implements PlayerExtensio
     }
 
     @Override
-    public void sgui$ignoreNextClose() {
+    public void extraLib$ignoreNextClose() {
         this.extraLib$ignoreNext = true;
     }
 }
