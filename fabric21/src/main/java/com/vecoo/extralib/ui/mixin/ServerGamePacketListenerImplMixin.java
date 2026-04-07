@@ -1,6 +1,7 @@
 package com.vecoo.extralib.ui.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.vecoo.extralib.ExtraLib;
 import com.vecoo.extralib.ui.api.ClickTypes;
 import com.vecoo.extralib.ui.api.GuiHelpers;
 import com.vecoo.extralib.ui.api.gui.SignGui;
@@ -165,7 +166,7 @@ public abstract class ServerGamePacketListenerImplMixin extends ServerCommonPack
             if (this.previousMenu instanceof VirtualScreenHandlerInterface screenHandler) {
                 screenHandler.getGui().handleException(e);
             } else {
-                e.printStackTrace();
+                ExtraLib.getLogger().error(e.getMessage());
             }
         }
 
@@ -203,7 +204,7 @@ public abstract class ServerGamePacketListenerImplMixin extends ServerCommonPack
             if (this.player.containerMenu instanceof VirtualScreenHandlerInterface handler) {
                 handler.getGui().handleException(e);
             } else {
-                e.printStackTrace();
+                ExtraLib.getLogger().error(e.getMessage());
             }
         }
     }

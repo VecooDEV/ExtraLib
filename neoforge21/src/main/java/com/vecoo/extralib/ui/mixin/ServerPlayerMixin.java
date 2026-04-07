@@ -2,7 +2,7 @@ package com.vecoo.extralib.ui.mixin;
 
 import com.mojang.authlib.GameProfile;
 import com.vecoo.extralib.ui.impl.PlayerExtensions;
-import com.vecoo.extralib.ui.virtual.SguiScreenHandlerFactory;
+import com.vecoo.extralib.ui.virtual.ScreenHandlerFactory;
 import com.vecoo.extralib.ui.virtual.VirtualScreenHandlerInterface;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -29,7 +29,7 @@ public abstract class ServerPlayerMixin extends Player implements PlayerExtensio
     public abstract void doCloseContainer();
 
     @Unique
-    private boolean sgui$ignoreNext = false;
+    private boolean extraLib$ignoreNext = false;
 
     public ServerPlayerMixin(ServerLevel world, BlockPos pos, float yaw, GameProfile gameProfile) {
         super(world, pos, yaw, gameProfile);
@@ -43,15 +43,15 @@ public abstract class ServerPlayerMixin extends Player implements PlayerExtensio
                     shift = At.Shift.BEFORE)
     )
     private void openMenu(MenuProvider factory, @Nullable Consumer<RegistryFriendlyByteBuf> extraDataWriter, CallbackInfoReturnable<OptionalInt> cir) {
-        if (factory instanceof SguiScreenHandlerFactory<?> sguiScreenHandlerFactory && !sguiScreenHandlerFactory.gui().resetMousePosition()) {
-            this.sgui$ignoreNext = true;
+        if (factory instanceof ScreenHandlerFactory<?> sguiScreenHandlerFactory && !sguiScreenHandlerFactory.gui().resetMousePosition()) {
+            this.extraLib$ignoreNext = true;
         }
     }
 
     @Inject(method = "closeContainer", at = @At("HEAD"), cancellable = true)
     private void closeContainer(CallbackInfo ci) {
-        if (this.sgui$ignoreNext) {
-            this.sgui$ignoreNext = false;
+        if (this.extraLib$ignoreNext) {
+            this.extraLib$ignoreNext = false;
             this.doCloseContainer();
             ci.cancel();
         }
@@ -65,7 +65,7 @@ public abstract class ServerPlayerMixin extends Player implements PlayerExtensio
     }
 
     @Override
-    public void sgui$ignoreNextClose() {
-        this.sgui$ignoreNext = true;
+    public void extraLib$ignoreNextClose() {
+        this.extraLib$ignoreNext = true;
     }
 }

@@ -4,7 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import com.vecoo.extralib.ui.api.GuiHelpers;
 import com.vecoo.extralib.ui.api.elements.GuiElement;
 import com.vecoo.extralib.ui.api.elements.GuiElementInterface;
-import com.vecoo.extralib.ui.virtual.SguiScreenHandlerFactory;
+import com.vecoo.extralib.ui.virtual.ScreenHandlerFactory;
 import com.vecoo.extralib.ui.virtual.inventory.VirtualScreenHandler;
 import com.vecoo.extralib.ui.virtual.inventory.VirtualSlot;
 import net.minecraft.network.chat.Component;
@@ -125,7 +125,7 @@ public class SimpleGui extends BaseSlotGui {
 
     protected boolean sendGui() {
         this.reOpen = true;
-        OptionalInt temp = this.player.openMenu(SguiScreenHandlerFactory.ofDefault(this));
+        OptionalInt temp = this.player.openMenu(ScreenHandlerFactory.ofDefault(this));
         this.reOpen = false;
 
         if (temp.isPresent()) {

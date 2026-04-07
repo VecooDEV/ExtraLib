@@ -7,6 +7,8 @@ import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.authlib.yggdrasil.ProfileResult;
 import com.vecoo.extralib.ExtraLib;
 import com.vecoo.extralib.ui.api.GuiHelpers;
+import com.vecoo.extralib.util.ItemUtil;
+import com.vecoo.extralib.util.TextUtil;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentType;
@@ -53,6 +55,10 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
         this.itemStack = itemStack.copy();
     }
 
+    public GuiElementBuilder(@NotNull String itemId) {
+        this.itemStack = ItemUtil.parseItemCustomModel(itemId);
+    }
+
     @NotNull
     public static GuiElementBuilder from(@NotNull ItemStack itemStack) {
         return new GuiElementBuilder(itemStack);
@@ -72,6 +78,12 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
     @NotNull
     public GuiElementBuilder setName(@NotNull Component name) {
         this.itemStack.set(DataComponents.CUSTOM_NAME, name.copy().withStyle(GuiHelpers.STYLE_CLEARER));
+        return this;
+    }
+
+    @NotNull
+    public GuiElementBuilder setFormattedName(@NotNull String name) {
+        this.itemStack.set(DataComponents.CUSTOM_NAME, TextUtil.formatMessage(name).copy().withStyle(GuiHelpers.STYLE_CLEARER));
         return this;
     }
 

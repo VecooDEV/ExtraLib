@@ -10,6 +10,7 @@ import net.minecraft.world.inventory.ContainerListener;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class VirtualScreenHandler extends AbstractContainerMenu implements VirtualScreenHandlerInterface {
@@ -57,7 +58,7 @@ public class VirtualScreenHandler extends AbstractContainerMenu implements Virtu
     }
 
     @Override
-    public void addSlotListener(ContainerListener listener) {
+    public void addSlotListener(@NotNull ContainerListener listener) {
         super.addSlotListener(listener);
         this.gui.afterOpen();
     }
@@ -101,17 +102,18 @@ public class VirtualScreenHandler extends AbstractContainerMenu implements Virtu
     }
 
     @Override
-    public ItemStack quickMoveStack(Player player, int index) {
+    @NotNull
+    public ItemStack quickMoveStack(@NotNull Player player, int index) {
         return this.gui.quickMoveStack(index);
     }
 
     @Override
-    public boolean canDragTo(Slot slot) {
+    public boolean canDragTo(@NotNull Slot slot) {
         return !(slot instanceof VirtualSlot) && super.canDragTo(slot);
     }
 
     @Override
-    public Slot addSlot(Slot slot) {
+    public Slot addSlot(@NotNull Slot slot) {
         return super.addSlot(slot);
     }
 
@@ -120,7 +122,7 @@ public class VirtualScreenHandler extends AbstractContainerMenu implements Virtu
     }
 
     @Override
-    protected boolean moveItemStackTo(ItemStack stack, int startIndex, int endIndex, boolean fromLast) {
-        return this.gui.insertItem(stack, startIndex, endIndex, fromLast);
+    protected boolean moveItemStackTo(@NotNull ItemStack itemStack, int startIndex, int endIndex, boolean fromLast) {
+        return this.gui.insertItem(itemStack, startIndex, endIndex, fromLast);
     }
 }

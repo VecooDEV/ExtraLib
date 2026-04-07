@@ -1,6 +1,7 @@
 package com.vecoo.extralib.ui.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.vecoo.extralib.ExtraLib;
 import com.vecoo.extralib.ui.api.ClickTypes;
 import com.vecoo.extralib.ui.api.GuiHelpers;
 import com.vecoo.extralib.ui.api.gui.SignGui;
@@ -34,7 +35,7 @@ public abstract class ServerGamePacketListenerImplMixin extends ServerCommonPack
     @Shadow
     public ServerPlayer player;
     @Unique
-    private AbstractContainerMenu previousMenu = null;
+    private AbstractContainerMenu extraLib$previousMenu = null;
 
     public ServerGamePacketListenerImplMixin(MinecraftServer server, Connection connection, CommonListenerCookie clientData) {
         super(server, connection, clientData);
@@ -136,7 +137,7 @@ public abstract class ServerGamePacketListenerImplMixin extends ServerCommonPack
     private void handleContainerCloseServerLevel(ServerboundContainerClosePacket packet, CallbackInfo info) {
         if (this.player.containerMenu instanceof VirtualScreenHandlerInterface handler) {
             if (handler.getGui().canPlayerClose()) {
-                this.previousMenu = this.player.containerMenu;
+                this.extraLib$previousMenu = this.player.containerMenu;
             } else {
                 AbstractContainerMenu screenHandler = this.player.containerMenu;
                 try {
@@ -156,20 +157,20 @@ public abstract class ServerGamePacketListenerImplMixin extends ServerCommonPack
     @Inject(method = "handleContainerClose", at = @At("TAIL"))
     private void handleContainerClose(ServerboundContainerClosePacket packet, CallbackInfo info) {
         try {
-            if (this.previousMenu != null) {
-                if (this.previousMenu instanceof VirtualScreenHandlerInterface screenHandler) {
+            if (this.extraLib$previousMenu != null) {
+                if (this.extraLib$previousMenu instanceof VirtualScreenHandlerInterface screenHandler) {
                     screenHandler.getGui().close(true);
                 }
             }
         } catch (Throwable e) {
-            if (this.previousMenu instanceof VirtualScreenHandlerInterface screenHandler) {
+            if (this.extraLib$previousMenu instanceof VirtualScreenHandlerInterface screenHandler) {
                 screenHandler.getGui().handleException(e);
             } else {
-                e.printStackTrace();
+                ExtraLib.getLogger().error(e.getMessage());
             }
         }
 
-        this.previousMenu = null;
+        this.extraLib$previousMenu = null;
     }
 
     @Inject(
@@ -203,7 +204,7 @@ public abstract class ServerGamePacketListenerImplMixin extends ServerCommonPack
             if (this.player.containerMenu instanceof VirtualScreenHandlerInterface handler) {
                 handler.getGui().handleException(e);
             } else {
-                e.printStackTrace();
+                ExtraLib.getLogger().error(e.getMessage());
             }
         }
     }

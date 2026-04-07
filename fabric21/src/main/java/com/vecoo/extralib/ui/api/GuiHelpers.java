@@ -35,7 +35,7 @@ public final class GuiHelpers {
     }
 
     public static void ignoreNextGuiClosing(@NotNull ServerPlayer player) {
-        ((PlayerExtensions) player).sgui$ignoreNextClose();
+        ((PlayerExtensions) player).extraLib$ignoreNextClose();
     }
 
     public static void sendSlotUpdate(@NotNull ServerPlayer player, int syncId, int slot, @NotNull ItemStack itemStack, int revision) {

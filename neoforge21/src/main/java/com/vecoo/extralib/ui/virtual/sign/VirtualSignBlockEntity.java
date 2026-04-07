@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 public class VirtualSignBlockEntity extends SignBlockEntity {
     public VirtualSignBlockEntity(@NotNull Level level, @NotNull BlockPos blockPos, @NotNull BlockState blockState) {
         super(blockPos, blockState);
-        this.setLevel(level);
+        setLevel(level);
     }
 
     public boolean setText(@NotNull SignText text, boolean front) {
@@ -21,6 +21,7 @@ public class VirtualSignBlockEntity extends SignBlockEntity {
     private boolean setBackText(@NotNull SignText backText) {
         if (backText != this.getBackText()) {
             ((SignBlockEntityAccessor) this).setBackText(backText);
+
             return true;
         } else {
             return false;
@@ -30,6 +31,7 @@ public class VirtualSignBlockEntity extends SignBlockEntity {
     private boolean setFrontText(@NotNull SignText frontText) {
         if (frontText != this.getFrontText()) {
             ((SignBlockEntityAccessor) this).setFrontText(frontText);
+
             return true;
         } else {
             return false;
