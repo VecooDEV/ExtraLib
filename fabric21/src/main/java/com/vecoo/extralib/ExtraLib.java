@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import com.vecoo.extralib.config.ServerConfig;
 import com.vecoo.extralib.loader.YamlLoader;
 import com.vecoo.extralib.scheduler.TaskTimer;
+import com.vecoo.extralib.util.ChatUtil;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -29,14 +30,12 @@ public class ExtraLib implements ModInitializer {
 
         loadConfig();
 
-        ServerLifecycleEvents.SERVER_STARTING.register(server -> {
-                    this.server = server;
-
-                    if (this.serverConfig.isNotification()) {
-                        notificationMessage();
-                    }
-                }
-        );
+        ServerLifecycleEvents.SERVER_STARTING.register(server -> this.server = server);
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+            if (this.serverConfig.isNotification()) {
+                notificationMessage();
+            }
+        });
         ServerTickEvents.END_SERVER_TICK.register(server -> TaskTimer.onServerTickEnd());
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> TaskTimer.cancelAll());
     }
@@ -53,36 +52,41 @@ public class ExtraLib implements ModInitializer {
         String language = Locale.getDefault().getLanguage();
         String separator = "==========================================================================";
 
-        LOGGER.info(separator);
+        ChatUtil.broadcast("&8" + separator);
+
         if (language.equalsIgnoreCase("ru")) {
-            LOGGER.info("Спасибо за использование библиотеки ExtraLib, а так же его зависимых модов!");
-            LOGGER.info("");
-            LOGGER.info("Официально поддерживаемые моды библиотеки:");
-            LOGGER.info("ExtraQuests, LegendControl, MoveLearner, PixelmonQuests, ExtraRTP, ExtraWarp, ChunkLimiter.");
-            LOGGER.info("");
-            LOGGER.info("За помощью (настройка, баги, ошибки и прочее) обращаться в дискорд:");
-            LOGGER.info("https://discord.gg/VSGEVagRPq");
-            LOGGER.info("");
-            LOGGER.info("По стандарту каждая команда запрещена для использования, так что для полноценной");
-            LOGGER.info("работы команд модов необходим мод или плагин LuckPerms. Если же такового не имеется");
-            LOGGER.info("загляните в /config/{mod}/permissions.yml и настройте разрешение здесь.");
-            LOGGER.info("");
-            LOGGER.info("Автор: Vecoo (Discord: @Vecoo)");
+            ChatUtil.broadcast("&#ff75ff&lСпа&#e08bff&lси&#c2a1ff&lбо &#a3b7ff&lза &#85cdff&lис&#5ce1ff&lпользование ExtraLib!");
+            ChatUtil.broadcast("");
+            ChatUtil.broadcast("&e&nОфициально поддерживаемые моды библиотеки:&r");
+            ChatUtil.broadcast("&aExtraQuests, LegendControl, MoveLearner, PixelmonQuests, ExtraRTP, ExtraWarp, ChunkLimiter.");
+            ChatUtil.broadcast("");
+            ChatUtil.broadcast("&#ffcc00За помощью (настройка, баги, ошибки) обращаться в дискорд:");
+            ChatUtil.broadcast("&#5865f2&nhttps://discord.gg/VSGEVagRPq");
+            ChatUtil.broadcast("");
+            ChatUtil.broadcast("&fПо стандарту каждая команда &cзапрещена&f. Для полноценной работы");
+            ChatUtil.broadcast("&fнеобходим &#ff8000LuckPerms&f. Если его нет, настройте разрешения в:");
+            ChatUtil.broadcast("&7/config/{mod}/permissions.yml");
+            ChatUtil.broadcast("&7&oОтключить это уведомление: /config/ExtraLib/config.yml");
+            ChatUtil.broadcast("");
+            ChatUtil.broadcast("&#ff75ffА&#ef66e6в&#df57cdт&#cf48b4о&#be399bр&#be2ed6: Vecoo (Discord: @Vecoo)");
         } else {
-            LOGGER.info("Thanks for using ExtraLib and its dependent mods!");
-            LOGGER.info("");
-            LOGGER.info("Officially supported mods:");
-            LOGGER.info("ExtraQuests, LegendControl, MoveLearner, PixelmonQuests, ExtraRTP, ExtraWarp, ChunkLimiter.");
-            LOGGER.info("");
-            LOGGER.info("For help (setup, bugs, errors, etc.) join our Discord:");
-            LOGGER.info("https://discord.gg/VSGEVagRPq");
-            LOGGER.info("");
-            LOGGER.info("By default, every command is restricted. For full functionality, LuckPerms is required.");
-            LOGGER.info("If you don't have it, check /config/{mod}/permissions.yml to configure permissions.");
-            LOGGER.info("");
-            LOGGER.info("Author: Vecoo (Discord: @Vecoo)");
+            ChatUtil.broadcast("&#ff75ff&lTha&#e08bff&lnks &#c2a1ff&lfor &#a3b7ff&lus&#85cdff&ling &#5ce1ff&lExtraLib!");
+            ChatUtil.broadcast("");
+            ChatUtil.broadcast("&e&nOfficially supported mods:&r");
+            ChatUtil.broadcast("&aExtraQuests, LegendControl, MoveLearner, PixelmonQuests, ExtraRTP, ExtraWarp, ChunkLimiter.");
+            ChatUtil.broadcast("");
+            ChatUtil.broadcast("&#ffcc00For help (setup, bugs, errors, etc.) join our Discord:");
+            ChatUtil.broadcast("&#5865f2&nhttps://discord.gg/VSGEVagRPq");
+            ChatUtil.broadcast("");
+            ChatUtil.broadcast("&fBy default, every command is &crestricted&f. For full functionality,");
+            ChatUtil.broadcast("&#ff8000LuckPerms &fis required. Otherwise, configure permissions in:");
+            ChatUtil.broadcast("&7/config/{mod}/permissions.yml");
+            ChatUtil.broadcast("&7&oTo disable this notification: /config/ExtraLib/config.yml");
+            ChatUtil.broadcast("");
+            ChatUtil.broadcast("&#ff75ffA&#ef66e6u&#df57ct&#cf48bh&#be399bo&#be2ed6r: Vecoo (Discord: @Vecoo)");
         }
-        LOGGER.info(separator);
+
+        ChatUtil.broadcast("&8" + separator);
     }
 
     public static ExtraLib getInstance() {
