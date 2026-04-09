@@ -1,6 +1,5 @@
 package com.vecoo.extralib.util;
 
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
@@ -29,11 +28,13 @@ public final class PermissionUtil {
      * @return {@code true} if the source has permission or is console; otherwise {@code false}
      */
     public static boolean hasPermission(@NotNull CommandSourceStack source, @NotNull String node) {
-        try {
-            return Permissions.check(source, node) || source.getPlayerOrException().hasPermissions(4);
-        } catch (CommandSyntaxException e) {
+        ServerPlayer player = source.getPlayer();
+
+        if (player == null) {
             return true;
         }
+
+        return hasPermission(player, node);
     }
 
     /**
@@ -82,6 +83,7 @@ public final class PermissionUtil {
                 value = Math.min(value, Integer.parseInt(permission.substring(permission.lastIndexOf('.') + 1)));
             }
         }
+
         return value;
     }
 
@@ -102,6 +104,7 @@ public final class PermissionUtil {
                 value = Math.max(value, Integer.parseInt(permission.substring(permission.lastIndexOf('.') + 1)));
             }
         }
+
         return value;
     }
 }

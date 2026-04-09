@@ -1,6 +1,5 @@
 package com.vecoo.extralib.util;
 
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.vecoo.extralib.ExtraLib;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
@@ -32,18 +31,13 @@ public final class PermissionUtil {
      * @return {@code true} if the source has permission or is console; otherwise {@code false}
      */
     public static boolean hasPermission(@NotNull CommandSourceStack source, @NotNull PermissionNode<Boolean> node) {
-        try {
-            if (PermissionAPI.getRegisteredNodes().contains(node)) {
-                ServerPlayer player = source.getPlayerOrException();
+        ServerPlayer player = source.getPlayer();
 
-                return PermissionAPI.getPermission(player, node) || player.hasPermissions(4);
-            }
-        } catch (CommandSyntaxException e) {
+        if (player == null) {
             return true;
         }
 
-        ExtraLib.getLogger().error("No permission found for node: {}.", node);
-        return false;
+        return hasPermission(player, node);
     }
 
     /**
@@ -100,10 +94,11 @@ public final class PermissionUtil {
      */
     public static int minValue(int value, @NotNull ServerPlayer player, @NotNull Set<PermissionNode<Boolean>> nodeList) {
         for (PermissionNode<Boolean> permission : nodeList) {
-            if (PermissionUtil.hasPermission(player, permission)) {
+            if (hasPermission(player, permission)) {
                 value = Math.min(value, Integer.parseInt(permission.getNodeName().substring(permission.getNodeName().lastIndexOf('.') + 1)));
             }
         }
+
         return value;
     }
 
@@ -120,10 +115,11 @@ public final class PermissionUtil {
      */
     public static int maxValue(int value, @NotNull ServerPlayer player, @NotNull Set<PermissionNode<Boolean>> nodeList) {
         for (PermissionNode<Boolean> permission : nodeList) {
-            if (PermissionUtil.hasPermission(player, permission)) {
+            if (hasPermission(player, permission)) {
                 value = Math.max(value, Integer.parseInt(permission.getNodeName().substring(permission.getNodeName().lastIndexOf('.') + 1)));
             }
         }
+
         return value;
     }
 
@@ -140,10 +136,11 @@ public final class PermissionUtil {
      */
     public static int minValue(int value, @NotNull UUID playerUUID, @NotNull Set<PermissionNode<Boolean>> nodeList) {
         for (PermissionNode<Boolean> permission : nodeList) {
-            if (PermissionUtil.hasPermission(playerUUID, permission)) {
+            if (hasPermission(playerUUID, permission)) {
                 value = Math.min(value, Integer.parseInt(permission.getNodeName().substring(permission.getNodeName().lastIndexOf('.') + 1)));
             }
         }
+
         return value;
     }
 
@@ -160,10 +157,11 @@ public final class PermissionUtil {
      */
     public static int maxValue(int value, @NotNull UUID playerUUID, @NotNull Set<PermissionNode<Boolean>> nodeList) {
         for (PermissionNode<Boolean> permission : nodeList) {
-            if (PermissionUtil.hasPermission(playerUUID, permission)) {
+            if (hasPermission(playerUUID, permission)) {
                 value = Math.max(value, Integer.parseInt(permission.getNodeName().substring(permission.getNodeName().lastIndexOf('.') + 1)));
             }
         }
+
         return value;
     }
 
@@ -183,10 +181,14 @@ public final class PermissionUtil {
      * @return a new boolean PermissionNode with default value {@code false}
      */
     @NotNull
-    public static PermissionNode<Boolean> getPermissionNode(@NotNull String nodeName) {
-        String[] nodeSplit = nodeName.split("\\.", 2);
+    public static PermissionNode<Boolean> getPermissionNode(@NotNull String nodeName, boolean defaultValue) {
+        try {
+            String[] nodeSplit = nodeName.split("\\.", 2);
 
-        return new PermissionNode<>(nodeSplit[0], nodeSplit[1], PermissionTypes.BOOLEAN,
-                (player, uuid, permissionDynamicContexts) -> false);
+            return new PermissionNode<>(nodeSplit[0], nodeSplit[1], PermissionTypes.BOOLEAN,
+                    (player, uuid, permissionDynamicContexts) -> defaultValue);
+        } catch (Exception e) {
+            throw new RuntimeException(String.format("Incorrect permission node: %s", nodeName), e);
+        }
     }
 }
