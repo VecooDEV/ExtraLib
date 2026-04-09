@@ -100,7 +100,7 @@ public class ExtraLib {
             ChatUtil.broadcast("&7/config/{mod}/permissions.yml");
             ChatUtil.broadcast("&7&oTo disable this notification: /config/ExtraLib/config.yml");
             ChatUtil.broadcast("");
-            ChatUtil.broadcast("&#ff75ffA&#ef66e6u&#df57ct&#cf48bh&#be399bo&#be2ed6r: Vecoo (Discord: @Vecoo)");
+            ChatUtil.broadcast("&#ff75ffA&#ef66e6u&#df57cdt&#cf48b4h&#be399bo&#be2ed6r: Vecoo (Discord: @Vecoo)");
         }
 
         ChatUtil.broadcast("&8" + separator);
