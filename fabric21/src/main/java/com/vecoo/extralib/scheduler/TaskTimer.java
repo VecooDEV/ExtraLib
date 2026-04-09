@@ -55,7 +55,6 @@ public final class TaskTimer {
      */
     public void cancel() {
         this.expired = true;
-
         TASKS.remove(this);
     }
 
@@ -80,7 +79,6 @@ public final class TaskTimer {
             ExtraLib.getLogger().error("Task execution failed.", e);
 
             cancel();
-
             return;
         }
 
@@ -121,7 +119,6 @@ public final class TaskTimer {
         @NotNull
         public Builder execute(@NotNull Runnable runnable) {
             this.consumer = task -> runnable.run();
-
             return this;
         }
 
@@ -134,7 +131,6 @@ public final class TaskTimer {
         @NotNull
         public Builder consume(@NotNull Consumer<TaskTimer> consumer) {
             this.consumer = consumer;
-
             return this;
         }
 
@@ -151,7 +147,6 @@ public final class TaskTimer {
             }
 
             this.delay = delay;
-
             return this;
         }
 
@@ -168,7 +163,6 @@ public final class TaskTimer {
             }
 
             this.interval = interval;
-
             return this;
         }
 
@@ -185,7 +179,6 @@ public final class TaskTimer {
             }
 
             this.iterations = iterations;
-
             return this;
         }
 
@@ -227,7 +220,6 @@ public final class TaskTimer {
             TaskTimer task = new TaskTimer(this.consumer, this.delay, this.interval, this.iterations);
 
             TASKS.add(task);
-
             return task;
         }
     }
