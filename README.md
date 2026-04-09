@@ -2,7 +2,7 @@
 ![](https://cdn.modrinth.com/data/cached_images/c791abd4829248bd13ec46eba8a4813858d6e429.png)
 * Utility classes for quick use.
 * Convenient thread timer.
-* Creating asynchronous GSON writes and reads.
+* Loaders for YAML and JSON with support for asynchronous saving (Configuration).
 * Database module for creating databases (MySQL, MariaDB, PostgreSQL).
 * UI module for creating menus (forked from [SGui](https://github.com/Patbox/sgui)).
 
