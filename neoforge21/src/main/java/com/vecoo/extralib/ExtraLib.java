@@ -66,12 +66,11 @@ public class ExtraLib {
     }
 
     private void notificationMessage() {
-        String language = Locale.getDefault().getLanguage();
         String separator = "==========================================================================";
 
         ChatUtil.broadcast("&8" + separator);
 
-        if (language.equalsIgnoreCase("ru")) {
+        if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {
             ChatUtil.broadcast("&#ff75ff&lСпа&#e08bff&lси&#c2a1ff&lбо &#a3b7ff&lза &#85cdff&lис&#5ce1ff&lпользование ExtraLib!");
             ChatUtil.broadcast("");
             ChatUtil.broadcast("&e&nОфициально поддерживаемые моды библиотеки:&r");

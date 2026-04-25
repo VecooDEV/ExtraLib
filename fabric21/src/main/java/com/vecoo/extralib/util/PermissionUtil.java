@@ -4,6 +4,7 @@ import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 import java.util.UUID;
@@ -27,7 +28,11 @@ public final class PermissionUtil {
      * @param node   the permission node to check
      * @return {@code true} if the source has permission or is console; otherwise {@code false}
      */
-    public static boolean hasPermission(@NotNull CommandSourceStack source, @NotNull String node) {
+    public static boolean hasPermission(@Nullable CommandSourceStack source, @NotNull String node) {
+        if (source == null) {
+            return false;
+        }
+
         ServerPlayer player = source.getPlayer();
 
         if (player == null) {
@@ -49,7 +54,11 @@ public final class PermissionUtil {
      * @param node   the permission node to evaluate
      * @return {@code true} if the player has the permission or is OP-level 4; otherwise {@code false}
      */
-    public static boolean hasPermission(@NotNull ServerPlayer player, @NotNull String node) {
+    public static boolean hasPermission(@Nullable ServerPlayer player, @NotNull String node) {
+        if (player == null) {
+            return false;
+        }
+
         return Permissions.check(player, node) || player.hasPermissions(4);
     }
 
@@ -77,7 +86,7 @@ public final class PermissionUtil {
      * @param nodeList a set of permission nodes containing numeric suffixes
      * @return the maximum numeric suffix among permissions the player has, or the original value if unchanged
      */
-    public static int minValue(int value, @NotNull ServerPlayer player, @NotNull Set<String> nodeList) {
+    public static int minValue(int value, @Nullable ServerPlayer player, @NotNull Set<String> nodeList) {
         for (String permission : nodeList) {
             if (PermissionUtil.hasPermission(player, permission)) {
                 value = Math.min(value, Integer.parseInt(permission.substring(permission.lastIndexOf('.') + 1)));
@@ -98,7 +107,7 @@ public final class PermissionUtil {
      * @param nodeList a set of permission nodes containing numeric suffixes
      * @return the maximum numeric suffix among permissions the player has, or the original value if unchanged
      */
-    public static int maxValue(int value, @NotNull ServerPlayer player, @NotNull Set<String> nodeList) {
+    public static int maxValue(int value, @Nullable ServerPlayer player, @NotNull Set<String> nodeList) {
         for (String permission : nodeList) {
             if (PermissionUtil.hasPermission(player, permission)) {
                 value = Math.max(value, Integer.parseInt(permission.substring(permission.lastIndexOf('.') + 1)));

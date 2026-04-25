@@ -10,6 +10,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.GameProfileCache;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
@@ -22,6 +27,9 @@ import java.util.Objects;
 import java.util.UUID;
 
 public final class PlayerUtil {
+    @NotNull
+    public static String UNKNOWN_PLAYER = "Unknown";
+
     private PlayerUtil() {
     }
 
@@ -65,12 +73,12 @@ public final class PlayerUtil {
         GameProfileCache profileCache = ExtraLib.getInstance().getServer().getProfileCache();
 
         if (profileCache == null) {
-            return "Unknown";
+            return UNKNOWN_PLAYER;
         }
 
         GameProfile gameProfile = profileCache.get(playerUUID).orElse(null);
 
-        return gameProfile != null ? gameProfile.getName() : "Unknown";
+        return gameProfile != null ? gameProfile.getName() : UNKNOWN_PLAYER;
     }
 
     /**
@@ -154,8 +162,10 @@ public final class PlayerUtil {
      * @param player  the player executing the command
      * @param command the command string
      */
-    public static void executeCommand(@NotNull Player player, @NotNull String command) {
-        ExtraLib.getInstance().getServer().getCommands().performPrefixedCommand(player.createCommandSourceStack(), command);
+    public static void executeCommand(@Nullable Player player, @NotNull String command) {
+        if (player != null) {
+            ExtraLib.getInstance().getServer().getCommands().performPrefixedCommand(player.createCommandSourceStack(), command);
+        }
     }
 
     /**
@@ -172,7 +182,7 @@ public final class PlayerUtil {
     public static ItemStack getPlayerSkull(@NotNull UUID playerUUID, @NotNull String playerName) {
         ItemStack itemStack = Items.PLAYER_HEAD.getDefaultInstance();
 
-        if (!playerName.equals("Unknown")) {
+        if (!playerName.equals(UNKNOWN_PLAYER)) {
             GameProfile profile = new GameProfile(playerUUID, playerName);
             ProfileResult profileResult = ExtraLib.getInstance().getServer().getSessionService().fetchProfile(profile.getId(), false);
 
@@ -194,7 +204,11 @@ public final class PlayerUtil {
      * @param searchItemStack the item stack to search for
      * @return the total count of matching items
      */
-    public static int countItemStack(@NotNull Player player, @NotNull ItemStack searchItemStack) {
+    public static int countItemStack(@Nullable Player player, @NotNull ItemStack searchItemStack) {
+        if (player == null) {
+            return 0;
+        }
+
         int count = 0;
 
         for (ItemStack itemStack : player.inventoryMenu.getItems()) {
@@ -217,7 +231,11 @@ public final class PlayerUtil {
      * @param dataComponent   the data component to compare
      * @return the total count of matching items
      */
-    public static int countItemStackTag(@NotNull Player player, @NotNull ItemStack searchItemStack, @NotNull DataComponentType<?> dataComponent) {
+    public static int countItemStackTag(@Nullable Player player, @NotNull ItemStack searchItemStack, @NotNull DataComponentType<?> dataComponent) {
+        if (player == null) {
+            return 0;
+        }
+
         int count = 0;
 
         for (ItemStack itemStack : player.inventoryMenu.getItems()) {
@@ -251,7 +269,12 @@ public final class PlayerUtil {
      * @param removeItemStack the item stack to remove
      * @param amount          the number of items to remove
      */
-    public static void removeItemStack(@NotNull Player player, @NotNull ItemStack removeItemStack, int amount) {
+    public static void removeItemStack(@Nullable Player player, @NotNull ItemStack removeItemStack, int amount) {
+        if (player == null) {
+            ExtraLib.getLogger().error("Item {} was not claimed because the player is null, this is an error.", removeItemStack.getDisplayName());
+            return;
+        }
+
         int totalRemoved = 0;
 
         InventoryMenu playerContainer = player.inventoryMenu;
@@ -283,7 +306,12 @@ public final class PlayerUtil {
      * @param dataComponent   the data component to match
      * @param amount          the number of items to remove
      */
-    public static void removeItemStackTag(@NotNull Player player, @NotNull ItemStack removeItemStack, @NotNull DataComponentType<?> dataComponent, int amount) {
+    public static void removeItemStackTag(@Nullable Player player, @NotNull ItemStack removeItemStack, @NotNull DataComponentType<?> dataComponent, int amount) {
+        if (player == null) {
+            ExtraLib.getLogger().error("Item {} was not claimed because the player is null, this is an error.", removeItemStack.getDisplayName());
+            return;
+        }
+
         int totalRemoved = 0;
 
         InventoryMenu playerContainer = player.inventoryMenu;
@@ -320,13 +348,41 @@ public final class PlayerUtil {
         playerContainer.broadcastChanges();
     }
 
+    public static void giveItem(@Nullable Player player, @NotNull ItemStack itemStack) {
+        if (player == null) {
+            ExtraLib.getLogger().error("Item {} was not issued because the player is null, this is an error.", itemStack.getDisplayName());
+            return;
+        }
+
+        if (!player.addItem(itemStack)) {
+            ItemEntity itemEntity = player.drop(itemStack, false);
+
+            if (itemEntity != null) {
+                itemEntity.setNoPickUpDelay();
+                itemEntity.setTarget(player.getUUID());
+            }
+        }
+
+        playSound(player, SoundEvents.ITEM_PICKUP);
+        player.containerMenu.broadcastChanges();
+    }
+
     /**
      * Checks if the player has at least one free slot in their inventory.
      *
      * @param player the player to check
      * @return true if the player has a free slot, false otherwise
      */
-    public static boolean hasFreeSlot(@NotNull Player player) {
-        return player.getInventory().getFreeSlot() != -1;
+    public static boolean hasFreeSlot(@Nullable Player player) {
+        return player != null && player.getInventory().getFreeSlot() != -1;
+    }
+
+    public static void playSound(@Nullable Player player, @NotNull SoundEvent soundEvent) {
+        if (player != null) {
+            RandomSource random = player.level().getRandom();
+
+            player.level().playSound(null, player.getX(), player.getY(), player.getZ(), soundEvent,
+                    SoundSource.PLAYERS, 0.2F, (random.nextFloat() - random.nextFloat() * 0.7F + 1.0F) * 2.0F);
+        }
     }
 }
