@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "package": "com.vecoo.extralib.ui.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+    "AbstractContainerMenuMixin",
+    "ServerGamePacketListenerImplMixin",
+    "ServerPlayerMixin",
+    "SignBlockEntityAccessor"
+  ]
+}
