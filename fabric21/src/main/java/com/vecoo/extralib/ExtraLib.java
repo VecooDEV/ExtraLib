@@ -65,7 +65,7 @@ public class ExtraLib implements ModInitializer {
             ChatUtil.broadcast("&fПо стандарту каждая команда &cзапрещена&f. Для полноценной работы");
             ChatUtil.broadcast("&fнеобходим &#ff8000LuckPerms&f. Если его нет, настройте разрешения в:");
             ChatUtil.broadcast("&7/config/{mod}/permissions.yml");
-            ChatUtil.broadcast("&7&oОтключить это уведомление: /config/ExtraLib/config.yml");
+            ChatUtil.broadcast("&7&oОтключить это уведомление: /config/extralib/config.yml");
             ChatUtil.broadcast("");
             ChatUtil.broadcast("&#ff75ffА&#ef66e6в&#df57cdт&#cf48b4о&#be399bр&#be2ed6: Vecoo (Discord: @Vecoo)");
         } else {
@@ -80,7 +80,7 @@ public class ExtraLib implements ModInitializer {
             ChatUtil.broadcast("&fBy default, every command is &crestricted&f. For full functionality,");
             ChatUtil.broadcast("&#ff8000LuckPerms &fis required. Otherwise, configure permissions in:");
             ChatUtil.broadcast("&7/config/{mod}/permissions.yml");
-            ChatUtil.broadcast("&7&oTo disable this notification: /config/ExtraLib/config.yml");
+            ChatUtil.broadcast("&7&oTo disable this notification: /config/extralib/config.yml");
             ChatUtil.broadcast("");
             ChatUtil.broadcast("&#ff75ffA&#ef66e6u&#df57cdt&#cf48b4h&#be399bo&#be2ed6r: Vecoo (Discord: @Vecoo)");
         }

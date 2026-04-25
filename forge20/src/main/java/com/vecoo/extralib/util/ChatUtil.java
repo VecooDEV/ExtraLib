@@ -1,6 +1,7 @@
 package com.vecoo.extralib.util;
 
 import com.vecoo.extralib.ExtraLib;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
 public final class ChatUtil {
@@ -10,10 +11,19 @@ public final class ChatUtil {
     /**
      * Broadcasts a formatted message to all online players.
      *
+     * @param message the component message to broadcast
+     */
+    public static void broadcast(@NotNull Component message) {
+        ExtraLib.getInstance().getServer().getPlayerList().broadcastSystemMessage(message, false);
+    }
+
+    /**
+     * Broadcasts a formatted message to all online players.
+     *
      * @param message the message to broadcast
      */
     public static void broadcast(@NotNull String message) {
-        ExtraLib.getInstance().getServer().getPlayerList().broadcastSystemMessage(TextUtil.formatMessage(message), false);
+        broadcast(TextUtil.formatMessage(message));
     }
 
     /**

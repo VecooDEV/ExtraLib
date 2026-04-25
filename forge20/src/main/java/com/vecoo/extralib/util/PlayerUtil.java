@@ -1,20 +1,19 @@
 package com.vecoo.extralib.util;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.yggdrasil.ProfileResult;
 import com.vecoo.extralib.ExtraLib;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.core.component.DataComponentType;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.ResolvableProfile;
-import net.neoforged.neoforge.common.UsernameCache;
+import net.minecraftforge.common.UsernameCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,6 +22,9 @@ import java.util.Objects;
 import java.util.UUID;
 
 public final class PlayerUtil {
+    @NotNull
+    public static String UNKNOWN_PLAYER = "Unknown";
+
     private PlayerUtil() {
     }
 
@@ -61,7 +63,7 @@ public final class PlayerUtil {
     public static String getPlayerName(@NotNull UUID playerUUID) {
         String name = UsernameCache.getLastKnownUsername(playerUUID);
 
-        return name != null ? name : "Unknown";
+        return name != null ? name : UNKNOWN_PLAYER;
     }
 
     /**
@@ -145,36 +147,10 @@ public final class PlayerUtil {
      * @param player  the player executing the command
      * @param command the command string
      */
-    public static void executeCommand(@NotNull Player player, @NotNull String command) {
-        ExtraLib.getInstance().getServer().getCommands().performPrefixedCommand(player.createCommandSourceStack(), command);
-    }
-
-    /**
-     * Creates an {@link ItemStack} of a player's head (skull) with the specified skin data.
-     * <p>
-     * This method attempts to fetch the full {@link GameProfile} from the Mojang session
-     * service to ensure the skin textures are correctly applied to the item.
-     *
-     * @param playerUUID the {@link UUID} of the player whose skin should be used.
-     * @param playerName the name of the player. If set to "Unknown", a default Steve/Alex head is returned.
-     * @return a {@link DataComponents#PROFILE} modified {@link ItemStack} of a player head.
-     */
-    @NotNull
-    public static ItemStack getPlayerSkull(@NotNull UUID playerUUID, @NotNull String playerName) {
-        ItemStack itemStack = Items.PLAYER_HEAD.getDefaultInstance();
-
-        if (!playerName.equals("Unknown")) {
-            GameProfile profile = new GameProfile(playerUUID, playerName);
-            ProfileResult profileResult = ExtraLib.getInstance().getServer().getSessionService().fetchProfile(profile.getId(), false);
-
-            if (profileResult != null) {
-                profile = profileResult.profile();
-            }
-
-            itemStack.set(DataComponents.PROFILE, new ResolvableProfile(profile));
+    public static void executeCommand(@Nullable Player player, @NotNull String command) {
+        if (player != null) {
+            ExtraLib.getInstance().getServer().getCommands().performPrefixedCommand(player.createCommandSourceStack(), command);
         }
-
-        return itemStack;
     }
 
     /**
@@ -185,11 +161,15 @@ public final class PlayerUtil {
      * @param searchItemStack the item stack to search for
      * @return the total count of matching items
      */
-    public static int countItemStack(@NotNull Player player, @NotNull ItemStack searchItemStack) {
+    public static int countItemStack(@Nullable Player player, @NotNull ItemStack searchItemStack) {
+        if (player == null) {
+            return 0;
+        }
+
         int count = 0;
 
         for (ItemStack itemStack : player.inventoryMenu.getItems()) {
-            if (itemStack.isEmpty() || !ItemStack.isSameItemSameComponents(itemStack, searchItemStack)) {
+            if (itemStack.isEmpty() || !ItemStack.isSameItemSameTags(itemStack, searchItemStack)) {
                 continue;
             }
 
@@ -205,10 +185,14 @@ public final class PlayerUtil {
      *
      * @param player          the player
      * @param searchItemStack the item stack to search for
-     * @param dataComponent   the data component to compare
+     * @param tag             the string tag
      * @return the total count of matching items
      */
-    public static int countItemStackTag(@NotNull Player player, @NotNull ItemStack searchItemStack, @NotNull DataComponentType<?> dataComponent) {
+    public static int countItemStackTag(@Nullable Player player, @NotNull ItemStack searchItemStack, @NotNull String tag) {
+        if (player == null) {
+            return 0;
+        }
+
         int count = 0;
 
         for (ItemStack itemStack : player.inventoryMenu.getItems()) {
@@ -216,16 +200,16 @@ public final class PlayerUtil {
                 continue;
             }
 
-            if (itemStack.getComponents().isEmpty() && searchItemStack.getComponents().isEmpty()) {
+            if (itemStack.getTag() == null && searchItemStack.getTag() == null) {
                 count += itemStack.getCount();
                 continue;
             }
 
-            if (itemStack.getComponents().isEmpty() || searchItemStack.getComponents().isEmpty()) {
+            if (itemStack.getTag() == null || searchItemStack.getTag() == null) {
                 continue;
             }
 
-            if (!Objects.equals(itemStack.getComponents().get(dataComponent), searchItemStack.getComponents().get(dataComponent))) {
+            if (!Objects.equals(itemStack.getTag().get(tag), searchItemStack.getTag().get(tag))) {
                 continue;
             }
 
@@ -242,7 +226,12 @@ public final class PlayerUtil {
      * @param removeItemStack the item stack to remove
      * @param amount          the number of items to remove
      */
-    public static void removeItemStack(@NotNull Player player, @NotNull ItemStack removeItemStack, int amount) {
+    public static void removeItemStack(@Nullable Player player, @NotNull ItemStack removeItemStack, int amount) {
+        if (player == null) {
+            ExtraLib.getLogger().error("Item {} was not claimed because the player is null, this is an error.", removeItemStack.getDisplayName());
+            return;
+        }
+
         int totalRemoved = 0;
 
         InventoryMenu playerContainer = player.inventoryMenu;
@@ -252,7 +241,7 @@ public final class PlayerUtil {
                 break;
             }
 
-            if (itemStack.isEmpty() || !ItemStack.isSameItemSameComponents(itemStack, removeItemStack)) {
+            if (itemStack.isEmpty() || !ItemStack.isSameItemSameTags(itemStack, removeItemStack)) {
                 continue;
             }
 
@@ -271,10 +260,15 @@ public final class PlayerUtil {
      *
      * @param player          the player
      * @param removeItemStack the item stack to remove
-     * @param dataComponent   the data component to match
+     * @param tag             string tag
      * @param amount          the number of items to remove
      */
-    public static void removeItemStackTag(@NotNull Player player, @NotNull ItemStack removeItemStack, @NotNull DataComponentType<?> dataComponent, int amount) {
+    public static void removeItemStackTag(@Nullable Player player, @NotNull ItemStack removeItemStack, @NotNull String tag, int amount) {
+        if (player == null) {
+            ExtraLib.getLogger().error("Item {} was not claimed because the player is null, this is an error.", removeItemStack.getDisplayName());
+            return;
+        }
+
         int totalRemoved = 0;
 
         InventoryMenu playerContainer = player.inventoryMenu;
@@ -290,17 +284,17 @@ public final class PlayerUtil {
 
             int toRemove = Math.min(itemStack.getCount(), amount - totalRemoved);
 
-            if (itemStack.getComponents().isEmpty() && removeItemStack.getComponents().isEmpty()) {
+            if (itemStack.getTag() == null && removeItemStack.getTag() == null) {
                 itemStack.shrink(toRemove);
                 totalRemoved += toRemove;
                 continue;
             }
 
-            if (itemStack.getComponents().isEmpty() || removeItemStack.getComponents().isEmpty()) {
+            if (itemStack.getTag() == null || removeItemStack.getTag() == null) {
                 continue;
             }
 
-            if (!Objects.equals(itemStack.getComponents().get(dataComponent), removeItemStack.getComponents().get(dataComponent))) {
+            if (!Objects.equals(itemStack.getTag().get(tag), removeItemStack.getTag().get(tag))) {
                 continue;
             }
 
@@ -311,13 +305,41 @@ public final class PlayerUtil {
         playerContainer.broadcastChanges();
     }
 
+    public static void giveItem(@Nullable Player player, @NotNull ItemStack itemStack) {
+        if (player == null) {
+            ExtraLib.getLogger().error("Item {} was not issued because the player is null, this is an error.", itemStack.getDisplayName());
+            return;
+        }
+
+        if (!player.addItem(itemStack)) {
+            ItemEntity itemEntity = player.drop(itemStack, false);
+
+            if (itemEntity != null) {
+                itemEntity.setNoPickUpDelay();
+                itemEntity.setTarget(player.getUUID());
+            }
+        }
+
+        playSound(player, SoundEvents.ITEM_PICKUP);
+        player.containerMenu.broadcastChanges();
+    }
+
     /**
      * Checks if the player has at least one free slot in their inventory.
      *
      * @param player the player to check
      * @return true if the player has a free slot, false otherwise
      */
-    public static boolean hasFreeSlot(@NotNull Player player) {
-        return player.getInventory().getFreeSlot() != -1;
+    public static boolean hasFreeSlot(@Nullable Player player) {
+        return player != null && player.getInventory().getFreeSlot() != -1;
+    }
+
+    public static void playSound(@Nullable Player player, @NotNull SoundEvent soundEvent) {
+        if (player != null) {
+            RandomSource random = player.level().getRandom();
+
+            player.level().playSound(null, player.getX(), player.getY(), player.getZ(), soundEvent,
+                    SoundSource.PLAYERS, 0.2F, (random.nextFloat() - random.nextFloat() * 0.7F + 1.0F) * 2.0F);
+        }
     }
 }

@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[2,)"
+loaderVersion = "[47,)"
 license = "MIT"
 
 [[mods]]
@@ -10,19 +10,16 @@ logoFile = "logo.png"
 authors = "Vecoo"
 description = "Library for mods."
 
-[[mixins]]
-config = "extralib.mixins.json"
-
 [[dependencies.extralib]]
 modId = "minecraft"
-type = "required"
-versionRange = "[1.21,)"
+mandatory = true
+versionRange = "[1.20,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.extralib]]
-modId = "neoforge"
-type = "required"
-versionRange = "[21.1,)"
+modId = "forge"
+mandatory = true
+versionRange = "[47,)"
 ordering = "NONE"
 side = "BOTH"

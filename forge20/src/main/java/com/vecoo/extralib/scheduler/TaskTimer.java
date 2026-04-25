@@ -1,8 +1,8 @@
 package com.vecoo.extralib.scheduler;
 
 import com.vecoo.extralib.ExtraLib;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
@@ -236,7 +236,7 @@ public final class TaskTimer {
          * @param event the server tick post event
          */
         @SubscribeEvent
-        public void onServerTickPost(ServerTickEvent.Post event) {
+        public void onServerTickPost(TickEvent.ServerTickEvent event) {
             Iterator<TaskTimer> iterator = TASKS.iterator();
 
             while (iterator.hasNext()) {

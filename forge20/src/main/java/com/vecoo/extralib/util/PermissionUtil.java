@@ -3,11 +3,12 @@ package com.vecoo.extralib.util;
 import com.vecoo.extralib.ExtraLib;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.server.permission.PermissionAPI;
-import net.neoforged.neoforge.server.permission.nodes.PermissionDynamicContext;
-import net.neoforged.neoforge.server.permission.nodes.PermissionNode;
-import net.neoforged.neoforge.server.permission.nodes.PermissionTypes;
+import net.minecraftforge.server.permission.PermissionAPI;
+import net.minecraftforge.server.permission.nodes.PermissionDynamicContext;
+import net.minecraftforge.server.permission.nodes.PermissionNode;
+import net.minecraftforge.server.permission.nodes.PermissionTypes;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 import java.util.UUID;
@@ -30,7 +31,11 @@ public final class PermissionUtil {
      * @param node   the permission node to check
      * @return {@code true} if the source has permission or is console; otherwise {@code false}
      */
-    public static boolean hasPermission(@NotNull CommandSourceStack source, @NotNull PermissionNode<Boolean> node) {
+    public static boolean hasPermission(@Nullable CommandSourceStack source, @NotNull PermissionNode<Boolean> node) {
+        if (source == null) {
+            return false;
+        }
+
         ServerPlayer player = source.getPlayer();
 
         if (player == null) {
@@ -52,7 +57,11 @@ public final class PermissionUtil {
      * @param node   the permission node to evaluate
      * @return {@code true} if the player has the permission or is OP-level 4; otherwise {@code false}
      */
-    public static boolean hasPermission(@NotNull ServerPlayer player, @NotNull PermissionNode<Boolean> node) {
+    public static boolean hasPermission(@Nullable ServerPlayer player, @NotNull PermissionNode<Boolean> node) {
+        if (player == null) {
+            return false;
+        }
+
         if (PermissionAPI.getRegisteredNodes().contains(node)) {
             return PermissionAPI.getPermission(player, node) || player.hasPermissions(4);
         }
@@ -92,7 +101,7 @@ public final class PermissionUtil {
      * @param nodeList a set of permission nodes containing numeric suffixes
      * @return the minimum numeric suffix among permissions the player has, or the original value if unchanged
      */
-    public static int minValue(int value, @NotNull ServerPlayer player, @NotNull Set<PermissionNode<Boolean>> nodeList) {
+    public static int minValue(int value, @Nullable ServerPlayer player, @NotNull Set<PermissionNode<Boolean>> nodeList) {
         for (PermissionNode<Boolean> permission : nodeList) {
             if (hasPermission(player, permission)) {
                 value = Math.min(value, Integer.parseInt(permission.getNodeName().substring(permission.getNodeName().lastIndexOf('.') + 1)));
@@ -113,7 +122,7 @@ public final class PermissionUtil {
      * @param nodeList a set of permission nodes containing numeric suffixes
      * @return the maximum numeric suffix among permissions the player has, or the original value if unchanged
      */
-    public static int maxValue(int value, @NotNull ServerPlayer player, @NotNull Set<PermissionNode<Boolean>> nodeList) {
+    public static int maxValue(int value, @Nullable ServerPlayer player, @NotNull Set<PermissionNode<Boolean>> nodeList) {
         for (PermissionNode<Boolean> permission : nodeList) {
             if (hasPermission(player, permission)) {
                 value = Math.max(value, Integer.parseInt(permission.getNodeName().substring(permission.getNodeName().lastIndexOf('.') + 1)));
@@ -188,7 +197,7 @@ public final class PermissionUtil {
             return new PermissionNode<>(nodeSplit[0], nodeSplit[1], PermissionTypes.BOOLEAN,
                     (player, uuid, permissionDynamicContexts) -> defaultValue);
         } catch (Exception e) {
-            throw new RuntimeException(String.format("Incorrect permission node: %s", nodeName), e);
+            throw new RuntimeException(String.format("Incorrect permission node: %s.", nodeName), e);
         }
     }
 }
