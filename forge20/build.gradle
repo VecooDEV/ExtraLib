@@ -64,6 +64,15 @@ shadowJar {
     exclude 'mariadb.properties'
 }
 
+tasks.named('jar') {
+    enabled = false
+}
+
+renamer.classes('renameJarToSrg', tasks.named('shadowJar', Jar)) {
+    mappings(minecraft.dependency.toSrg.get())
+    output = layout.buildDirectory.file("libs/${rootProject.name}-${project.version}.jar").get().asFile
+}
+
 processResources {
     filesMatching('META-INF/mods.toml') {
         expand(
@@ -87,18 +96,9 @@ modrinth {
     versionNumber = project_version
     versionType = "release"
     changelog = rootProject.file("changelog.md").text
-    uploadFile = shadowJar
+    uploadFile = layout.buildDirectory.file("libs/${rootProject.name}-${project.version}.jar")
     gameVersions = ["1.20.1"]
     loaders = ["forge"]
-}
-
-tasks.named('jar') {
-    enabled = false
-}
-
-renamer.classes('renameJarToSrg', tasks.named('shadowJar', Jar)) {
-    mappings(minecraft.dependency.toSrg.get())
-    output = layout.buildDirectory.file("libs/${rootProject.name}-${project.version}.jar").get().asFile
 }
 
 build.finalizedBy('versionedRelease')
