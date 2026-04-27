@@ -68,6 +68,7 @@ public final class YamlLoader {
             YamlConfigurationLoader loader = YamlConfigurationLoader.builder()
                     .path(path)
                     .nodeStyle(NodeStyle.BLOCK)
+                    .indent(2)
                     .build();
 
             CommentedConfigurationNode root = loader.load();
@@ -118,6 +119,7 @@ public final class YamlLoader {
             YamlConfigurationLoader loader = YamlConfigurationLoader.builder()
                     .path(path)
                     .nodeStyle(NodeStyle.BLOCK)
+                    .indent(2)
                     .build();
 
             CommentedConfigurationNode root = loader.createNode();
