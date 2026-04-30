@@ -1,6 +1,7 @@
 package com.vecoo.extralib.loader;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.configurate.BasicConfigurationNode;
 import org.spongepowered.configurate.gson.GsonConfigurationLoader;
 import org.spongepowered.configurate.objectmapping.ObjectMapper;
@@ -19,6 +20,7 @@ public final class GsonLoader {
      * Dedicated single-thread executor for write operations.
      * Ensures that save tasks are processed sequentially to avoid file access conflicts.
      */
+    @NotNull
     private static final ExecutorService WRITER_EXECUTOR = Executors.newSingleThreadExecutor(runnable -> {
         Thread thread = new Thread(runnable, "ExtraLib-GSON-Writer");
 
@@ -27,20 +29,6 @@ public final class GsonLoader {
     });
 
     private GsonLoader() {
-    }
-
-    /**
-     * Loads a JSON configuration file into a strongly-typed object.
-     *
-     * @param <T>    the configuration class type
-     * @param clazz  the class to deserialize the JSON into
-     * @param path   the string path to the file
-     * @param backup whether to create a .old backup if the file is invalid
-     * @return a populated configuration instance
-     * @throws IOException if a critical I/O error occurs
-     */
-    public static <T> T load(@NotNull Class<T> clazz, @NotNull String path, boolean backup) throws IOException {
-        return load(clazz, Path.of(path), backup);
     }
 
     /**
@@ -62,6 +50,7 @@ public final class GsonLoader {
      * @return a populated configuration instance
      * @throws IOException if the file is inaccessible or invalid when backup is disabled
      */
+    @Nullable
     public static <T> T load(@NotNull Class<T> clazz, @NotNull Path path, boolean backup) throws IOException {
         try {
             GsonConfigurationLoader loader = GsonConfigurationLoader.builder()
@@ -79,8 +68,7 @@ public final class GsonLoader {
         } catch (Exception e) {
             if (backup && Files.exists(path)) {
                 Files.move(path, path.resolveSibling(path.getFileName().toString() + ".old"), StandardCopyOption.REPLACE_EXISTING);
-
-                return load(clazz, path, false);
+                return null;
             }
 
             throw new IOException(String.format("Failed to load file: %s.", path), e);
@@ -88,15 +76,18 @@ public final class GsonLoader {
     }
 
     /**
-     * Synchronously saves an object to a JSON file.
+     * Loads a JSON configuration file into a strongly-typed object.
      *
-     * @param <T>            the object type
-     * @param configInstance the object instance to save
-     * @param path           the string path to the file
-     * @throws IOException if directories cannot be created or the file cannot be written
+     * @param <T>    the configuration class type
+     * @param clazz  the class to deserialize the JSON into
+     * @param path   the string path to the file
+     * @param backup whether to create a .old backup if the file is invalid
+     * @return a populated configuration instance
+     * @throws IOException if a critical I/O error occurs
      */
-    public static <T> void save(@NotNull T configInstance, @NotNull String path) throws IOException {
-        save(configInstance, Path.of(path));
+    @Nullable
+    public static <T> T load(@NotNull Class<T> clazz, @NotNull String path, boolean backup) throws IOException {
+        return load(clazz, Path.of(path), backup);
     }
 
     /**
@@ -128,16 +119,15 @@ public final class GsonLoader {
     }
 
     /**
-     * Asynchronously saves an object to a JSON file.
-     * Uses an internal single-thread executor to maintain write order.
+     * Synchronously saves an object to a JSON file.
      *
      * @param <T>            the object type
      * @param configInstance the object instance to save
      * @param path           the string path to the file
-     * @return a {@link CompletableFuture} representing the save task
+     * @throws IOException if directories cannot be created or the file cannot be written
      */
-    public static <T> CompletableFuture<Void> saveAsync(@NotNull T configInstance, @NotNull String path) {
-        return saveAsync(configInstance, Path.of(path));
+    public static <T> void save(@NotNull T configInstance, @NotNull String path) throws IOException {
+        save(configInstance, Path.of(path));
     }
 
     /**
@@ -156,5 +146,18 @@ public final class GsonLoader {
                 throw new RuntimeException(e);
             }
         }, WRITER_EXECUTOR);
+    }
+
+    /**
+     * Asynchronously saves an object to a JSON file.
+     * Uses an internal single-thread executor to maintain write order.
+     *
+     * @param <T>            the object type
+     * @param configInstance the object instance to save
+     * @param path           the string path to the file
+     * @return a {@link CompletableFuture} representing the save task
+     */
+    public static <T> CompletableFuture<Void> saveAsync(@NotNull T configInstance, @NotNull String path) {
+        return saveAsync(configInstance, Path.of(path));
     }
 }
