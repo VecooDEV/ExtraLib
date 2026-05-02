@@ -11,7 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 @SuppressWarnings("unchecked")
@@ -21,7 +21,7 @@ public final class GsonLoader {
      * Ensures that save tasks are processed sequentially to avoid file access conflicts.
      */
     @NotNull
-    private static final ExecutorService WRITER_EXECUTOR = Executors.newSingleThreadExecutor(runnable -> {
+    public static final Executor WRITER_EXECUTOR = Executors.newSingleThreadExecutor(runnable -> {
         Thread thread = new Thread(runnable, "ExtraLib-GSON-Writer");
 
         thread.setDaemon(true);
