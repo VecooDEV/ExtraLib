@@ -1,5 +1,6 @@
 package com.vecoo.extralib.sql;
 
+import com.vecoo.extralib.ExtraLib;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.jetbrains.annotations.NotNull;
@@ -166,7 +167,13 @@ public class DatabaseUtil {
      * @param task the task to execute asynchronously
      */
     public void async(@NotNull Runnable task) {
-        this.executor.execute(task);
+        this.executor.execute(() -> {
+            try {
+                task.run();
+            } catch (Exception e) {
+                ExtraLib.getLogger().error("Error sql async method.", e);
+            }
+        });
     }
 
     /**
