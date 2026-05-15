@@ -32,7 +32,7 @@ import java.util.function.Supplier;
  * {@link #getDataSource()}. The executor service is exposed through helper methods for running
  * tasks asynchronously.</p>
  */
-public final class DatabaseUtil {
+public class DatabaseUtil {
     private final HikariDataSource dataSource;
     private final ExecutorService executor;
 
