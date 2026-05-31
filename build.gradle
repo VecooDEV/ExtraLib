@@ -9,12 +9,12 @@ subprojects {
         setArchiveBaseName("${rootProject.name}")
     }
 
-    repositories {
-        mavenCentral()
-    }
-
     tasks.withType(JavaCompile).configureEach {
         options.encoding = 'UTF-8'
+    }
+
+    repositories {
+        mavenCentral()
     }
 
     tasks.register('versionedRelease', Copy) {

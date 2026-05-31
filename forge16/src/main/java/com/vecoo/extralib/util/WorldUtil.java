@@ -1,0 +1,118 @@
+package com.vecoo.extralib.util;
+
+import com.vecoo.extralib.ExtraLib;
+import net.minecraft.block.Block;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.chunk.ChunkSection;
+import net.minecraft.world.chunk.IChunk;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.storage.FolderName;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Locale;
+
+public final class WorldUtil {
+    private WorldUtil() {
+    }
+
+    /**
+     * Finds for a world by its name.
+     *
+     * <p>The world name should be provided **without a namespace** (e.g. "overworld").
+     * The method compares the name with the path part of the dimension ID.</p>
+     *
+     * @param levelName the level name without a namespace (must not be null)
+     * @return the found {@link ServerWorld}, or {@code null} if none match
+     */
+    @Nullable
+    public static ServerWorld findLevelByName(@NotNull String levelName) {
+        for (ServerWorld level : ExtraLib.getInstance().getServer().getAllLevels()) {
+            if (level.dimension().location().getPath().equals(levelName.toLowerCase(Locale.ROOT))) {
+                return level;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Resolves the world directory path depending on whether the server is dedicated
+     * or running in singleplayer/integrated mode.
+     * <p>
+     * Replaces the placeholder {@code %directory%} in the provided file path with:
+     * <ul>
+     *     <li>{@code world} for dedicated servers</li>
+     *     <li>{@code saves/<worldName>} for singleplayer/integrated servers</li>
+     * </ul>
+     *
+     * @param file   the file path template that contains the placeholder {@code %directory%}
+     * @param server the current Minecraft server instance
+     * @return the resolved file path with the actual world directory substituted
+     */
+    @NotNull
+    public static String resolveWorldDirectory(@NotNull String file, @NotNull MinecraftServer server) {
+        if (server.isDedicatedServer()) {
+            return file.replace("%directory%", "world");
+        }
+
+        return file.replace("%directory%", "saves/" + server.getWorldPath(FolderName.LEVEL_DATA_FILE)
+                .normalize().getParent().getFileName().toString());
+    }
+
+    /**
+     * Counts the total number of blocks of the specified type inside the given chunk.
+     * <p>
+     * The method iterates through all chunk sections (skipping empty ones) and sums
+     * the occurrences of the target block using the palette’s internal counting logic.
+     *
+     * @param chunk       the chunk in which to search for the blocks
+     * @param targetBlock the block type to count
+     * @return the total amount of blocks of the given type in the chunk
+     */
+    public static int countBlocksInChunk(@NotNull IChunk chunk, @NotNull Block targetBlock) {
+        int[] count = {0};
+
+        for (ChunkSection section : chunk.getSections()) {
+            if (section == null || section.isEmpty()) {
+                continue;
+            }
+
+            section.getStates().count((state, amount) -> {
+                if (state.is(targetBlock)) {
+                    count[0] += amount;
+                }
+            });
+        }
+
+        return count[0];
+    }
+
+    /**
+     * Converts a biome ID into a human-readable biome name.
+     * For example, "minecraft:dark_forest" becomes "Dark Forest".
+     *
+     * @param biomeId the biome ID in the format "namespace:biome_name"
+     * @return a formatted, human-readable biome name with each word capitalized
+     */
+    @NotNull
+    public static String formatBiomeName(@NotNull String biomeId) {
+        String[] split = biomeId.split(":");
+        StringBuilder name = new StringBuilder();
+
+        if (split[1].contains("_")) {
+            String[] fullName = split[1].split("_");
+
+            for (String s : fullName) {
+                String word = s.substring(0, 1).toUpperCase() + s.substring(1);
+                name.append(word).append(" ");
+            }
+
+            name = new StringBuilder(name.substring(0, name.length() - 1));
+        } else {
+            name = new StringBuilder(split[1].substring(0, 1).toUpperCase() + split[1].substring(1));
+        }
+
+        return name.toString();
+    }
+}

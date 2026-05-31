@@ -1,12 +1,14 @@
 plugins {
-    id 'fabric-loom' version '1.11+'
-    id 'com.modrinth.minotaur' version '2.8.10'
-    id 'com.gradleup.shadow' version '8+'
+    id 'fabric-loom' version '1.16+'
+    id 'com.modrinth.minotaur' version '2.9.0'
+    id 'com.gradleup.shadow' version '9.4.1'
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
-archivesBaseName = "${project_name}"
+base {
+    archivesName = "${project_name}"
+}
 
 version = "${project_version}-1.20.1-Fabric"
 
@@ -25,15 +27,19 @@ dependencies {
     shadow("com.zaxxer:HikariCP:${hikari_cp_11}") {
         exclude group: 'org.slf4j'
     }
-    shadow("org.spongepowered:configurate-yaml:${configurate_yaml}")
+    shadow "org.spongepowered:configurate-core:${configurate}"
+    shadow "org.spongepowered:configurate-yaml:${configurate}"
+    shadow "org.spongepowered:configurate-gson:${configurate}"
     shadow "com.mysql:mysql-connector-j:${mysql_connector_j}"
     shadow "org.mariadb.jdbc:mariadb-java-client:${mariadb_connector_j}"
     shadow "org.postgresql:postgresql:${postgresql_jdbc_driver}"
+    shadow "com.github.ben-manes.caffeine:caffeine:${caffeine}"
 }
 
 shadowJar {
     configurations = [project.configurations.shadow]
-    setArchiveBaseName("${rootProject.name}")
+    archiveClassifier.set('shadow')
+    archiveBaseName.set("${project_name}")
 
     relocate('me.lucko.fabric.api.permissions.v0', 'com.vecoo.extralib.shade.lucko.fabric.api.permissions.v0')
     relocate('com.zaxxer.hikari', 'com.vecoo.extralib.shade.zaxxer.hikari')
@@ -43,8 +49,12 @@ shadowJar {
     relocate('com.mysql', 'com.vecoo.extralib.shade.mysql')
     relocate('org.mariadb.jdbc', 'com.vecoo.extralib.shade.mariadb.jdbc')
     relocate('org.postgresql', 'com.vecoo.extralib.shade.postgresql')
+    relocate('com.google.gson', 'com.vecoo.extralib.shade.google.gson')
     relocate('com.google.protobuf', 'com.vecoo.extralib.shade.google.protobuf')
+    relocate('com.google.errorprone', 'com.vecoo.extralib.shade.google.errorprone')
+    relocate('com.github.benmanes.caffeine', 'com.vecoo.extralib.shade.benmanes.caffeine')
     relocate('org.checkerframework', 'com.vecoo.extralib.shade.checkerframework')
+    relocate('org.jspecify.annotations', 'com.vecoo.extralib.shade.jspecify.annotations')
 
     exclude 'META-INF/licenses/**'
     exclude 'META-INF/maven/**'
@@ -52,6 +62,7 @@ shadowJar {
     exclude 'META-INF/versions/**'
     exclude 'META-INF/LICENSE/**'
     exclude 'META-INF/LICENSE.txt'
+    exclude 'META-INF/jandex.idx'
     exclude 'INFO_BIN/**'
     exclude 'INFO_SRC/**'
     exclude 'README/**'
