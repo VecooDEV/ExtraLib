@@ -237,15 +237,17 @@ public final class TaskTimer {
          */
         @SubscribeEvent
         public void onServerTickPost(TickEvent.ServerTickEvent event) {
-            Iterator<TaskTimer> iterator = TASKS.iterator();
+            if (event.phase == TickEvent.Phase.END) {
+                Iterator<TaskTimer> iterator = TASKS.iterator();
 
-            while (iterator.hasNext()) {
-                TaskTimer task = iterator.next();
+                while (iterator.hasNext()) {
+                    TaskTimer task = iterator.next();
 
-                task.tick();
+                    task.tick();
 
-                if (task.expired) {
-                    iterator.remove();
+                    if (task.expired) {
+                        iterator.remove();
+                    }
                 }
             }
         }
