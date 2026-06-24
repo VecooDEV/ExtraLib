@@ -29,7 +29,9 @@ dependencies {
     }
     shadow "org.spongepowered:configurate-core:${configurate}"
     shadow "org.spongepowered:configurate-yaml:${configurate}"
-    shadow "org.spongepowered:configurate-gson:${configurate}"
+    shadow("org.spongepowered:configurate-gson:${configurate}") {
+        exclude group: 'com.google.code.gson'
+    }
     shadow "com.mysql:mysql-connector-j:${mysql_connector_j}"
     shadow "org.mariadb.jdbc:mariadb-java-client:${mariadb_connector_j}"
     shadow "org.postgresql:postgresql:${postgresql_jdbc_driver}"
@@ -49,7 +51,6 @@ shadowJar {
     relocate('com.mysql', 'com.vecoo.extralib.shade.mysql')
     relocate('org.mariadb.jdbc', 'com.vecoo.extralib.shade.mariadb.jdbc')
     relocate('org.postgresql', 'com.vecoo.extralib.shade.postgresql')
-    relocate('com.google.gson', 'com.vecoo.extralib.shade.google.gson')
     relocate('com.google.protobuf', 'com.vecoo.extralib.shade.google.protobuf')
     relocate('com.google.errorprone', 'com.vecoo.extralib.shade.google.errorprone')
     relocate('com.github.benmanes.caffeine', 'com.vecoo.extralib.shade.benmanes.caffeine')
