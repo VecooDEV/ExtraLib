@@ -1,1 +1,1 @@
-* fix speed timer.
+* fix relocate gson.
