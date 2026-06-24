@@ -1,1 +1,1 @@
-* fix relocate gson.
+* added new gson loader methods.

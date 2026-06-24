@@ -1,15 +1,20 @@
 package com.vecoo.extralib.loader;
 
+import io.leangen.geantyref.TypeFactory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.configurate.BasicConfigurationNode;
 import org.spongepowered.configurate.gson.GsonConfigurationLoader;
 import org.spongepowered.configurate.objectmapping.ObjectMapper;
+import org.spongepowered.configurate.serialize.TypeSerializerCollection;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -75,6 +80,40 @@ public final class GsonLoader {
         }
     }
 
+    @Nullable
+    public static <T> List<T> load(@NotNull Class<T> clazz, @NotNull Path path, @NotNull TypeSerializerCollection serializers, boolean backup) throws IOException {
+        try {
+            if (!Files.exists(path)) {
+                return new ArrayList<>();
+            }
+
+            GsonConfigurationLoader loader = GsonConfigurationLoader.builder()
+                    .defaultOptions(options -> options.serializers(serializers))
+                    .path(path)
+                    .build();
+
+            BasicConfigurationNode root = loader.load();
+            Type listJavaType = TypeFactory.parameterizedClass(List.class, clazz);
+            List<T> configList = (List<T>) root.get(listJavaType);
+
+            if (configList == null) {
+                configList = new ArrayList<>();
+            }
+
+            root.set(listJavaType, configList);
+            loader.save(root);
+
+            return configList;
+        } catch (Exception e) {
+            if (backup && Files.exists(path)) {
+                Files.move(path, path.resolveSibling(path.getFileName().toString() + ".old"), StandardCopyOption.REPLACE_EXISTING);
+                return null;
+            }
+
+            throw new IOException(String.format("Failed to load file: %s.", path), e);
+        }
+    }
+
     /**
      * Loads a JSON configuration file into a strongly-typed object.
      *
@@ -88,6 +127,11 @@ public final class GsonLoader {
     @Nullable
     public static <T> T load(@NotNull Class<T> clazz, @NotNull String path, boolean backup) throws IOException {
         return load(clazz, Path.of(path), backup);
+    }
+
+    @Nullable
+    public static <T> List<T> load(@NotNull Class<T> clazz, @NotNull String path, @NotNull TypeSerializerCollection serializers, boolean backup) throws IOException {
+        return load(clazz, Path.of(path), serializers, backup);
     }
 
     /**
@@ -118,6 +162,26 @@ public final class GsonLoader {
         }
     }
 
+    public static <T> void save(@NotNull List<T> configList, @NotNull Class<T> elementClass, @NotNull Path path, @NotNull TypeSerializerCollection serializers) throws IOException {
+        try {
+            if (path.getParent() != null) {
+                Files.createDirectories(path.getParent());
+            }
+
+            GsonConfigurationLoader loader = GsonConfigurationLoader.builder()
+                    .defaultOptions(options -> options.serializers(serializers))
+                    .path(path)
+                    .build();
+
+            BasicConfigurationNode root = loader.createNode();
+
+            root.set(TypeFactory.parameterizedClass(List.class, elementClass), configList);
+            loader.save(root);
+        } catch (Exception e) {
+            throw new IOException(String.format("Failed to save file: %s.", path), e);
+        }
+    }
+
     /**
      * Synchronously saves an object to a JSON file.
      *
@@ -128,6 +192,10 @@ public final class GsonLoader {
      */
     public static <T> void save(@NotNull T configInstance, @NotNull String path) throws IOException {
         save(configInstance, Path.of(path));
+    }
+
+    public static <T> void save(@NotNull List<T> configList, @NotNull Class<T> elementClass, @NotNull String path, @NotNull TypeSerializerCollection serializers) throws IOException {
+        save(configList, elementClass, Path.of(path), serializers);
     }
 
     /**
