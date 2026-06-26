@@ -7,6 +7,7 @@ import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
+import java.util.function.Supplier;
 
 public final class CommandUtil {
     private CommandUtil() {
@@ -61,8 +62,13 @@ public final class CommandUtil {
      */
     @NotNull
     public static SuggestionProvider<CommandSourceStack> suggestString(@NotNull Collection<String> collection) {
+        return suggestString(() -> collection);
+    }
+
+    @NotNull
+    public static SuggestionProvider<CommandSourceStack> suggestString(@NotNull Supplier<Collection<String>> supplier) {
         return (context, builder) -> {
-            for (String name : collection) {
+            for (String name : supplier.get()) {
                 builder.suggest(name);
             }
 
@@ -82,8 +88,13 @@ public final class CommandUtil {
      */
     @NotNull
     public static SuggestionProvider<CommandSourceStack> suggestAmount(@NotNull Collection<Integer> collection) {
+        return suggestAmount(() -> collection);
+    }
+
+    @NotNull
+    public static SuggestionProvider<CommandSourceStack> suggestAmount(@NotNull Supplier<Collection<Integer>> supplier) {
         return (context, builder) -> {
-            for (int amount : collection) {
+            for (int amount : supplier.get()) {
                 builder.suggest(amount);
             }
 
