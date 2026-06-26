@@ -1,1 +1,1 @@
-* added new gson loader methods.
+* added new command suggest.
