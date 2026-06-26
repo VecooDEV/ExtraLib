@@ -1,1 +1,1 @@
-* added new command suggest.
+* added strict mode to count and remove itemstack.
