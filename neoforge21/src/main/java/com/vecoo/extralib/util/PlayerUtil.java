@@ -196,6 +196,10 @@ public final class PlayerUtil {
      * @return the total count of matching items
      */
     public static int countItemStack(@Nullable Player player, @NotNull ItemStack searchItemStack) {
+        return countItemStack(player, searchItemStack, true);
+    }
+
+    public static int countItemStack(@Nullable Player player, @NotNull ItemStack searchItemStack, boolean strict) {
         if (player == null) {
             return 0;
         }
@@ -203,8 +207,18 @@ public final class PlayerUtil {
         int count = 0;
 
         for (ItemStack itemStack : player.inventoryMenu.getItems()) {
-            if (itemStack.isEmpty() || !ItemStack.isSameItemSameComponents(itemStack, searchItemStack)) {
+            if (itemStack.isEmpty()) {
                 continue;
+            }
+
+            if (strict) {
+                if (!ItemStack.isSameItemSameComponents(itemStack, searchItemStack)) {
+                    continue;
+                }
+            } else {
+                if (!itemStack.is(searchItemStack.getItem())) {
+                    continue;
+                }
             }
 
             count += itemStack.getCount();
@@ -261,6 +275,10 @@ public final class PlayerUtil {
      * @param amount          the number of items to remove
      */
     public static void removeItemStack(@Nullable Player player, @NotNull ItemStack removeItemStack, int amount) {
+        removeItemStack(player, removeItemStack, amount, true);
+    }
+
+    public static void removeItemStack(@Nullable Player player, @NotNull ItemStack removeItemStack, int amount, boolean strict) {
         if (player == null) {
             ExtraLib.getLogger().error("Item {} was not claimed because the player is null, this is an error.", removeItemStack.getDisplayName());
             return;
@@ -275,8 +293,18 @@ public final class PlayerUtil {
                 break;
             }
 
-            if (itemStack.isEmpty() || !ItemStack.isSameItemSameComponents(itemStack, removeItemStack)) {
+            if (itemStack.isEmpty()) {
                 continue;
+            }
+
+            if (strict) {
+                if (!ItemStack.isSameItemSameComponents(itemStack, removeItemStack)) {
+                    continue;
+                }
+            } else {
+                if (!itemStack.is(removeItemStack.getItem())) {
+                    continue;
+                }
             }
 
             int toRemove = Math.min(itemStack.getCount(), amount - totalRemoved);

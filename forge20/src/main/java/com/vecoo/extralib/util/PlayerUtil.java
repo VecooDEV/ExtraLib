@@ -162,6 +162,10 @@ public final class PlayerUtil {
      * @return the total count of matching items
      */
     public static int countItemStack(@Nullable Player player, @NotNull ItemStack searchItemStack) {
+        return countItemStack(player, searchItemStack, true);
+    }
+
+    public static int countItemStack(@Nullable Player player, @NotNull ItemStack searchItemStack, boolean strict) {
         if (player == null) {
             return 0;
         }
@@ -169,8 +173,18 @@ public final class PlayerUtil {
         int count = 0;
 
         for (ItemStack itemStack : player.inventoryMenu.getItems()) {
-            if (itemStack.isEmpty() || !ItemStack.isSameItemSameTags(itemStack, searchItemStack)) {
+            if (itemStack.isEmpty()) {
                 continue;
+            }
+
+            if (strict) {
+                if (!ItemStack.isSameItemSameTags(itemStack, searchItemStack)) {
+                    continue;
+                }
+            } else {
+                if (!itemStack.is(searchItemStack.getItem())) {
+                    continue;
+                }
             }
 
             count += itemStack.getCount();
@@ -227,43 +241,10 @@ public final class PlayerUtil {
      * @param amount          the number of items to remove
      */
     public static void removeItemStack(@Nullable Player player, @NotNull ItemStack removeItemStack, int amount) {
-        if (player == null) {
-            ExtraLib.getLogger().error("Item {} was not claimed because the player is null, this is an error.", removeItemStack.getDisplayName());
-            return;
-        }
-
-        int totalRemoved = 0;
-
-        InventoryMenu playerContainer = player.inventoryMenu;
-
-        for (ItemStack itemStack : playerContainer.getItems()) {
-            if (totalRemoved >= amount) {
-                break;
-            }
-
-            if (itemStack.isEmpty() || !ItemStack.isSameItemSameTags(itemStack, removeItemStack)) {
-                continue;
-            }
-
-            int toRemove = Math.min(itemStack.getCount(), amount - totalRemoved);
-
-            itemStack.shrink(toRemove);
-            totalRemoved += toRemove;
-        }
-
-        playerContainer.broadcastChanges();
+        removeItemStack(player, removeItemStack, amount, true);
     }
 
-    /**
-     * Removes a specific number of item stacks from the player's inventory
-     * that match a specific data component.
-     *
-     * @param player          the player
-     * @param removeItemStack the item stack to remove
-     * @param tag             string tag
-     * @param amount          the number of items to remove
-     */
-    public static void removeItemStackTag(@Nullable Player player, @NotNull ItemStack removeItemStack, @NotNull String tag, int amount) {
+    public static void removeItemStack(@Nullable Player player, @NotNull ItemStack removeItemStack, int amount, boolean strict) {
         if (player == null) {
             ExtraLib.getLogger().error("Item {} was not claimed because the player is null, this is an error.", removeItemStack.getDisplayName());
             return;
@@ -278,25 +259,21 @@ public final class PlayerUtil {
                 break;
             }
 
-            if (itemStack.isEmpty() || itemStack.getItem() != removeItemStack.getItem()) {
+            if (itemStack.isEmpty()) {
                 continue;
+            }
+
+            if (strict) {
+                if (!ItemStack.isSameItemSameTags(itemStack, removeItemStack)) {
+                    continue;
+                }
+            } else {
+                if (!itemStack.is(removeItemStack.getItem())) {
+                    continue;
+                }
             }
 
             int toRemove = Math.min(itemStack.getCount(), amount - totalRemoved);
-
-            if (itemStack.getTag() == null && removeItemStack.getTag() == null) {
-                itemStack.shrink(toRemove);
-                totalRemoved += toRemove;
-                continue;
-            }
-
-            if (itemStack.getTag() == null || removeItemStack.getTag() == null) {
-                continue;
-            }
-
-            if (!Objects.equals(itemStack.getTag().get(tag), removeItemStack.getTag().get(tag))) {
-                continue;
-            }
 
             itemStack.shrink(toRemove);
             totalRemoved += toRemove;
