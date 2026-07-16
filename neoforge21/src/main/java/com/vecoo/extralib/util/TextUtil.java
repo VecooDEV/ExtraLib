@@ -11,7 +11,7 @@ public final class TextUtil {
     @NotNull
     private static final Pattern HEX_PATTERN = Pattern.compile("&#([a-fA-F0-9]{6})");
     @NotNull
-    private static final Pattern URL_PATTERN = Pattern.compile("(?:https?://)?(?:[\\w-]+\\.)+[\\w-]+(?:/[\\w-./?%&=]*)?");
+    private static final Pattern URL_PATTERN = Pattern.compile("(?i)(?:https?://)?(?:[a-z0-9-]+\\.)+[a-z]{2,}(?:/[\\w-./?%&=]*)?");
 
     private TextUtil() {
     }
