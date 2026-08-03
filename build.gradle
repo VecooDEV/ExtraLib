@@ -18,20 +18,20 @@ subprojects {
         maven { url = "https://repo.opencollab.dev/maven-snapshots" }
     }
 
-    tasks.register('versionedRelease', Copy) {
+    tasks.register("versionedRelease", Copy) {
         group "build"
 
-        delete fileTree('../release/') {
+        delete fileTree("../release/") {
             include '**/*.jar'
         }
 
         from(fileTree("build/libs") {
-            include '*Forge.jar'
-            include '*NeoForge.jar'
-            include '*Fabric.jar'
+            include "*Forge.jar"
+            include "*NeoForge.jar"
+            include "*Fabric.jar"
         })
 
-        into('../release/')
+        into("../release/")
 
         doLast {
             delete "build/libs"

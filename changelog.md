@@ -1,1 +1,1 @@
-* added strict mode to count and remove itemstack.
+* fixed url parser.

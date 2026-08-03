@@ -1,7 +1,7 @@
 plugins {
-    id 'net.neoforged.moddev' version '2.0.141'
+    id 'net.neoforged.moddev' version '2.0.143'
     id 'com.modrinth.minotaur' version '2.9.0'
-    id 'com.gradleup.shadow' version '9.4.1'
+    id 'com.gradleup.shadow' version '9.6.1'
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
@@ -24,7 +24,6 @@ dependencies {
     shadow "com.mysql:mysql-connector-j:${mysql_connector_j}"
     shadow "org.mariadb.jdbc:mariadb-java-client:${mariadb_connector_j}"
     shadow "org.postgresql:postgresql:${postgresql_jdbc_driver}"
-    shadow "com.github.ben-manes.caffeine:caffeine:${caffeine}"
 }
 
 shadowJar {
@@ -49,6 +48,7 @@ shadowJar {
     exclude 'META-INF/maven/**'
     exclude 'META-INF/services/**'
     exclude 'META-INF/versions/**'
+    exclude 'META-INF/native-image/**'
     exclude 'META-INF/LICENSE/**'
     exclude 'META-INF/LICENSE.txt'
     exclude 'INFO_BIN/**'
@@ -56,9 +56,7 @@ shadowJar {
     exclude 'README/**'
     exclude 'LICENSE/**'
     exclude 'google/**'
-    exclude 'driver.properties'
-    exclude 'deprecated.properties'
-    exclude 'mariadb.properties'
+    exclude 'CONTRIBUTING.md'
 }
 
 processResources {
