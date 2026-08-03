@@ -6,13 +6,11 @@ import com.vecoo.extralib.loader.YamlLoader;
 import com.vecoo.extralib.scheduler.TaskTimer;
 import com.vecoo.extralib.ui.listener.GuiListener;
 import com.vecoo.extralib.util.ChatUtil;
-import net.minecraft.server.MinecraftServer;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
-import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import org.slf4j.Logger;
 
@@ -28,8 +26,6 @@ public class ExtraLib {
 
     private ServerConfig serverConfig;
 
-    private MinecraftServer server;
-
     public ExtraLib() {
         instance = this;
 
@@ -38,11 +34,6 @@ public class ExtraLib {
         NeoForge.EVENT_BUS.register(this);
         NeoForge.EVENT_BUS.register(new GuiListener());
         NeoForge.EVENT_BUS.register(new TaskTimer.EventHandler());
-    }
-
-    @SubscribeEvent
-    public void onServerStarting(ServerStartingEvent event) {
-        this.server = event.getServer();
     }
 
     @SubscribeEvent
@@ -71,6 +62,7 @@ public class ExtraLib {
         ChatUtil.broadcast("&8" + separator);
 
         if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {
+
             ChatUtil.broadcast("&#ff75ff&lСпа&#e08bff&lси&#c2a1ff&lбо &#a3b7ff&lза &#85cdff&lис&#5ce1ff&lпользование ExtraLib!");
             ChatUtil.broadcast("");
             ChatUtil.broadcast("&e&nОфициально поддерживаемые моды библиотеки:&r");
@@ -111,9 +103,5 @@ public class ExtraLib {
 
     public static Logger getLogger() {
         return LOGGER;
-    }
-
-    public MinecraftServer getServer() {
-        return instance.server;
     }
 }

@@ -5,7 +5,6 @@ import com.mojang.authlib.minecraft.MinecraftProfileTextures;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.authlib.yggdrasil.ProfileResult;
-import com.vecoo.extralib.ExtraLib;
 import com.vecoo.extralib.ui.api.GuiHelpers;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
@@ -15,6 +14,7 @@ import net.minecraft.core.component.TypedDataComponent;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Unit;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -25,6 +25,7 @@ import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.item.component.Unbreakable;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -177,7 +178,13 @@ public class AnimatedGuiElementBuilder implements GuiElementBuilderInterface<Ani
 
     @NotNull
     public AnimatedGuiElementBuilder enchant(@NotNull ResourceKey<Enchantment> enchantment, int level) {
-        return enchant(ExtraLib.getInstance().getServer().registryAccess(), enchantment, level);
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+
+        if (server == null) {
+            return this;
+        }
+
+        return enchant(server.registryAccess(), enchantment, level);
     }
 
     @NotNull
@@ -211,8 +218,14 @@ public class AnimatedGuiElementBuilder implements GuiElementBuilderInterface<Ani
 
     @NotNull
     public AnimatedGuiElementBuilder setSkullOwner(@NotNull GameProfile profile) {
-        if (ExtraLib.getInstance().getServer().getSessionService().getTextures(profile) == MinecraftProfileTextures.EMPTY) {
-            ProfileResult profileResult = ExtraLib.getInstance().getServer().getSessionService().fetchProfile(profile.getId(), false);
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+
+        if (server == null) {
+            return this;
+        }
+
+        if (server.getSessionService().getTextures(profile) == MinecraftProfileTextures.EMPTY) {
+            ProfileResult profileResult = server.getSessionService().fetchProfile(profile.getId(), false);
 
             if (profileResult != null) {
                 profile = profileResult.profile();

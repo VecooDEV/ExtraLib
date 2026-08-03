@@ -10,6 +10,7 @@ import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 /**
@@ -58,20 +59,16 @@ public class DatabaseUtil {
                         @NotNull String password, @NotNull String prefix, int maxPoolSize, int minimumIdle, long maxLifeTime,
                         long keepaliveTime, long connectionTimeout, boolean useSSL, int threadPool) {
         HikariConfig config = new HikariConfig();
-        String normalizedType = type.toLowerCase(Locale.ROOT);
+        String normalizedType = type.toLowerCase(Locale.ROOT).trim();
 
         try {
             switch (normalizedType) {
                 case "mysql" -> {
-                    try {
-                        Class.forName("com.vecoo.extralib.shade.mysql.cj.jdbc.Driver");
-                    } catch (ClassNotFoundException e) {
-                        throw new RuntimeException("MySQL driver not found.", e);
-                    }
+                    config.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
-                    String ssl = useSSL ? "" : "?useSSL=false";
+                    config.setJdbcUrl("jdbc:mysql://" + address + "/" + database);
 
-                    config.setJdbcUrl("jdbc:mysql://" + address + "/" + database + ssl);
+                    config.addDataSourceProperty("sslMode", useSSL ? "VERIFY_IDENTITY" : "DISABLED");
                     config.addDataSourceProperty("cachePrepStmts", "true");
                     config.addDataSourceProperty("prepStmtCacheSize", "250");
                     config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
@@ -79,15 +76,11 @@ public class DatabaseUtil {
                 }
 
                 case "mariadb" -> {
-                    try {
-                        Class.forName("com.vecoo.extralib.shade.mariadb.jdbc.Driver");
-                    } catch (ClassNotFoundException e) {
-                        throw new RuntimeException("MariaDB driver not found.", e);
-                    }
+                    config.setDriverClassName("org.mariadb.jdbc.Driver");
 
-                    String ssl = useSSL ? "" : "?useSSL=false";
+                    config.setJdbcUrl("jdbc:mariadb://" + address + "/" + database);
 
-                    config.setJdbcUrl("jdbc:mariadb://" + address + "/" + database + ssl);
+                    config.addDataSourceProperty("sslMode", useSSL ? "verify-full" : "disable");
                     config.addDataSourceProperty("cachePrepStmts", "true");
                     config.addDataSourceProperty("prepStmtCacheSize", "250");
                     config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
@@ -95,18 +88,15 @@ public class DatabaseUtil {
                 }
 
                 case "postgresql" -> {
-                    try {
-                        Class.forName("com.vecoo.extralib.shade.postgresql.Driver");
-                    } catch (ClassNotFoundException e) {
-                        throw new RuntimeException("PostgreSQL driver not found.", e);
-                    }
+                    config.setDriverClassName("org.postgresql.Driver");
 
-                    String ssl = useSSL ? "" : "?sslmode=disable";
+                    config.setJdbcUrl("jdbc:postgresql://" + address + "/" + database);
 
-                    config.setJdbcUrl("jdbc:postgresql://" + address + "/" + database + ssl);
+                    config.addDataSourceProperty("sslmode", useSSL ? "verify-full" : "disable");
+                    config.addDataSourceProperty("tcpKeepAlive", "true");
                 }
 
-                default -> throw new IllegalStateException("Unsupported database type.");
+                default -> throw new IllegalArgumentException("Unsupported database type: " + type);
             }
 
             config.setUsername(username);
@@ -133,20 +123,7 @@ public class DatabaseUtil {
      */
     @NotNull
     public DataSource getDataSource() {
-        if (this.dataSource == null) {
-            throw new IllegalStateException("Database not initialized.");
-        }
-
         return this.dataSource;
-    }
-
-    /**
-     * Checks whether the HikariCP data source has been successfully initialized.
-     *
-     * @return {@code true} if the data source is initialized, otherwise {@code false}
-     */
-    public boolean isDataSourceInitialized() {
-        return this.dataSource != null;
     }
 
     /**
@@ -154,11 +131,22 @@ public class DatabaseUtil {
      * Should be called when the plugin or server is shutting down.
      */
     public void close() {
-        if (this.dataSource != null) {
+        this.executor.shutdown();
+
+        try {
+            if (!this.executor.awaitTermination(10, TimeUnit.SECONDS)) {
+                this.executor.shutdownNow();
+
+                if (!this.executor.awaitTermination(5, TimeUnit.SECONDS)) {
+                    ExtraLib.getLogger().warn("Database executor did not terminate.");
+                }
+            }
+        } catch (InterruptedException e) {
+            this.executor.shutdownNow();
+            Thread.currentThread().interrupt();
+        } finally {
             this.dataSource.close();
         }
-
-        this.executor.shutdown();
     }
 
     /**
@@ -175,6 +163,7 @@ public class DatabaseUtil {
             }
         });
     }
+
     /**
      * Submits a task that returns a value asynchronously.
      *

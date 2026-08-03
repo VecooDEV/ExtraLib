@@ -5,10 +5,8 @@ import com.vecoo.extralib.config.ServerConfig;
 import com.vecoo.extralib.loader.YamlLoader;
 import com.vecoo.extralib.scheduler.TaskTimer;
 import com.vecoo.extralib.util.ChatUtil;
-import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.server.ServerStartedEvent;
-import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -27,8 +25,6 @@ public class ExtraLib {
 
     private ServerConfig serverConfig;
 
-    private MinecraftServer server;
-
     public ExtraLib() {
         instance = this;
 
@@ -36,11 +32,6 @@ public class ExtraLib {
 
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new TaskTimer.EventHandler());
-    }
-
-    @SubscribeEvent
-    public void onServerStarting(ServerStartingEvent event) {
-        this.server = event.getServer();
     }
 
     @SubscribeEvent
@@ -109,9 +100,5 @@ public class ExtraLib {
 
     public static Logger getLogger() {
         return LOGGER;
-    }
-
-    public MinecraftServer getServer() {
-        return instance.server;
     }
 }

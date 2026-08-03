@@ -1,9 +1,9 @@
 package com.vecoo.extralib.util;
 
 import com.mojang.brigadier.suggestion.SuggestionProvider;
-import com.vecoo.extralib.ExtraLib;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -23,9 +23,11 @@ public final class CommandUtil {
      * @param command the command to execute, without a leading slash
      */
     public static void executeCommand(@NotNull String command) {
-        MinecraftServer server = ExtraLib.getInstance().getServer();
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
 
-        server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), command);
+        if (server != null) {
+            server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), command);
+        }
     }
 
     /**

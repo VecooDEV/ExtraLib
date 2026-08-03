@@ -1,12 +1,12 @@
 package com.vecoo.extralib.util;
 
-import com.vecoo.extralib.ExtraLib;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,7 +49,7 @@ public final class PacketUtil {
      */
     public static void sendToPlayer(@Nullable UUID playerUUID, @NotNull Packet<?> packet) {
         if (playerUUID != null) {
-            MinecraftServer server = ExtraLib.getInstance().getServer();
+            MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
 
             if (server != null) {
                 sendToPlayer(server.getPlayerList().getPlayer(playerUUID), packet);

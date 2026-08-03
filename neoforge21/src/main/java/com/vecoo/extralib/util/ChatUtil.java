@@ -1,7 +1,8 @@
 package com.vecoo.extralib.util;
 
-import com.vecoo.extralib.ExtraLib;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.NotNull;
 
 public final class ChatUtil {
@@ -14,7 +15,13 @@ public final class ChatUtil {
      * @param message the component message to broadcast
      */
     public static void broadcast(@NotNull Component message) {
-        ExtraLib.getInstance().getServer().getPlayerList().broadcastSystemMessage(message, false);
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+
+        if (server == null) {
+            return;
+        }
+
+        server.getPlayerList().broadcastSystemMessage(message, false);
     }
 
     /**
@@ -26,6 +33,16 @@ public final class ChatUtil {
         broadcast(TextUtil.formatMessage(message));
     }
 
+    public static void clickableBroadcastCommand(@NotNull Component message, @NotNull String command) {
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+
+        if (server == null) {
+            return;
+        }
+
+        server.getPlayerList().broadcastSystemMessage(TextUtil.clickableMessageCommand(message, command), false);
+    }
+
     /**
      * Broadcasts a clickable command message to all online players.
      *
@@ -33,6 +50,6 @@ public final class ChatUtil {
      * @param command the command to execute when clicked
      */
     public static void clickableBroadcastCommand(@NotNull String message, @NotNull String command) {
-        ExtraLib.getInstance().getServer().getPlayerList().broadcastSystemMessage(TextUtil.clickableMessageCommand(message, command), false);
+        clickableBroadcastCommand(TextUtil.formatMessage(message), command);
     }
 }

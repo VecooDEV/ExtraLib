@@ -26,6 +26,10 @@ public final class ChatUtil {
         broadcast(TextUtil.formatMessage(message));
     }
 
+    public static void clickableBroadcastCommand(@NotNull Component message, @NotNull String command) {
+        ExtraLib.getInstance().getServer().getPlayerList().broadcastSystemMessage(TextUtil.clickableMessageCommand(message, command), false);
+    }
+
     /**
      * Broadcasts a clickable command message to all online players.
      *
@@ -33,6 +37,6 @@ public final class ChatUtil {
      * @param command the command to execute when clicked
      */
     public static void clickableBroadcastCommand(@NotNull String message, @NotNull String command) {
-        ExtraLib.getInstance().getServer().getPlayerList().broadcastSystemMessage(TextUtil.clickableMessageCommand(message, command), false);
+        clickableBroadcastCommand(TextUtil.formatMessage(message), command);
     }
 }

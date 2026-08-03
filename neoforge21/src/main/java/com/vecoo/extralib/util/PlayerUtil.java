@@ -20,6 +20,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ResolvableProfile;
 import net.neoforged.neoforge.common.UsernameCache;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -67,9 +68,9 @@ public final class PlayerUtil {
      */
     @NotNull
     public static String getPlayerName(@NotNull UUID playerUUID) {
-        String name = UsernameCache.getLastKnownUsername(playerUUID);
+        String playerName = UsernameCache.getLastKnownUsername(playerUUID);
 
-        return name != null ? name : UNKNOWN_PLAYER;
+        return playerName != null ? playerName : UNKNOWN_PLAYER;
     }
 
     /**
@@ -83,10 +84,14 @@ public final class PlayerUtil {
      * @param message    the message to send
      */
     public static void sendMessageUUID(@NotNull UUID playerUUID, @NotNull Component message) {
-        ServerPlayer player = ExtraLib.getInstance().getServer().getPlayerList().getPlayer(playerUUID);
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
 
-        if (player != null) {
-            player.sendSystemMessage(message);
+        if (server != null) {
+            ServerPlayer player = server.getPlayerList().getPlayer(playerUUID);
+
+            if (player != null) {
+                player.sendSystemMessage(message);
+            }
         }
     }
 
@@ -101,10 +106,14 @@ public final class PlayerUtil {
      * @param message    the message to send
      */
     public static void sendMessageUUID(@NotNull UUID playerUUID, @NotNull String message) {
-        ServerPlayer player = ExtraLib.getInstance().getServer().getPlayerList().getPlayer(playerUUID);
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
 
-        if (player != null) {
-            player.sendSystemMessage(TextUtil.formatMessage(message));
+        if (server != null) {
+            ServerPlayer player = server.getPlayerList().getPlayer(playerUUID);
+
+            if (player != null) {
+                player.sendSystemMessage(TextUtil.formatMessage(message));
+            }
         }
     }
 
@@ -116,7 +125,13 @@ public final class PlayerUtil {
      */
     @Nullable
     public static ServerPlayer findPlayer(@NotNull UUID playerUUID) {
-        return ExtraLib.getInstance().getServer().getPlayerList().getPlayer(playerUUID);
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+
+        if (server == null) {
+            return null;
+        }
+
+        return server.getPlayerList().getPlayer(playerUUID);
     }
 
     /**
@@ -127,7 +142,13 @@ public final class PlayerUtil {
      */
     @Nullable
     public static ServerPlayer findPlayer(@NotNull String playerName) {
-        return ExtraLib.getInstance().getServer().getPlayerList().getPlayerByName(playerName);
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+
+        if (server == null) {
+            return null;
+        }
+
+        return server.getPlayerList().getPlayerByName(playerName);
     }
 
     /**
@@ -139,9 +160,14 @@ public final class PlayerUtil {
      * @param sourceName the name of the player or source
      * @return the command source stack
      */
-    @NotNull
+    @Nullable
     public static CommandSourceStack getSource(@NotNull String sourceName) {
-        MinecraftServer server = ExtraLib.getInstance().getServer();
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+
+        if (server == null) {
+            return null;
+        }
+
         ServerPlayer player = server.getPlayerList().getPlayerByName(sourceName);
 
         return player != null ? player.createCommandSourceStack() : server.createCommandSourceStack();
@@ -154,8 +180,12 @@ public final class PlayerUtil {
      * @param command the command string
      */
     public static void executeCommand(@Nullable Player player, @NotNull String command) {
-        if (player != null) {
-            ExtraLib.getInstance().getServer().getCommands().performPrefixedCommand(player.createCommandSourceStack(), command);
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+
+        if (server != null) {
+            if (player != null) {
+                server.getCommands().performPrefixedCommand(player.createCommandSourceStack(), command);
+            }
         }
     }
 
@@ -171,11 +201,17 @@ public final class PlayerUtil {
      */
     @NotNull
     public static ItemStack getPlayerSkull(@NotNull UUID playerUUID, @NotNull String playerName) {
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+
+        if (server == null) {
+            return Items.BEDROCK.getDefaultInstance();
+        }
+
         ItemStack itemStack = Items.PLAYER_HEAD.getDefaultInstance();
 
         if (!playerName.equals(UNKNOWN_PLAYER)) {
             GameProfile profile = new GameProfile(playerUUID, playerName);
-            ProfileResult profileResult = ExtraLib.getInstance().getServer().getSessionService().fetchProfile(profile.getId(), false);
+            ProfileResult profileResult = server.getSessionService().fetchProfile(profile.getId(), false);
 
             if (profileResult != null) {
                 profile = profileResult.profile();
@@ -286,9 +322,9 @@ public final class PlayerUtil {
 
         int totalRemoved = 0;
 
-        InventoryMenu playerContainer = player.inventoryMenu;
+        InventoryMenu inventoryMenu = player.inventoryMenu;
 
-        for (ItemStack itemStack : playerContainer.getItems()) {
+        for (ItemStack itemStack : inventoryMenu.getItems()) {
             if (totalRemoved >= amount) {
                 break;
             }
@@ -313,7 +349,7 @@ public final class PlayerUtil {
             totalRemoved += toRemove;
         }
 
-        playerContainer.broadcastChanges();
+        inventoryMenu.broadcastChanges();
     }
 
     /**
@@ -333,9 +369,9 @@ public final class PlayerUtil {
 
         int totalRemoved = 0;
 
-        InventoryMenu playerContainer = player.inventoryMenu;
+        InventoryMenu inventoryMenu = player.inventoryMenu;
 
-        for (ItemStack itemStack : playerContainer.getItems()) {
+        for (ItemStack itemStack : inventoryMenu.getItems()) {
             if (totalRemoved >= amount) {
                 break;
             }
@@ -364,7 +400,7 @@ public final class PlayerUtil {
             totalRemoved += toRemove;
         }
 
-        playerContainer.broadcastChanges();
+        inventoryMenu.broadcastChanges();
     }
 
     public static void giveItem(@Nullable Player player, @NotNull ItemStack itemStack) {
@@ -377,13 +413,13 @@ public final class PlayerUtil {
             ItemEntity itemEntity = player.drop(itemStack, false);
 
             if (itemEntity != null) {
-                itemEntity.setNoPickUpDelay();
                 itemEntity.setTarget(player.getUUID());
+                itemEntity.setNoPickUpDelay();
             }
+        } else {
+            playSound(player, SoundEvents.ITEM_PICKUP, 0.2F);
+            player.containerMenu.broadcastChanges();
         }
-
-        playSound(player, SoundEvents.ITEM_PICKUP);
-        player.containerMenu.broadcastChanges();
     }
 
     /**
@@ -396,12 +432,22 @@ public final class PlayerUtil {
         return player != null && player.getInventory().getFreeSlot() != -1;
     }
 
+    @Deprecated
     public static void playSound(@Nullable Player player, @NotNull SoundEvent soundEvent) {
         if (player != null) {
             RandomSource random = player.level().getRandom();
 
             player.level().playSound(null, player.getX(), player.getY(), player.getZ(), soundEvent,
                     SoundSource.PLAYERS, 0.2F, (random.nextFloat() - random.nextFloat() * 0.7F + 1.0F) * 2.0F);
+        }
+    }
+
+    public static void playSound(@Nullable Player player, @NotNull SoundEvent soundEvent, float volume) {
+        if (player != null) {
+            RandomSource random = player.level().getRandom();
+
+            player.level().playSound(null, player.getX(), player.getY(), player.getZ(), soundEvent,
+                    SoundSource.PLAYERS, volume, (random.nextFloat() - random.nextFloat() * 0.7F + 1.0F) * 2.0F);
         }
     }
 }

@@ -1,6 +1,5 @@
 package com.vecoo.extralib.util;
 
-import com.vecoo.extralib.ExtraLib;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -10,6 +9,7 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.phys.AABB;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,9 +30,13 @@ public final class WorldUtil {
      */
     @Nullable
     public static ServerLevel findLevelByName(@NotNull String levelName) {
-        for (ServerLevel level : ExtraLib.getInstance().getServer().getAllLevels()) {
-            if (level.dimension().location().getPath().equals(levelName.toLowerCase(Locale.ROOT))) {
-                return level;
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+
+        if (server != null) {
+            for (ServerLevel level : server.getAllLevels()) {
+                if (level.dimension().location().getPath().equals(levelName.toLowerCase(Locale.ROOT))) {
+                    return level;
+                }
             }
         }
 

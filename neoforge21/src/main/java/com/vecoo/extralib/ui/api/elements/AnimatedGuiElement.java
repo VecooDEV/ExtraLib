@@ -1,9 +1,11 @@
 package com.vecoo.extralib.ui.api.elements;
 
-import com.vecoo.extralib.ExtraLib;
 import com.vecoo.extralib.ui.api.gui.GuiInterface;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class AnimatedGuiElement implements GuiElementInterface {
     protected ItemStack[] items;
@@ -43,9 +45,16 @@ public class AnimatedGuiElement implements GuiElementInterface {
     }
 
     @Override
+    @Nullable
     public ItemStack getItemStackForDisplay(@NotNull GuiInterface gui) {
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+
+        if (server == null) {
+            return null;
+        }
+
         int copyFrame = this.frame;
-        int tickCount = ExtraLib.getInstance().getServer().getTickCount();
+        int tickCount = server.getTickCount();
 
         if (this.lastTick != tickCount) {
             this.tick += 1;
