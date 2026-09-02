@@ -3,6 +3,7 @@ package com.vecoo.extralib;
 import com.mojang.logging.LogUtils;
 import com.vecoo.extralib.config.ServerConfig;
 import com.vecoo.extralib.loader.YamlLoader;
+import com.vecoo.extralib.scheduler.ResetScheduler;
 import com.vecoo.extralib.scheduler.TaskTimer;
 import com.vecoo.extralib.util.ChatUtil;
 import net.fabricmc.api.ModInitializer;
@@ -37,7 +38,10 @@ public class ExtraLib implements ModInitializer {
             }
         });
         ServerTickEvents.END_SERVER_TICK.register(server -> TaskTimer.onServerTickEnd());
-        ServerLifecycleEvents.SERVER_STOPPING.register(server -> TaskTimer.cancelAll());
+        ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+            TaskTimer.cancelAll();
+            ResetScheduler.shutdown();
+        });
     }
 
     public void loadConfig() {

@@ -3,6 +3,7 @@ package com.vecoo.extralib;
 import com.mojang.logging.LogUtils;
 import com.vecoo.extralib.config.ServerConfig;
 import com.vecoo.extralib.loader.YamlLoader;
+import com.vecoo.extralib.scheduler.ResetScheduler;
 import com.vecoo.extralib.scheduler.TaskTimer;
 import com.vecoo.extralib.ui.listener.GuiListener;
 import com.vecoo.extralib.util.ChatUtil;
@@ -46,6 +47,7 @@ public class ExtraLib {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onServerStopping(ServerStoppingEvent event) {
         TaskTimer.cancelAll();
+        ResetScheduler.shutdown();
     }
 
     public void loadConfig() {
