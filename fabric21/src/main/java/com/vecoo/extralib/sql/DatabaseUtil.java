@@ -49,7 +49,7 @@ public class DatabaseUtil {
      * @param maxPoolSize       maximum number of active connections in the pool
      * @param minimumIdle       minimum number of idle connections in the pool
      * @param maxLifeTime       maximum lifetime of a connection before it is recycled (ms)
-     * @param keepaliveTime     how often the pool checks for idle connections (ms)
+     * @param keepaliveTime     interval for keeping idle connections alive (ms)
      * @param connectionTimeout maximum wait time when obtaining a connection (ms)
      * @param useSSL            whether SSL should be used for the connection
      * @param threadPool        size of the async executor thread pool
@@ -58,61 +58,73 @@ public class DatabaseUtil {
     public DatabaseUtil(@NotNull String type, @NotNull String address, @NotNull String database, @NotNull String username,
                         @NotNull String password, @NotNull String prefix, int maxPoolSize, int minimumIdle, long maxLifeTime,
                         long keepaliveTime, long connectionTimeout, boolean useSSL, int threadPool) {
+        if (maxPoolSize <= 0) {
+            throw new IllegalArgumentException("maxPoolSize must be greater than 0.");
+        }
+
+        if (minimumIdle < 0 || minimumIdle > maxPoolSize) {
+            throw new IllegalArgumentException("minimumIdle must be between 0 and maxPoolSize.");
+        }
+
+        if (threadPool <= 0) {
+            throw new IllegalArgumentException("threadPool must be greater than 0.");
+        }
+
+        if (keepaliveTime > 0 && keepaliveTime >= maxLifeTime) {
+            throw new IllegalArgumentException("keepaliveTime must be less than maxLifeTime.");
+        }
+
         HikariConfig config = new HikariConfig();
         String normalizedType = type.toLowerCase(Locale.ROOT).trim();
 
-        try {
-            switch (normalizedType) {
-                case "mysql" -> {
-                    config.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        switch (normalizedType) {
+            case "mysql" -> {
+                config.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
-                    config.setJdbcUrl("jdbc:mysql://" + address + "/" + database);
+                config.setJdbcUrl("jdbc:mysql://" + address + "/" + database);
 
-                    config.addDataSourceProperty("sslMode", useSSL ? "VERIFY_IDENTITY" : "DISABLED");
-                    config.addDataSourceProperty("cachePrepStmts", "true");
-                    config.addDataSourceProperty("prepStmtCacheSize", "250");
-                    config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-                    config.addDataSourceProperty("useServerPrepStmts", "true");
-                }
-
-                case "mariadb" -> {
-                    config.setDriverClassName("org.mariadb.jdbc.Driver");
-
-                    config.setJdbcUrl("jdbc:mariadb://" + address + "/" + database);
-
-                    config.addDataSourceProperty("sslMode", useSSL ? "verify-full" : "disable");
-                    config.addDataSourceProperty("cachePrepStmts", "true");
-                    config.addDataSourceProperty("prepStmtCacheSize", "250");
-                    config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-                    config.addDataSourceProperty("useServerPrepStmts", "true");
-                }
-
-                case "postgresql" -> {
-                    config.setDriverClassName("org.postgresql.Driver");
-
-                    config.setJdbcUrl("jdbc:postgresql://" + address + "/" + database);
-
-                    config.addDataSourceProperty("sslmode", useSSL ? "verify-full" : "disable");
-                    config.addDataSourceProperty("tcpKeepAlive", "true");
-                }
-
-                default -> throw new IllegalArgumentException("Unsupported database type: " + type);
+                config.addDataSourceProperty("sslMode", useSSL ? "VERIFY_IDENTITY" : "DISABLED");
+                config.addDataSourceProperty("cachePrepStmts", "true");
+                config.addDataSourceProperty("prepStmtCacheSize", "250");
+                config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+                config.addDataSourceProperty("useServerPrepStmts", "true");
             }
 
-            config.setUsername(username);
-            config.setPassword(password);
-            config.setPoolName(prefix);
-            config.setMaximumPoolSize(maxPoolSize);
-            config.setMinimumIdle(minimumIdle);
-            config.setMaxLifetime(maxLifeTime);
-            config.setKeepaliveTime(keepaliveTime);
-            config.setConnectionTimeout(connectionTimeout);
+            case "mariadb" -> {
+                config.setDriverClassName("org.mariadb.jdbc.Driver");
 
-            this.dataSource = new HikariDataSource(config);
-            this.executor = Executors.newFixedThreadPool(threadPool);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+                config.setJdbcUrl("jdbc:mariadb://" + address + "/" + database);
+
+                config.addDataSourceProperty("sslMode", useSSL ? "verify-full" : "disable");
+                config.addDataSourceProperty("cachePrepStmts", "true");
+                config.addDataSourceProperty("prepStmtCacheSize", "250");
+                config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+                config.addDataSourceProperty("useServerPrepStmts", "true");
+            }
+
+            case "postgresql" -> {
+                config.setDriverClassName("org.postgresql.Driver");
+
+                config.setJdbcUrl("jdbc:postgresql://" + address + "/" + database);
+
+                config.addDataSourceProperty("sslmode", useSSL ? "verify-full" : "disable");
+                config.addDataSourceProperty("tcpKeepAlive", "true");
+            }
+
+            default -> throw new IllegalArgumentException("Unsupported database type: " + type);
         }
+
+        config.setUsername(username);
+        config.setPassword(password);
+        config.setPoolName(prefix);
+        config.setMaximumPoolSize(maxPoolSize);
+        config.setMinimumIdle(minimumIdle);
+        config.setMaxLifetime(maxLifeTime);
+        config.setKeepaliveTime(keepaliveTime);
+        config.setConnectionTimeout(connectionTimeout);
+
+        this.dataSource = new HikariDataSource(config);
+        this.executor = Executors.newFixedThreadPool(threadPool);
     }
 
     /**
@@ -155,12 +167,10 @@ public class DatabaseUtil {
      * @param task the task to execute asynchronously
      */
     public void async(@NotNull Runnable task) {
-        this.executor.execute(() -> {
-            try {
-                task.run();
-            } catch (Exception e) {
-                ExtraLib.getLogger().error("Error sql async method.", e);
-            }
+        runAsync(task).exceptionally(throwable -> {
+            ExtraLib.getLogger().error("An error occurred while executing asynchronous database task.", throwable);
+
+            return null;
         });
     }
 
