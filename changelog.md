@@ -1,3 +1,1 @@
-* Update depends.
-* Added scheduler timer.
-* Improve sql settings.
+* change set style text to with and added new text method.
