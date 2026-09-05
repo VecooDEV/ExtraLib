@@ -51,19 +51,6 @@ public final class TextUtil {
     }
 
     /**
-     * Creates a clickable {@link Component} that runs a command when clicked.
-     *
-     * @param message the text of the message
-     * @param command the command to run when clicked (e.g., "/say hello")
-     * @return a {@link Component} with click action applied
-     */
-    @NotNull
-    public static Component clickableMessageCommand(@NotNull String message, @NotNull String command) {
-        return Component.literal(formatMessage(message).getString()).setStyle(Style.EMPTY.withClickEvent(
-                new ClickEvent(ClickEvent.Action.RUN_COMMAND, command)));
-    }
-
-    /**
      * Creates a clickable {@link MutableComponent} that runs a command when clicked.
      *
      * @param message the {@link MutableComponent} message
@@ -72,21 +59,19 @@ public final class TextUtil {
      */
     @NotNull
     public static Component clickableMessageCommand(@NotNull Component message, @NotNull String command) {
-        return message.copy().setStyle(Style.EMPTY.withClickEvent(
-                new ClickEvent(ClickEvent.Action.RUN_COMMAND, command)));
+        return message.copy().withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command)));
     }
 
     /**
-     * Creates a clickable {@link Component} that opens a URL when clicked.
+     * Creates a clickable {@link Component} that runs a command when clicked.
      *
      * @param message the text of the message
-     * @param url     the URL to open
+     * @param command the command to run when clicked (e.g., "/say hello")
      * @return a {@link Component} with click action applied
      */
     @NotNull
-    public static Component clickableMessageURL(@NotNull String message, @NotNull String url) {
-        return Component.literal(formatMessage(message).getString()).setStyle(Style.EMPTY.withClickEvent(
-                new ClickEvent(ClickEvent.Action.OPEN_URL, url)));
+    public static Component clickableMessageCommand(@NotNull String message, @NotNull String command) {
+        return clickableMessageCommand(formatMessage(message), command);
     }
 
     /**
@@ -96,6 +81,7 @@ public final class TextUtil {
      * @param url     the URL to open
      * @return a new {@link MutableComponent} with click action applied
      */
+    @Deprecated(forRemoval = true)
     @NotNull
     public static Component clickableMessageURL(@NotNull Component message, @NotNull String url) {
         return message.copy().setStyle(Style.EMPTY.withClickEvent(
@@ -103,16 +89,16 @@ public final class TextUtil {
     }
 
     /**
-     * Creates a {@link Component} with a hover text when the mouse hovers over the message.
+     * Creates a clickable {@link Component} that opens a URL when clicked.
      *
      * @param message the text of the message
-     * @param text    the hover text to display
-     * @return a {@link Component} with hover event applied
+     * @param url     the URL to open
+     * @return a {@link Component} with click action applied
      */
+    @Deprecated(forRemoval = true)
     @NotNull
-    public static Component hoverMessageText(@NotNull String message, @NotNull String text) {
-        return Component.literal(formatMessage(message).getString()).setStyle(Style.EMPTY.withHoverEvent(
-                new HoverEvent(HoverEvent.Action.SHOW_TEXT, formatMessage(text))));
+    public static Component clickableMessageURL(@NotNull String message, @NotNull String url) {
+        return clickableMessageURL(formatMessage(message), url);
     }
 
     /**
@@ -124,8 +110,19 @@ public final class TextUtil {
      */
     @NotNull
     public static Component hoverMessageText(@NotNull Component message, @NotNull String text) {
-        return message.copy().setStyle(Style.EMPTY.withHoverEvent(
-                new HoverEvent(HoverEvent.Action.SHOW_TEXT, formatMessage(text))));
+        return message.copy().withStyle(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, formatMessage(text))));
+    }
+
+    /**
+     * Creates a {@link Component} with a hover text when the mouse hovers over the message.
+     *
+     * @param message the text of the message
+     * @param text    the hover text to display
+     * @return a {@link Component} with hover event applied
+     */
+    @NotNull
+    public static Component hoverMessageText(@NotNull String message, @NotNull String text) {
+        return hoverMessageText(formatMessage(message), text);
     }
 
     @NotNull

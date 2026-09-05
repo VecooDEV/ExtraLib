@@ -43,6 +43,16 @@ public final class ChatUtil {
         server.getPlayerList().broadcastSystemMessage(TextUtil.clickableMessageCommand(message, command), false);
     }
 
+    public static void hoverBroadcastCommand(@NotNull Component message, @NotNull String text) {
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+
+        if (server == null) {
+            return;
+        }
+
+        server.getPlayerList().broadcastSystemMessage(TextUtil.hoverMessageText(message, text), false);
+    }
+
     /**
      * Broadcasts a clickable command message to all online players.
      *
@@ -51,5 +61,9 @@ public final class ChatUtil {
      */
     public static void clickableBroadcastCommand(@NotNull String message, @NotNull String command) {
         clickableBroadcastCommand(TextUtil.formatMessage(message), command);
+    }
+
+    public static void hoverBroadcastCommand(@NotNull String message, @NotNull String text) {
+        hoverBroadcastCommand(TextUtil.formatMessage(message), text);
     }
 }
