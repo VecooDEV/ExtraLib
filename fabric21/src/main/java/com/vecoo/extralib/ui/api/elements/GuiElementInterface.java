@@ -8,8 +8,7 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 public interface GuiElementInterface {
-    ClickCallback EMPTY_CALLBACK = (index, type, action, gui) -> {
-    };
+    ClickCallback EMPTY_CALLBACK = (index, type, action, gui) -> {};
 
     ItemStack getItemStack();
 
@@ -25,7 +24,6 @@ public interface GuiElementInterface {
     }
 
     default void onRemoved(@NotNull SlotGuiInterface gui) {
-
     }
 
     @FunctionalInterface

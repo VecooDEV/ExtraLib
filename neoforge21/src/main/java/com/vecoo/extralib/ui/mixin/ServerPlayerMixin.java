@@ -27,7 +27,6 @@ import java.util.function.Consumer;
 public abstract class ServerPlayerMixin extends Player implements PlayerExtensions {
     @Shadow
     public abstract void doCloseContainer();
-
     @Unique
     private boolean extraLib$ignoreNext = false;
 
@@ -52,7 +51,8 @@ public abstract class ServerPlayerMixin extends Player implements PlayerExtensio
     private void closeContainer(CallbackInfo ci) {
         if (this.extraLib$ignoreNext) {
             this.extraLib$ignoreNext = false;
-            this.doCloseContainer();
+
+            doCloseContainer();
             ci.cancel();
         }
     }

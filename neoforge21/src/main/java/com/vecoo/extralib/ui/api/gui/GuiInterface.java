@@ -64,18 +64,18 @@ public interface GuiInterface {
     }
 
     default void sendProperty(@NotNull ScreenProperty property, int value) {
-        if (!property.validFor(this.getType())) {
-            throw new IllegalArgumentException(String.format("The property '%s' is not valid for the handler '%s'", property.name(), BuiltInRegistries.MENU.getId(this.getType())));
+        if (!property.validFor(getType())) {
+            throw new IllegalArgumentException(String.format("The property '%s' is not valid for the handler '%s'", property.name(), BuiltInRegistries.MENU.getId(getType())));
         }
 
-        if (this.isOpen()) {
-            this.getPlayer().connection.send(new ClientboundContainerSetDataPacket(this.getSyncId(), property.id(), value));
+        if (isOpen()) {
+            getPlayer().connection.send(new ClientboundContainerSetDataPacket(getSyncId(), property.id(), value));
         }
     }
 
     default void sendRawProperty(int id, int value) {
-        if (this.isOpen()) {
-            this.getPlayer().connection.send(new ClientboundContainerSetDataPacket(this.getSyncId(), id, value));
+        if (isOpen()) {
+            getPlayer().connection.send(new ClientboundContainerSetDataPacket(getSyncId(), id, value));
         }
     }
 

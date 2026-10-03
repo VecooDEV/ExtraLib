@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 public class SimpleGui extends BaseSlotGui {
-    public static final Map<UUID, Runnable> pendingOpens = new HashMap<>();
+    public static final Map<UUID, Runnable> PENDING_OPENS = new HashMap<>();
 
     protected final int width;
     protected final int height;
@@ -32,7 +32,7 @@ public class SimpleGui extends BaseSlotGui {
     protected VirtualScreenHandler screenHandler = null;
     protected int syncId = -1;
     protected boolean hasRedirects = false;
-    private Component title = null;
+    private Component title = Component.empty();
 
     public SimpleGui(@NotNull MenuType<?> type, @NotNull ServerPlayer player, boolean manipulatePlayerSlots) {
         super(player, GuiHelpers.getHeight(type) * GuiHelpers.getWidth(type) + (manipulatePlayerSlots ? 36 : 0));
@@ -125,8 +125,13 @@ public class SimpleGui extends BaseSlotGui {
 
     protected boolean sendGui() {
         this.reOpen = true;
-        OptionalInt temp = this.player.openMenu(ScreenHandlerFactory.ofDefault(this));
-        this.reOpen = false;
+        OptionalInt temp;
+
+        try {
+            temp = this.player.openMenu(ScreenHandlerFactory.ofDefault(this));
+        } finally {
+            this.reOpen = false;
+        }
 
         if (temp.isPresent()) {
             this.syncId = temp.getAsInt();
@@ -161,13 +166,23 @@ public class SimpleGui extends BaseSlotGui {
         }
     }
 
+    @Deprecated
     public void safeOpen(@NotNull ServerPlayer player) {
         if (player.containerMenu != player.inventoryMenu) {
-            pendingOpens.put(player.getUUID(), this::open);
+            PENDING_OPENS.put(player.getUUID(), this::open);
             return;
         }
 
         open();
+    }
+
+    public void safeOpen() {
+        if (this.player.containerMenu != this.player.inventoryMenu) {
+            PENDING_OPENS.put(this.player.getUUID(), this::open);
+            return;
+        }
+
+        this.open();
     }
 
     @Override
@@ -196,15 +211,19 @@ public class SimpleGui extends BaseSlotGui {
 
     @Override
     public void close(boolean screenHandlerIsClosed) {
-        if ((this.isOpen() || screenHandlerIsClosed) && !this.reOpen) {
+        if ((isOpen() || screenHandlerIsClosed) && !this.reOpen) {
             if (!screenHandlerIsClosed && this.player.containerMenu == this.screenHandler) {
                 this.player.closeContainer();
-                this.screenHandler = null;
             }
 
-            this.player.containerMenu.broadcastChanges();
+            if (this.screenHandler != null) {
+                this.screenHandler.broadcastChanges();
+            }
 
-            this.onClose();
+            this.screenHandler = null;
+            this.syncId = -1;
+
+            onClose();
         } else {
             this.reOpen = false;
         }
@@ -226,10 +245,10 @@ public class SimpleGui extends BaseSlotGui {
     }
 
     public void setSlot(int index, @NotNull ItemStack itemStack, @NotNull GuiElementInterface.ItemClickCallback callback) {
-        this.setSlot(index, new GuiElement(itemStack, callback));
+        setSlot(index, new GuiElement(itemStack, callback));
     }
 
     public void addSlot(@NotNull ItemStack itemStack, @NotNull GuiElementInterface.ItemClickCallback callback) {
-        this.addSlot(new GuiElement(itemStack, callback));
+        addSlot(new GuiElement(itemStack, callback));
     }
 }

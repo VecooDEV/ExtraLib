@@ -24,7 +24,7 @@ public final class SimpleGuiBuilder implements SlotHolder {
     private final int sizeCont;
     private boolean lockPlayerInventory = false;
     private boolean hasRedirects = false;
-    private Component title = null;
+    private Component title = Component.empty();
 
     public SimpleGuiBuilder(@NotNull MenuType<?> type, boolean manipulatePlayerSlots) {
         this.height = GuiHelpers.getHeight(type);
@@ -44,7 +44,7 @@ public final class SimpleGuiBuilder implements SlotHolder {
     public SimpleGui build(@NotNull ServerPlayer player) {
         SimpleGui gui = new SimpleGui(this.type, player, this.includePlayer);
         gui.setTitle(this.title);
-        gui.setLockPlayerInventory(true);
+        gui.setLockPlayerInventory(this.lockPlayerInventory);
 
         int pos = 0;
 
@@ -84,7 +84,7 @@ public final class SimpleGuiBuilder implements SlotHolder {
     }
 
     public void setSlot(int index, @NotNull ItemStack itemStack) {
-        this.setSlot(index, new GuiElement(itemStack, GuiElementInterface.EMPTY_CALLBACK));
+        setSlot(index, new GuiElement(itemStack, GuiElementInterface.EMPTY_CALLBACK));
     }
 
     public void addSlot(@NotNull ItemStack itemStack) {
@@ -92,27 +92,27 @@ public final class SimpleGuiBuilder implements SlotHolder {
     }
 
     public void setSlot(int index, @NotNull GuiElementBuilderInterface<?> element) {
-        this.setSlot(index, element.build());
+        setSlot(index, element.build());
     }
 
     public void addSlot(@NotNull GuiElementBuilderInterface<?> element) {
-        this.setSlot(this.getFirstEmptySlot(), element.build());
+        setSlot(this.getFirstEmptySlot(), element.build());
     }
 
     public void setSlot(int index, @NotNull ItemStack itemStack, @NotNull GuiElement.ClickCallback callback) {
-        this.setSlot(index, new GuiElement(itemStack, callback));
+        setSlot(index, new GuiElement(itemStack, callback));
     }
 
     public void setSlot(int index, @NotNull ItemStack itemStack, @NotNull GuiElementInterface.ItemClickCallback callback) {
-        this.setSlot(index, new GuiElement(itemStack, callback));
+        setSlot(index, new GuiElement(itemStack, callback));
     }
 
     public void addSlot(@NotNull ItemStack itemStack, @NotNull GuiElement.ClickCallback callback) {
-        this.setSlot(this.getFirstEmptySlot(), new GuiElement(itemStack, callback));
+        setSlot(this.getFirstEmptySlot(), new GuiElement(itemStack, callback));
     }
 
     public void addSlot(@NotNull ItemStack itemStack, @NotNull GuiElementInterface.ItemClickCallback callback) {
-        this.setSlot(this.getFirstEmptySlot(), new GuiElement(itemStack, callback));
+        setSlot(this.getFirstEmptySlot(), new GuiElement(itemStack, callback));
     }
 
     public void setSlotRedirect(int index, @NotNull Slot slot) {

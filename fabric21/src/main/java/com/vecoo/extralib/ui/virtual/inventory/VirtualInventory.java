@@ -37,7 +37,7 @@ public record VirtualInventory() implements Container {
     }
 
     @Override
-    public void setItem(int index, @NotNull ItemStack stack) {
+    public void setItem(int index, @NotNull ItemStack itemStack) {
     }
 
     @Override

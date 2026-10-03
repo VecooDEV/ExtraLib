@@ -68,17 +68,17 @@ public interface SlotGuiInterface extends SlotHolder, GuiInterface {
 
     default ItemStack quickMoveStack(int index) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = this.getSlotRedirectOrPlayer(index);
+        Slot slot = getSlotRedirectOrPlayer(index);
 
         if (slot != null && slot.hasItem() && !(slot instanceof VirtualSlot)) {
             ItemStack itemStack2 = slot.getItem();
             itemStack = itemStack2.copy();
 
-            if (index < this.getVirtualSize()) {
-                if (!this.insertItem(itemStack2, this.getVirtualSize(), this.getVirtualSize() + 9 * 4, true)) {
+            if (index < getVirtualSize()) {
+                if (!insertItem(itemStack2, getVirtualSize(), getVirtualSize() + 9 * 4, true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.insertItem(itemStack2, 0, this.getVirtualSize(), false)) {
+            } else if (!insertItem(itemStack2, 0, getVirtualSize(), false)) {
                 return ItemStack.EMPTY;
             }
             if (itemStack2.isEmpty()) {
@@ -103,7 +103,7 @@ public interface SlotGuiInterface extends SlotHolder, GuiInterface {
 
         if (stack.isStackable()) {
             while (!stack.isEmpty() && (fromLast ? i >= startIndex : i < endIndex)) {
-                Slot slot = this.getSlotRedirectOrPlayer(i);
+                Slot slot = getSlotRedirectOrPlayer(i);
 
                 if (slot != null && slot.mayPlace(stack)) {
                     ItemStack stackInSlot = slot.getItem();
@@ -142,7 +142,7 @@ public interface SlotGuiInterface extends SlotHolder, GuiInterface {
             }
 
             while (fromLast ? i >= startIndex : i < endIndex) {
-                Slot slot = this.getSlotRedirectOrPlayer(i);
+                Slot slot = getSlotRedirectOrPlayer(i);
 
                 if (slot != null && slot.mayPlace(stack)) {
                     ItemStack stackInSlot = slot.getItem();

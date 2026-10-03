@@ -1,82 +1,88 @@
 package com.vecoo.extralib.ui.virtual.inventory;
 
+import com.vecoo.extralib.ui.api.elements.GuiElementInterface;
 import com.vecoo.extralib.ui.api.gui.SlotGuiInterface;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
 public class VirtualSlot extends Slot {
-
+    @NotNull
     private final SlotGuiInterface gui;
 
-    public VirtualSlot(SlotGuiInterface gui, int index, int x, int y) {
+    public VirtualSlot(@NotNull SlotGuiInterface gui, int index, int x, int y) {
         super(VirtualInventory.INSTANCE, index, x, y);
         this.gui = gui;
     }
 
     @Override
+    @NotNull
     public ItemStack remove(int amount) {
         return ItemStack.EMPTY;
     }
 
     @Override
-    public boolean mayPickup(Player Player) {
+    public boolean mayPickup(@NotNull Player Player) {
         return false;
     }
 
     @Override
-    public boolean allowModification(Player player) {
+    public boolean allowModification(@NotNull Player player) {
         return false;
     }
 
     @Override
-    public ItemStack safeInsert(ItemStack stack, int count) {
-        return stack;
+    @NotNull
+    public ItemStack safeInsert(@NotNull ItemStack itemStack, int count) {
+        return itemStack;
     }
 
     @Override
-    public Optional<ItemStack> tryRemove(int min, int max, Player player) {
+    @NotNull
+    public Optional<ItemStack> tryRemove(int min, int max, @NotNull Player player) {
         return Optional.empty();
     }
 
     @Override
-    public ItemStack safeInsert(ItemStack stack) {
+    @NotNull
+    public ItemStack safeInsert(@NotNull ItemStack itemStack) {
         return ItemStack.EMPTY;
     }
 
     @Override
+    @NotNull
     public ItemStack getItem() {
-        var x = this.gui.getSlot(this.getContainerSlot());
-        if (x == null) {
+        GuiElementInterface guiElement = this.gui.getSlot(this.getContainerSlot());
+
+        if (guiElement == null) {
             return ItemStack.EMPTY;
         }
-        return x.getItemStackForDisplay(this.gui).copy();
+
+        return guiElement.getItemStackForDisplay(this.gui).copy();
     }
 
     @Override
-    public void setByPlayer(ItemStack stack) {
-
+    public void setByPlayer(@NotNull ItemStack itemStack) {
     }
 
     @Override
-    public void set(ItemStack stack) {
-
+    public void set(@NotNull ItemStack itemStack) {
     }
 
     @Override
     public boolean hasItem() {
-        return true;
+        return !getItem().isEmpty();
     }
 
     @Override
-    public boolean mayPlace(ItemStack stack) {
+    public boolean mayPlace(@NotNull ItemStack itemStack) {
         return false;
     }
 
     @Override
     public void setChanged() {
-
     }
 }

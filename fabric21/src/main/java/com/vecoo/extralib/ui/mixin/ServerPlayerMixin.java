@@ -49,7 +49,8 @@ public abstract class ServerPlayerMixin extends Player implements PlayerExtensio
     private void sgui$ignoreClosing(CallbackInfo ci) {
         if (this.extraLib$ignoreNext) {
             this.extraLib$ignoreNext = false;
-            this.doCloseContainer();
+
+            doCloseContainer();
             ci.cancel();
         }
     }

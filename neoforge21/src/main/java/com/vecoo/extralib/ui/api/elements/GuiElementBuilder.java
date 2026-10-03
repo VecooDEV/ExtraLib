@@ -240,15 +240,12 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
     public GuiElementBuilder setSkullOwner(@NotNull GameProfile profile) {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
 
-        if (server == null) {
-            return this;
-        }
+        if (server != null && server.getSessionService().getTextures(profile) == MinecraftProfileTextures.EMPTY) {
 
-        if (server.getSessionService().getTextures(profile) == MinecraftProfileTextures.EMPTY) {
-            ProfileResult profileResult = server.getSessionService().fetchProfile(profile.getId(), false);
+            ProfileResult result = server.getSessionService().fetchProfile(profile.getId(), false);
 
-            if (profileResult != null) {
-                profile = profileResult.profile();
+            if (result != null) {
+                profile = result.profile();
             }
         }
 

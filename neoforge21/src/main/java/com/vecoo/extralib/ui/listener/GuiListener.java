@@ -9,7 +9,7 @@ public class GuiListener {
     @SubscribeEvent
     public void onPlayerContainerClose(PlayerContainerEvent.Close event) {
         Player player = event.getEntity();
-        Runnable pending = SimpleGui.pendingOpens.remove(player.getUUID());
+        Runnable pending = SimpleGui.PENDING_OPENS.remove(player.getUUID());
 
         if (pending != null && player.getServer() != null) {
             player.getServer().execute(pending);

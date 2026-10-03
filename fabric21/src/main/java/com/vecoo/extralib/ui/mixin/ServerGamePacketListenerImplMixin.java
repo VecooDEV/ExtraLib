@@ -4,7 +4,6 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.vecoo.extralib.ExtraLib;
 import com.vecoo.extralib.ui.api.ClickTypes;
 import com.vecoo.extralib.ui.api.GuiHelpers;
-import com.vecoo.extralib.ui.api.gui.SignGui;
 import com.vecoo.extralib.ui.api.gui.SimpleGui;
 import com.vecoo.extralib.ui.api.gui.SlotGuiInterface;
 import com.vecoo.extralib.ui.virtual.FakeScreenHandler;
@@ -50,6 +49,7 @@ public abstract class ServerGamePacketListenerImplMixin extends ServerCommonPack
             ),
             cancellable = true
     )
+
     private void updateClicks(ServerboundContainerClickPacket packet, CallbackInfo ci) {
         if (this.player.containerMenu instanceof VirtualScreenHandler handler) {
             try {
@@ -65,27 +65,36 @@ public abstract class ServerGamePacketListenerImplMixin extends ServerCommonPack
                 ClickTypes type = ClickTypes.toClickType(packet.getClickType(), button, slot);
                 boolean ignore = gui.onAnyClick(slot, type, packet.getClickType());
 
-                if (ignore && !handler.getGui().getLockPlayerInventory() && (slot >= handler.getGui().getSize() || slot < 0 || handler.getGui().getSlotRedirect(slot) != null)) {
+                if (ignore && !gui.getLockPlayerInventory() && (slot >= gui.getSize() || slot < 0 || gui.getSlotRedirect(slot) != null)) {
                     return;
                 }
 
-                this.player.containerMenu.suppressRemoteUpdates();
-                boolean bl = packet.getStateId() != this.player.containerMenu.getStateId();
+                var containerMenu = this.player.containerMenu;
 
-                for (var entry : Int2ObjectMaps.fastIterable(packet.getChangedSlots())) {
-                    this.player.containerMenu.setRemoteSlotNoCopy(entry.getIntKey(), entry.getValue());
+                boolean stateChanged;
+                boolean allow;
+
+                containerMenu.suppressRemoteUpdates();
+
+                try {
+                    stateChanged = packet.getStateId() != containerMenu.getStateId();
+
+                    for (var entry : Int2ObjectMaps.fastIterable(packet.getChangedSlots())) {
+                        containerMenu.setRemoteSlotNoCopy(entry.getIntKey(), entry.getValue());
+                    }
+
+                    containerMenu.setRemoteCarried(packet.getCarriedItem());
+
+                    allow = gui.click(slot, type, packet.getClickType());
+                } finally {
+                    containerMenu.resumeRemoteUpdates();
                 }
 
-                this.player.containerMenu.setRemoteCarried(packet.getCarriedItem());
-
-                boolean allow = gui.click(slot, type, packet.getClickType());
-
-                this.player.containerMenu.resumeRemoteUpdates();
                 if (allow) {
-                    if (bl) {
-                        this.player.containerMenu.broadcastFullState();
+                    if (stateChanged) {
+                        containerMenu.broadcastFullState();
                     } else {
-                        this.player.containerMenu.broadcastChanges();
+                        containerMenu.broadcastChanges();
                     }
                 }
             } catch (Throwable e) {
@@ -134,15 +143,16 @@ public abstract class ServerGamePacketListenerImplMixin extends ServerCommonPack
             ),
             cancellable = true
     )
-    private void sgui$storeScreenHandler(ServerboundContainerClosePacket packet, CallbackInfo info) {
+    private void storeScreenHandler(ServerboundContainerClosePacket packet, CallbackInfo info) {
         if (this.player.containerMenu instanceof VirtualScreenHandlerInterface handler) {
             if (handler.getGui().canPlayerClose()) {
                 this.previousMenu = this.player.containerMenu;
             } else {
                 AbstractContainerMenu screenHandler = this.player.containerMenu;
+
                 try {
                     if (screenHandler.getType() != null) {
-                        this.send(new ClientboundOpenScreenPacket(screenHandler.containerId, screenHandler.getType(), handler.getGui().getTitle()));
+                        send(new ClientboundOpenScreenPacket(screenHandler.containerId, screenHandler.getType(), handler.getGui().getTitle()));
                         screenHandler.sendAllDataToRemote();
                     }
                 } catch (Throwable ignored) {
@@ -155,7 +165,7 @@ public abstract class ServerGamePacketListenerImplMixin extends ServerCommonPack
     }
 
     @Inject(method = "handleContainerClose", at = @At("TAIL"))
-    private void sgui$executeClosing(ServerboundContainerClosePacket packet, CallbackInfo info) {
+    private void executeClosing(ServerboundContainerClosePacket packet, CallbackInfo info) {
         try {
             if (this.previousMenu != null) {
                 if (this.previousMenu instanceof VirtualScreenHandlerInterface screenHandler) {
@@ -180,31 +190,12 @@ public abstract class ServerGamePacketListenerImplMixin extends ServerCommonPack
                     target = "Lnet/minecraft/server/level/ServerPlayer;resetLastActionTime()V",
                     shift = At.Shift.BEFORE)
     )
-    private void sgui$catchRecipeRequests(ServerboundPlaceRecipePacket packet, CallbackInfo ci) {
+    private void catchRecipeRequests(ServerboundPlaceRecipePacket packet, CallbackInfo ci) {
         if (this.player.containerMenu instanceof VirtualScreenHandler handler && handler.getGui() instanceof SimpleGui gui) {
             try {
                 gui.onCraftRequest(packet.getRecipe(), packet.isShiftDown());
             } catch (Throwable e) {
                 handler.getGui().handleException(e);
-            }
-        }
-    }
-
-    @Inject(method = "updateSignText", at = @At("HEAD"), cancellable = true)
-    private void sgui$catchSignUpdate(ServerboundSignUpdatePacket packet, List<FilteredText> signComponent, CallbackInfo ci) {
-        try {
-            if (this.player.containerMenu instanceof FakeScreenHandler fake && fake.getGui() instanceof SignGui gui) {
-                for (int i = 0; i < packet.getLines().length; i++) {
-                    gui.setLineInternal(i, Component.literal(packet.getLines()[i]));
-                }
-                gui.close(true);
-                ci.cancel();
-            }
-        } catch (Throwable e) {
-            if (this.player.containerMenu instanceof VirtualScreenHandlerInterface handler) {
-                handler.getGui().handleException(e);
-            } else {
-                ExtraLib.getLogger().error(e.getMessage());
             }
         }
     }
@@ -217,7 +208,7 @@ public abstract class ServerGamePacketListenerImplMixin extends ServerCommonPack
                     target = "Lnet/minecraft/network/protocol/PacketUtils;ensureRunningOnSameThread(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketListener;Lnet/minecraft/server/level/ServerLevel;)V"),
             cancellable = true
     )
-    private void sgui$cancelCreativeAction(ServerboundSetCreativeModeSlotPacket packet, CallbackInfo ci) {
+    private void cancelCreativeAction(ServerboundSetCreativeModeSlotPacket packet, CallbackInfo ci) {
         if (this.player.containerMenu instanceof VirtualScreenHandlerInterface) {
             ci.cancel();
         }

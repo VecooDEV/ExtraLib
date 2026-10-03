@@ -11,8 +11,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuConstructor;
 import org.jetbrains.annotations.NotNull;
 
-public record ScreenHandlerFactory<T extends GuiInterface>(@NotNull T gui,
-                                                           @NotNull MenuConstructor factory) implements MenuProvider {
+public record ScreenHandlerFactory<T extends GuiInterface>(@NotNull T gui, @NotNull MenuConstructor factory) implements MenuProvider {
     @Override
     @NotNull
     public Component getDisplayName() {
@@ -31,6 +30,6 @@ public record ScreenHandlerFactory<T extends GuiInterface>(@NotNull T gui,
     }
 
     public static <T extends SlotGuiInterface> ScreenHandlerFactory<T> ofDefault(T gui) {
-        return new ScreenHandlerFactory<>(gui, ((syncId, inv, player) -> new VirtualScreenHandler(gui.getType(), syncId, gui, player)));
+        return new ScreenHandlerFactory<>(gui, ((syncId, inventory, player) -> new VirtualScreenHandler(gui.getType(), syncId, gui, player)));
     }
 }

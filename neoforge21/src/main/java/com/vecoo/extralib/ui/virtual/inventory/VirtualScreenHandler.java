@@ -14,45 +14,49 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class VirtualScreenHandler extends AbstractContainerMenu implements VirtualScreenHandlerInterface {
+    @NotNull
     private final SlotGuiInterface gui;
 
-    public VirtualScreenHandler(@Nullable MenuType<?> type, int syncId, SlotGuiInterface gui, Player player) {
+    public VirtualScreenHandler(@Nullable MenuType<?> type, int syncId, @NotNull SlotGuiInterface gui, @NotNull Player player) {
         super(type, syncId);
         this.gui = gui;
 
         setupSlots(player);
     }
 
-    protected void setupSlots(Player player) {
-        int n;
-        int m;
+    protected void setupSlots(@NotNull Player player) {
+        int slots;
+        int playerSlots;
 
-        for (n = 0; n < this.gui.getVirtualSize(); ++n) {
-            Slot slot = this.gui.getSlotRedirect(n);
+        for (slots = 0; slots < this.gui.getVirtualSize(); ++slots) {
+            Slot slot = this.gui.getSlotRedirect(slots);
+
             if (slot != null) {
-                this.addSlot(slot);
+                addSlot(slot);
             } else {
-                this.addSlot(new VirtualSlot(gui, n, 0, 0));
+                addSlot(new VirtualSlot(gui, slots, 0, 0));
             }
         }
 
         if (gui.isIncludingPlayer()) {
             int size = this.gui.getHeight() * this.gui.getWidth();
-            for (n = 0; n < 4; ++n) {
-                for (m = 0; m < 9; ++m) {
-                    this.addSlot(new VirtualSlot(gui, m + n * 9 + size, 0, 0));
+
+            for (slots = 0; slots < 4; ++slots) {
+                for (playerSlots = 0; playerSlots < 9; ++playerSlots) {
+                    addSlot(new VirtualSlot(this.gui, playerSlots + slots * 9 + size, 0, 0));
                 }
             }
         } else {
             Inventory playerInventory = player.getInventory();
-            for (n = 0; n < 3; ++n) {
-                for (m = 0; m < 9; ++m) {
-                    this.addSlot(new Slot(playerInventory, m + n * 9 + 9, 0, 0));
+
+            for (slots = 0; slots < 3; ++slots) {
+                for (playerSlots = 0; playerSlots < 9; ++playerSlots) {
+                    addSlot(new Slot(playerInventory, playerSlots + slots * 9 + 9, 0, 0));
                 }
             }
 
-            for (n = 0; n < 9; ++n) {
-                this.addSlot(new Slot(playerInventory, n, 0, 0));
+            for (slots = 0; slots < 9; ++slots) {
+                addSlot(new Slot(playerInventory, slots, 0, 0));
             }
         }
     }
@@ -66,26 +70,28 @@ public class VirtualScreenHandler extends AbstractContainerMenu implements Virtu
     @Override
     public void sendAllDataToRemote() {
         super.sendAllDataToRemote();
-        // We have to manually sync offhand state
+
         int index = this.getGui().getOffhandSlotIndex();
+
         ItemStack updated = index >= 0 ? this.getSlot(index).getItem() : ItemStack.EMPTY;
         GuiHelpers.sendSlotUpdate(this.gui.getPlayer(), -2, Inventory.SLOT_OFFHAND, updated, this.getStateId());
     }
 
     @Override
+    @NotNull
     public SlotGuiInterface getGui() {
         return this.gui;
     }
 
     @Override
-    public boolean stillValid(Player player) {
+    public boolean stillValid(@NotNull Player player) {
         return true;
     }
 
     @Override
-    public void setItem(int slot, int i, ItemStack stack) {
+    public void setItem(int slot, int i, @NotNull ItemStack itemStack) {
         if (this.gui.getSize() <= slot) {
-            this.getSlot(slot).set(stack);
+            this.getSlot(slot).set(itemStack);
         } else {
             this.getSlot(slot).set(ItemStack.EMPTY);
         }
@@ -98,6 +104,7 @@ public class VirtualScreenHandler extends AbstractContainerMenu implements Virtu
         } catch (Exception e) {
             this.gui.handleException(e);
         }
+
         super.broadcastChanges();
     }
 
@@ -113,6 +120,7 @@ public class VirtualScreenHandler extends AbstractContainerMenu implements Virtu
     }
 
     @Override
+    @NotNull
     public Slot addSlot(@NotNull Slot slot) {
         return super.addSlot(slot);
     }
