@@ -27,7 +27,13 @@ public final class ItemUtil {
      */
     @NotNull
     public static ItemStack parseItem(@NotNull String itemId) {
-        Item item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(itemId));
+        ResourceLocation resourceLocation = ResourceLocation.tryParse(itemId);
+
+        if (resourceLocation == null) {
+            return ItemStack.EMPTY;
+        }
+
+        Item item = BuiltInRegistries.ITEM.get(resourceLocation);
 
         if (item == Items.AIR) {
             return ItemStack.EMPTY;
@@ -50,7 +56,11 @@ public final class ItemUtil {
      */
     @NotNull
     public static ItemStack parseItemCustomModel(@NotNull String itemId) {
-        String[] parts = itemId.split(":");
+        String[] parts = itemId.split(":", -1);
+
+        if (parts.length < 2 || parts.length > 3 || parts[0].isBlank() || parts[1].isBlank()) {
+            return ItemStack.EMPTY;
+        }
 
         ItemStack itemStack = parseItem(parts[0] + ":" + parts[1]);
 
@@ -102,7 +112,7 @@ public final class ItemUtil {
         if (jsonElement.isJsonObject()) {
             JsonObject object = jsonElement.getAsJsonObject();
 
-            if ("minecraft:air".equals(object.get("id").getAsString())) {
+            if (object.has("id") && !object.get("id").isJsonNull() && "minecraft:air".equals(object.get("id").getAsString())) {
                 return ItemStack.EMPTY;
             }
         }

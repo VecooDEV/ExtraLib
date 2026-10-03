@@ -11,6 +11,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 /**
@@ -33,7 +34,7 @@ import java.util.function.Supplier;
  * {@link #getDataSource()}. The executor service is exposed through helper methods for running
  * tasks asynchronously.</p>
  */
-public class DatabaseUtil {
+public class DatabaseUtil implements AutoCloseable {
     private final HikariDataSource dataSource;
     private final ExecutorService executor;
 
@@ -124,7 +125,9 @@ public class DatabaseUtil {
         config.setConnectionTimeout(connectionTimeout);
 
         this.dataSource = new HikariDataSource(config);
-        this.executor = Executors.newFixedThreadPool(threadPool);
+
+        AtomicInteger threadCounter = new AtomicInteger();
+        this.executor = Executors.newFixedThreadPool(threadPool, runnable -> new Thread(runnable, prefix + "-db-" + threadCounter.incrementAndGet()));
     }
 
     /**
@@ -142,6 +145,7 @@ public class DatabaseUtil {
      * Closes the data source and shuts down the executor service.
      * Should be called when the plugin or server is shutting down.
      */
+    @Override
     public void close() {
         this.executor.shutdown();
 

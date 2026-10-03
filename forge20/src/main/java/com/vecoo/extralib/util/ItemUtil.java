@@ -2,6 +2,7 @@ package com.vecoo.extralib.util;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.vecoo.extralib.ExtraLib;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceLocation;
@@ -23,6 +24,12 @@ public final class ItemUtil {
      */
     @NotNull
     public static ItemStack parseItem(@NotNull String itemId) {
+        ResourceLocation resourceLocation = ResourceLocation.tryParse(itemId);
+
+        if (resourceLocation == null) {
+            return ItemStack.EMPTY;
+        }
+
         Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemId));
 
         if (item == null) {
@@ -46,7 +53,11 @@ public final class ItemUtil {
      */
     @NotNull
     public static ItemStack parseItemCustomModel(@NotNull String itemId) {
-        String[] parts = itemId.split(":");
+        String[] parts = itemId.split(":", -1);
+
+        if (parts.length < 2 || parts.length > 3 || parts[0].isBlank() || parts[1].isBlank()) {
+            return ItemStack.EMPTY;
+        }
 
         ItemStack itemStack = parseItem(parts[0] + ":" + parts[1]);
 
