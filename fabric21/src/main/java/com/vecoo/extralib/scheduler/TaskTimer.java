@@ -69,8 +69,16 @@ public final class TaskTimer {
      * Ticks the task, decrementing its countdown and executing the consumer if ready.
      */
     private void tick() {
-        if (this.expired || this.countdown-- > 0) {
+        if (this.expired) {
             return;
+        }
+
+        if (this.countdown > 0) {
+            this.countdown--;
+
+            if (this.countdown > 0) {
+                return;
+            }
         }
 
         try {

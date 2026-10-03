@@ -20,6 +20,10 @@ public final class ResetPeriod {
     private final int amount;
 
     public ResetPeriod(@NotNull Type type, int amount) {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Reset period must be greater than 0.");
+        }
+
         this.type = type;
         this.amount = amount;
     }

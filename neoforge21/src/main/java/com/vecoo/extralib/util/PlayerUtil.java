@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 public final class PlayerUtil {
-    public static String UNKNOWN_PLAYER = "Unknown";
+    public static final String UNKNOWN_PLAYER = "Unknown";
     private static final Map<String, UUID> UUID_BY_NAME = new HashMap<>();
 
     private PlayerUtil() {

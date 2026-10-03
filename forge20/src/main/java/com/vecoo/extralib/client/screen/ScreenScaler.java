@@ -42,10 +42,14 @@ public final class ScreenScaler {
         scaleFactor = Math.min(scaleFactor, Math.min((float) width / GUI_BASE_WIDTH, (float) height / GUI_BASE_HEIGHT));
 
         guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(centerX, centerY, 0.0F);
-        guiGraphics.pose().scale(scaleFactor, scaleFactor, 1.0F);
-        guiGraphics.pose().translate(-centerX, -centerY, 0.0F);
-        action.scale((int) (centerX + (mouseX - centerX) / scaleFactor), (int) (centerY + (mouseY - centerY) / scaleFactor));
-        guiGraphics.pose().popPose();
+
+        try {
+            guiGraphics.pose().translate(centerX, centerY, 0.0F);
+            guiGraphics.pose().scale(scaleFactor, scaleFactor, 1.0F);
+            guiGraphics.pose().translate(-centerX, -centerY, 0.0F);
+            action.scale((int) (centerX + (mouseX - centerX) / scaleFactor), (int) (centerY + (mouseY - centerY) / scaleFactor));
+        } finally {
+            guiGraphics.pose().popPose();
+        }
     }
 }

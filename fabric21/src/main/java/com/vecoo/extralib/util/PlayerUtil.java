@@ -27,8 +27,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 public final class PlayerUtil {
-    @NotNull
-    public static String UNKNOWN_PLAYER = "Unknown";
+    public static final String UNKNOWN_PLAYER = "Unknown";
 
     private PlayerUtil() {
     }

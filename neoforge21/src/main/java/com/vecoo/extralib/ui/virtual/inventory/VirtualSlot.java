@@ -49,7 +49,7 @@ public class VirtualSlot extends Slot {
     @Override
     @NotNull
     public ItemStack safeInsert(@NotNull ItemStack itemStack) {
-        return ItemStack.EMPTY;
+        return itemStack;
     }
 
     @Override
