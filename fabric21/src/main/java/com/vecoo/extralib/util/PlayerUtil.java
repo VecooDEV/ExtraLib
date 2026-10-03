@@ -354,12 +354,26 @@ public final class PlayerUtil {
         return player != null && player.getInventory().getFreeSlot() != -1;
     }
 
+    @Deprecated
     public static void playSound(@Nullable Player player, @NotNull SoundEvent soundEvent) {
+        playSound(player, soundEvent, 0.2F);
+    }
+
+    public static void playSound(@Nullable Player player, @NotNull SoundEvent soundEvent, float volume) {
         if (player != null) {
             RandomSource random = player.level().getRandom();
+            float pitch = (random.nextFloat() - random.nextFloat() * 0.7F + 1.0F) * 2.0F;
 
-            player.level().playSound(null, player.getX(), player.getY(), player.getZ(), soundEvent,
-                    SoundSource.PLAYERS, 0.2F, (random.nextFloat() - random.nextFloat() * 0.7F + 1.0F) * 2.0F);
+            player.playNotifySound(soundEvent, SoundSource.PLAYERS, volume, pitch);
+        }
+    }
+
+    public static void playSoundLevel(@Nullable ServerPlayer player, @NotNull SoundEvent soundEvent, float volume) {
+        if (player != null) {
+            RandomSource random = player.level().getRandom();
+            float pitch = (random.nextFloat() - random.nextFloat() * 0.7F + 1.0F) * 2.0F;
+
+            player.level().playSound(null, player.getX(), player.getY(), player.getZ(), soundEvent, SoundSource.PLAYERS, volume, pitch);
         }
     }
 }

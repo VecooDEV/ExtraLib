@@ -2,6 +2,7 @@ package com.vecoo.extralib.util;
 
 import com.vecoo.extralib.ExtraLib;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -338,27 +339,31 @@ public final class PlayerUtil {
 
     @Deprecated
     public static void playSound(@Nullable Player player, @NotNull SoundEvent soundEvent) {
-        if (player != null) {
-            RandomSource random = player.level().getRandom();
-
-            player.level().playSound(null, player.getX(), player.getY(), player.getZ(), soundEvent,
-                    SoundSource.PLAYERS, 0.2F, (random.nextFloat() - random.nextFloat() * 0.7F + 1.0F) * 2.0F);
-        }
+        playSound(player, soundEvent, 0.2F);
     }
 
     public static void playSound(@Nullable Player player, @NotNull SoundEvent soundEvent, float volume) {
         if (player != null) {
             RandomSource random = player.level().getRandom();
+            float pitch = (random.nextFloat() - random.nextFloat() * 0.7F + 1.0F) * 2.0F;
 
-            player.level().playSound(null, player.getX(), player.getY(), player.getZ(), soundEvent,
-                    SoundSource.PLAYERS, volume, (random.nextFloat() - random.nextFloat() * 0.7F + 1.0F) * 2.0F);
+            player.playNotifySound(soundEvent, SoundSource.PLAYERS, volume, pitch);
+        }
+    }
+
+    public static void playSoundLevel(@Nullable ServerPlayer player, @NotNull SoundEvent soundEvent, float volume) {
+        if (player != null) {
+            RandomSource random = player.level().getRandom();
+            float pitch = (random.nextFloat() - random.nextFloat() * 0.7F + 1.0F) * 2.0F;
+
+            player.level().playSound(null, player.getX(), player.getY(), player.getZ(), soundEvent, SoundSource.PLAYERS, volume, pitch);
         }
     }
 
     public static void rebuildUUIDCache() {
         UUID_BY_NAME.clear();
 
-        UsernameCache.getMap().forEach((playerUUID, name) -> UUID_BY_NAME.put(name.toLowerCase(Locale.ROOT), playerUUID));
+        UsernameCache.getMap().forEach((playerUUID, playerName) -> UUID_BY_NAME.put(playerName.toLowerCase(Locale.ROOT), playerUUID));
     }
 
     public static void cacheUUID(@NotNull UUID playerUUID, @NotNull String playerName) {
