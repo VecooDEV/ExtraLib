@@ -34,7 +34,7 @@ public final class TextUtil {
             String textSegment = message.substring(lastEnd, matcher.start());
 
             if (!textSegment.isEmpty()) {
-                result.append(processLinks(textSegment.replace("&", "§"), currentColor));
+                result.append(processLinks(textSegment, currentColor));
             }
 
             currentColor = TextColor.fromRgb(Integer.parseInt(matcher.group(1), 16));
@@ -44,7 +44,7 @@ public final class TextUtil {
         String tail = message.substring(lastEnd);
 
         if (!tail.isEmpty()) {
-            result.append(processLinks(tail.replace("&", "§"), currentColor));
+            result.append(processLinks(tail, currentColor));
         }
 
         return result;
@@ -133,7 +133,7 @@ public final class TextUtil {
 
         while (urlMatcher.find()) {
             if (urlMatcher.start() > lastEnd) {
-                segment.append(Component.literal(text.substring(lastEnd, urlMatcher.start()))
+                segment.append(Component.literal(text.substring(lastEnd, urlMatcher.start()).replace("&", "§"))
                         .withStyle(s -> color != null ? s.withColor(color) : s));
             }
 
@@ -150,7 +150,7 @@ public final class TextUtil {
         }
 
         if (lastEnd < text.length()) {
-            segment.append(Component.literal(text.substring(lastEnd))
+            segment.append(Component.literal(text.substring(lastEnd).replace("&", "§"))
                     .withStyle(s -> color != null ? s.withColor(color) : s));
         }
 

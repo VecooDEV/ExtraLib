@@ -29,9 +29,9 @@ public final class GuiHelpers {
 
         if (gui != null) {
             gui.close();
-        } else {
-            player.closeContainer();
         }
+
+        player.closeContainer();
     }
 
     public static void ignoreNextGuiClosing(@NotNull ServerPlayer player) {

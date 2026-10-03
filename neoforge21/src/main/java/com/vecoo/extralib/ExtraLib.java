@@ -3,6 +3,7 @@ package com.vecoo.extralib;
 import com.mojang.logging.LogUtils;
 import com.vecoo.extralib.config.ServerConfig;
 import com.vecoo.extralib.listener.ExtraLibListener;
+import com.vecoo.extralib.loader.GsonLoader;
 import com.vecoo.extralib.loader.YamlLoader;
 import com.vecoo.extralib.scheduler.ResetScheduler;
 import com.vecoo.extralib.scheduler.TaskTimer;
@@ -42,28 +43,33 @@ public class ExtraLib {
 
     @SubscribeEvent
     public void onServerStarted(ServerStartedEvent event) {
+        PlayerUtil.rebuildUUIDCache();
+
         if (this.serverConfig.isNotification()) {
             notificationMessage();
         }
-
-        PlayerUtil.rebuildUUIDCache();
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onServerStopping(ServerStoppingEvent event) {
         TaskTimer.cancelAll();
         ResetScheduler.shutdown();
+
+        YamlLoader.flush().join();
+        GsonLoader.flush().join();
     }
 
     public void loadConfig() {
         try {
             this.serverConfig = YamlLoader.load(ServerConfig.class, "config/extralib/config.yml", false);
         } catch (IOException e) {
-            throw new RuntimeException(e.getMessage());
+            throw new RuntimeException("Failed to load ExtraLib config.", e);
         }
     }
 
     private void notificationMessage() {
+        LOGGER.info("Thanks for using ExtraLib. Support: https://discord.gg/VSGEVagRPq");
+
         String separator = "==========================================================================";
 
         ChatUtil.broadcast("&8" + separator);

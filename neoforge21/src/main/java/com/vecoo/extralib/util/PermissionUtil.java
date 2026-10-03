@@ -62,12 +62,16 @@ public final class PermissionUtil {
             return false;
         }
 
-        if (PermissionAPI.getRegisteredNodes().contains(node)) {
-            return PermissionAPI.getPermission(player, node) || player.hasPermissions(4);
+        if (player.hasPermissions(4)) {
+            return true;
         }
 
-        ExtraLib.getLogger().error("No permission found for node: {}.", node);
-        return false;
+        if (!PermissionAPI.getRegisteredNodes().contains(node)) {
+            ExtraLib.getLogger().error("No permission found for node: {}.", node);
+            return false;
+        }
+
+        return PermissionAPI.getPermission(player, node);
     }
 
     /**
@@ -191,13 +195,16 @@ public final class PermissionUtil {
      */
     @NotNull
     public static PermissionNode<Boolean> getPermissionNode(@NotNull String nodeName, boolean defaultValue) {
-        try {
-            String[] nodeSplit = nodeName.split("\\.", 2);
+        int separator = nodeName.indexOf('.');
 
-            return new PermissionNode<>(nodeSplit[0], nodeSplit[1], PermissionTypes.BOOLEAN,
-                    (player, uuid, permissionDynamicContexts) -> defaultValue);
-        } catch (Exception e) {
-            throw new RuntimeException(String.format("Incorrect permission node: %s.", nodeName), e);
+        if (separator <= 0 || separator == nodeName.length() - 1) {
+            throw new IllegalArgumentException(String.format("Incorrect permission node: %s.", nodeName));
         }
+
+        String namespace = nodeName.substring(0, separator);
+        String path = nodeName.substring(separator + 1);
+
+        return new PermissionNode<>(namespace, path, PermissionTypes.BOOLEAN,
+                (player, uuid, permissionDynamicContexts) -> defaultValue);
     }
 }

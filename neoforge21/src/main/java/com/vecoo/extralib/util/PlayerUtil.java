@@ -146,13 +146,10 @@ public final class PlayerUtil {
     }
 
     /**
-     * Returns a {@link CommandSourceStack} for the finds player name.
-     * <p>
-     * If the player is not online, returns the server's command source stack.
-     * </p>
+     * Returns a {@link CommandSourceStack} for an online player name.
      *
-     * @param sourceName the name of the player or source
-     * @return the command source stack
+     * @param sourceName the name of the player
+     * @return the player's command source stack, or null if the player is not online
      */
     @Nullable
     public static CommandSourceStack getSource(@NotNull String sourceName) {
@@ -164,7 +161,7 @@ public final class PlayerUtil {
 
         ServerPlayer player = server.getPlayerList().getPlayerByName(sourceName);
 
-        return player != null ? player.createCommandSourceStack() : server.createCommandSourceStack();
+        return player != null ? player.createCommandSourceStack() : null;
     }
 
     /**
@@ -195,25 +192,24 @@ public final class PlayerUtil {
      */
     @NotNull
     public static ItemStack getPlayerSkull(@NotNull UUID playerUUID, @NotNull String playerName) {
-        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-
-        if (server == null) {
-            return Items.BEDROCK.getDefaultInstance();
-        }
-
         ItemStack itemStack = Items.PLAYER_HEAD.getDefaultInstance();
 
-        if (!playerName.equals(UNKNOWN_PLAYER)) {
-            GameProfile profile = new GameProfile(playerUUID, playerName);
+        if (UNKNOWN_PLAYER.equals(playerName)) {
+            return itemStack;
+        }
+
+        GameProfile profile = new GameProfile(playerUUID, playerName);
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+
+        if (server != null) {
             ProfileResult profileResult = server.getSessionService().fetchProfile(profile.getId(), false);
 
             if (profileResult != null) {
                 profile = profileResult.profile();
             }
-
-            itemStack.set(DataComponents.PROFILE, new ResolvableProfile(profile));
         }
 
+        itemStack.set(DataComponents.PROFILE, new ResolvableProfile(profile));
         return itemStack;
     }
 

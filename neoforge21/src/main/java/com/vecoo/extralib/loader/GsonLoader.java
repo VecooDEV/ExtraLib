@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @SuppressWarnings("unchecked")
@@ -26,12 +27,15 @@ public final class GsonLoader {
      * Ensures that save tasks are processed sequentially to avoid file access conflicts.
      */
     @NotNull
-    public static final Executor WRITER_EXECUTOR = Executors.newSingleThreadExecutor(runnable -> {
+    private static final ExecutorService WRITER_SERVICE = Executors.newSingleThreadExecutor(runnable -> {
         Thread thread = new Thread(runnable, "ExtraLib-GSON-Writer");
 
         thread.setDaemon(true);
         return thread;
     });
+
+    @NotNull
+    public static final Executor WRITER_EXECUTOR = WRITER_SERVICE;
 
     private GsonLoader() {
     }
@@ -228,4 +232,16 @@ public final class GsonLoader {
     public static <T> CompletableFuture<Void> saveAsync(@NotNull T configInstance, @NotNull String path) {
         return saveAsync(configInstance, Path.of(path));
     }
+
+    /**
+     * Returns a future that completes after all write operations submitted before this call.
+     *
+     * @return a barrier future for pending JSON writes
+     */
+    @NotNull
+    public static CompletableFuture<Void> flush() {
+        return CompletableFuture.runAsync(() -> {
+        }, WRITER_SERVICE);
+    }
+
 }

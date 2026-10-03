@@ -142,13 +142,10 @@ public final class PlayerUtil {
     }
 
     /**
-     * Returns a {@link CommandSourceStack} for the finds player name.
-     * <p>
-     * If the player is not online, returns the server's command source stack.
-     * </p>
+     * Returns a {@link CommandSourceStack} for an online player name.
      *
-     * @param sourceName the name of the player or source
-     * @return the command source stack
+     * @param sourceName the name of the player
+     * @return the player's command source stack, or null if the player is not online
      */
     @Nullable
     public static CommandSourceStack getSource(@NotNull String sourceName) {
@@ -160,7 +157,7 @@ public final class PlayerUtil {
 
         ServerPlayer player = server.getPlayerList().getPlayerByName(sourceName);
 
-        return player != null ? player.createCommandSourceStack() : server.createCommandSourceStack();
+        return player != null ? player.createCommandSourceStack() : null;
     }
 
     /**
