@@ -18,13 +18,11 @@ import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 public final class PlayerUtil {
-    @NotNull
     public static String UNKNOWN_PLAYER = "Unknown";
+    private static final Map<String, UUID> UUID_BY_NAME = new HashMap<>();
 
     private PlayerUtil() {
     }
@@ -37,12 +35,9 @@ public final class PlayerUtil {
      */
     @Nullable
     public static UUID findUUID(@NotNull String playerName) {
-        return UsernameCache.getMap().entrySet().stream()
-                .filter(entry -> entry.getValue().equalsIgnoreCase(playerName))
-                .map(Map.Entry::getKey)
-                .findFirst()
-                .orElse(null);
+        return UUID_BY_NAME.get(playerName.toLowerCase(Locale.ROOT));
     }
+
 
     /**
      * Checks if a player with the specified username has a cached UUID.
@@ -358,5 +353,18 @@ public final class PlayerUtil {
             player.level().playSound(null, player.getX(), player.getY(), player.getZ(), soundEvent,
                     SoundSource.PLAYERS, volume, (random.nextFloat() - random.nextFloat() * 0.7F + 1.0F) * 2.0F);
         }
+    }
+
+    public static void rebuildUUIDCache() {
+        UUID_BY_NAME.clear();
+
+        UsernameCache.getMap().forEach((playerUUID, name) -> UUID_BY_NAME.put(name.toLowerCase(Locale.ROOT), playerUUID));
+    }
+
+    public static void cacheUUID(@NotNull UUID playerUUID, @NotNull String playerName) {
+        String normalizedName = playerName.toLowerCase(Locale.ROOT);
+
+        UUID_BY_NAME.entrySet().removeIf(entry -> entry.getValue().equals(playerUUID) && !entry.getKey().equals(normalizedName));
+        UUID_BY_NAME.put(normalizedName, playerUUID);
     }
 }

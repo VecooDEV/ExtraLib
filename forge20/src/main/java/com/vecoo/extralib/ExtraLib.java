@@ -2,10 +2,12 @@ package com.vecoo.extralib;
 
 import com.mojang.logging.LogUtils;
 import com.vecoo.extralib.config.ServerConfig;
+import com.vecoo.extralib.listener.ExtraLibListener;
 import com.vecoo.extralib.loader.YamlLoader;
 import com.vecoo.extralib.scheduler.ResetScheduler;
 import com.vecoo.extralib.scheduler.TaskTimer;
 import com.vecoo.extralib.util.ChatUtil;
+import com.vecoo.extralib.util.PlayerUtil;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
@@ -32,6 +34,7 @@ public class ExtraLib {
         loadConfig();
 
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(new ExtraLibListener());
         MinecraftForge.EVENT_BUS.register(new TaskTimer.EventHandler());
     }
 
@@ -40,6 +43,8 @@ public class ExtraLib {
         if (this.serverConfig.isNotification()) {
             notificationMessage();
         }
+
+        PlayerUtil.rebuildUUIDCache();
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
