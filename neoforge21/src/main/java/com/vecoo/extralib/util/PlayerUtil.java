@@ -436,7 +436,7 @@ public final class PlayerUtil {
         }
     }
 
-    public static void playSoundLevel(@Nullable ServerPlayer player, @NotNull SoundEvent soundEvent, float volume) {
+    public static void playSoundLevel(@Nullable Player player, @NotNull SoundEvent soundEvent, float volume) {
         if (player != null) {
             RandomSource random = player.level().getRandom();
             float pitch = (random.nextFloat() - random.nextFloat() * 0.7F + 1.0F) * 2.0F;
