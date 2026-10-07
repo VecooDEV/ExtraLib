@@ -1,1 +1,1 @@
-* Change sound argument ServerPlayer to Player.
+* Change logic suggest command.

@@ -2,6 +2,7 @@ package com.vecoo.extralib.util;
 
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.server.MinecraftServer;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.NotNull;
@@ -41,15 +42,8 @@ public final class CommandUtil {
      */
     @NotNull
     public static SuggestionProvider<CommandSourceStack> suggestOnlinePlayers() {
-        return (context, builder) -> {
-            for (String playerName : context.getSource().getOnlinePlayerNames()) {
-                if (playerName.toLowerCase().startsWith(builder.getRemaining().toLowerCase())) {
-                    builder.suggest(playerName);
-                }
-            }
-
-            return builder.buildFuture();
-        };
+        return (context, builder) ->
+                SharedSuggestionProvider.suggest(context.getSource().getOnlinePlayerNames(), builder);
     }
 
     /**
@@ -69,13 +63,7 @@ public final class CommandUtil {
 
     @NotNull
     public static SuggestionProvider<CommandSourceStack> suggestString(@NotNull Supplier<Collection<String>> supplier) {
-        return (context, builder) -> {
-            for (String name : supplier.get()) {
-                builder.suggest(name);
-            }
-
-            return builder.buildFuture();
-        };
+        return (context, builder) -> SharedSuggestionProvider.suggest(supplier.get(), builder);
     }
 
     /**
@@ -96,8 +84,12 @@ public final class CommandUtil {
     @NotNull
     public static SuggestionProvider<CommandSourceStack> suggestAmount(@NotNull Supplier<Collection<Integer>> supplier) {
         return (context, builder) -> {
+            String remaining = builder.getRemaining();
+
             for (int amount : supplier.get()) {
-                builder.suggest(amount);
+                if (Integer.toString(amount).startsWith(remaining)) {
+                    builder.suggest(amount);
+                }
             }
 
             return builder.buildFuture();
