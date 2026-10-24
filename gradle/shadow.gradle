@@ -1,0 +1,34 @@
+shadowJar {
+    configurations = [project.configurations.shadow]
+    archiveBaseName.set(rootProject.name)
+    archiveClassifier.set(project.name.startsWith('fabric') ? 'shadow' : '')
+    from(project(':core').sourceSets.main.output)
+
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    mergeServiceFiles()
+
+    relocate('com.zaxxer.hikari', 'com.vecoo.extralib.shade.zaxxer.hikari')
+    relocate('io.leangen.geantyref', 'com.vecoo.extralib.shade.leangen.geantyref')
+    relocate('net.kyori.option', 'com.vecoo.extralib.shade.kyori.option')
+    relocate('org.spongepowered.configurate', 'com.vecoo.extralib.shade.spongepowered.configurate')
+    relocate('com.mysql', 'com.vecoo.extralib.shade.mysql')
+    relocate('org.mariadb.jdbc', 'com.vecoo.extralib.shade.mariadb.jdbc')
+    relocate('org.postgresql', 'com.vecoo.extralib.shade.postgresql')
+    relocate('com.google.protobuf', 'com.vecoo.extralib.shade.google.protobuf')
+    relocate('com.google.errorprone', 'com.vecoo.extralib.shade.google.errorprone')
+    relocate('com.github.benmanes.caffeine', 'com.vecoo.extralib.shade.benmanes.caffeine')
+    relocate('org.checkerframework', 'com.vecoo.extralib.shade.checkerframework')
+    relocate('org.jspecify.annotations', 'com.vecoo.extralib.shade.jspecify.annotations')
+
+    exclude 'META-INF/licenses/**'
+    exclude 'META-INF/maven/**'
+    exclude 'META-INF/native-image/**'
+    exclude 'META-INF/LICENSE/**'
+    exclude 'META-INF/LICENSE.txt'
+    exclude 'INFO_BIN/**'
+    exclude 'INFO_SRC/**'
+    exclude 'README/**'
+    exclude 'LICENSE/**'
+    exclude 'google/**'
+    exclude 'CONTRIBUTING.md'
+}

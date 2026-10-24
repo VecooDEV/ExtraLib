@@ -1,0 +1,15 @@
+def libraryConfiguration = project.name == 'core' ? 'api' : 'shadow'
+
+dependencies {
+    add(libraryConfiguration, "com.zaxxer:HikariCP:${hikari_cp}") {
+        exclude group: 'org.slf4j'
+    }
+    add(libraryConfiguration, "org.spongepowered:configurate-core:${configurate}")
+    add(libraryConfiguration, "org.spongepowered:configurate-yaml:${configurate}")
+    add(libraryConfiguration, "org.spongepowered:configurate-gson:${configurate}") {
+        exclude group: 'com.google.code.gson'
+    }
+    add(libraryConfiguration, "com.mysql:mysql-connector-j:${mysql_connector_j}")
+    add(libraryConfiguration, "org.mariadb.jdbc:mariadb-java-client:${mariadb_connector_j}")
+    add(libraryConfiguration, "org.postgresql:postgresql:${postgresql_jdbc_driver}")
+}

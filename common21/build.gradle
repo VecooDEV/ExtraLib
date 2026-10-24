@@ -1,0 +1,25 @@
+plugins {
+    id 'net.neoforged.moddev'
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+neoForge {
+    neoFormVersion = '1.21.1-20240808.144430'
+}
+
+repositories {
+    maven {
+        url = 'https://maven.fabricmc.net/'
+    }
+}
+
+dependencies {
+    implementation project(':core')
+    compileOnly 'org.jetbrains:annotations:26.0.2'
+    compileOnly 'net.fabricmc:sponge-mixin:0.15.2+mixin.0.8.7'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs.add('-proc:none')
+}

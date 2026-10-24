@@ -204,7 +204,6 @@ public final class PermissionUtil {
         String namespace = nodeName.substring(0, separator);
         String path = nodeName.substring(separator + 1);
 
-        return new PermissionNode<>(namespace, path, PermissionTypes.BOOLEAN,
-                (player, uuid, permissionDynamicContexts) -> defaultValue);
+        return new PermissionNode<>(namespace, path, PermissionTypes.BOOLEAN, (player, uuid, permissionDynamicContexts) -> defaultValue);
     }
 }

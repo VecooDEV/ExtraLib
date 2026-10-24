@@ -1,6 +1,6 @@
 package com.vecoo.extralib;
 
-import com.mojang.logging.LogUtils;
+import com.vecoo.extralib.internal.ExtraLibLogger;
 import com.vecoo.extralib.config.ServerConfig;
 import com.vecoo.extralib.loader.YamlLoader;
 import com.vecoo.extralib.scheduler.ResetScheduler;
@@ -17,7 +17,7 @@ import java.util.Locale;
 
 public class ExtraLib implements ModInitializer {
     public static final String MOD_ID = "extralib";
-    private static final Logger LOGGER = LogUtils.getLogger();
+    private static final Logger LOGGER = ExtraLibLogger.getLogger();
 
     private static ExtraLib instance;
 

@@ -1,6 +1,6 @@
 plugins {
-    id 'net.neoforged.moddev' version '2.0.148'
-    id 'com.modrinth.minotaur' version '2.9.0'
+    id 'net.neoforged.moddev'
+    id 'com.modrinth.minotaur' version '2.10.0'
     id 'com.gradleup.shadow' version '9.6.1'
 }
 
@@ -12,53 +12,16 @@ neoForge {
     version = "${neoforge_21}"
 }
 
+sourceSets.main.java.srcDir(rootProject.file('common21/src/main/java'))
+sourceSets.main.resources.srcDir(rootProject.file('common21/src/main/resources'))
+
 dependencies {
-    shadow("com.zaxxer:HikariCP:${hikari_cp}") {
-        exclude group: 'org.slf4j'
-    }
-    shadow "org.spongepowered:configurate-core:${configurate}"
-    shadow "org.spongepowered:configurate-yaml:${configurate}"
-    shadow("org.spongepowered:configurate-gson:${configurate}") {
-        exclude group: 'com.google.code.gson'
-    }
-    shadow "com.mysql:mysql-connector-j:${mysql_connector_j}"
-    shadow "org.mariadb.jdbc:mariadb-java-client:${mariadb_connector_j}"
-    shadow "org.postgresql:postgresql:${postgresql_jdbc_driver}"
+    implementation project(':core')
+
 }
 
-shadowJar {
-    configurations = [project.configurations.shadow]
-    setArchiveBaseName("${rootProject.name}")
-    setArchiveClassifier('')
-
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
-    mergeServiceFiles()
-
-    relocate('com.zaxxer.hikari', 'com.vecoo.extralib.shade.zaxxer.hikari')
-    relocate('io.leangen.geantyref', 'com.vecoo.extralib.shade.leangen.geantyref')
-    relocate('net.kyori.option', 'com.vecoo.extralib.shade.kyori.option')
-    relocate('org.spongepowered.configurate', 'com.vecoo.extralib.shade.spongepowered.configurate')
-    relocate('com.mysql', 'com.vecoo.extralib.shade.mysql')
-    relocate('org.mariadb.jdbc', 'com.vecoo.extralib.shade.mariadb.jdbc')
-    relocate('org.postgresql', 'com.vecoo.extralib.shade.postgresql')
-    relocate('com.google.protobuf', 'com.vecoo.extralib.shade.google.protobuf')
-    relocate('com.google.errorprone', 'com.vecoo.extralib.shade.google.errorprone')
-    relocate('com.github.benmanes.caffeine', 'com.vecoo.extralib.shade.benmanes.caffeine')
-    relocate('org.checkerframework', 'com.vecoo.extralib.shade.checkerframework')
-    relocate('org.jspecify.annotations', 'com.vecoo.extralib.shade.jspecify.annotations')
-
-    exclude 'META-INF/licenses/**'
-    exclude 'META-INF/maven/**'
-    exclude 'META-INF/native-image/**'
-    exclude 'META-INF/LICENSE/**'
-    exclude 'META-INF/LICENSE.txt'
-    exclude 'INFO_BIN/**'
-    exclude 'INFO_SRC/**'
-    exclude 'README/**'
-    exclude 'LICENSE/**'
-    exclude 'google/**'
-    exclude 'CONTRIBUTING.md'
-}
+apply from: rootProject.file('gradle/library-dependencies.gradle')
+apply from: rootProject.file('gradle/shadow.gradle')
 
 processResources {
     filesMatching('META-INF/neoforge.mods.toml') {
