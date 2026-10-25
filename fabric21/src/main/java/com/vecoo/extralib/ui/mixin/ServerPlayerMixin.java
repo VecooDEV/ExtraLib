@@ -2,10 +2,12 @@ package com.vecoo.extralib.ui.mixin;
 
 import com.mojang.authlib.GameProfile;
 import com.vecoo.extralib.ui.impl.PlayerExtensions;
+import com.vecoo.extralib.ui.api.gui.SimpleGui;
 import com.vecoo.extralib.ui.virtual.ScreenHandlerFactory;
 import com.vecoo.extralib.ui.virtual.VirtualScreenHandlerInterface;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.damagesource.DamageSource;
@@ -66,4 +68,13 @@ public abstract class ServerPlayerMixin extends Player implements PlayerExtensio
     public void extraLib$ignoreNextClose() {
         this.extraLib$ignoreNext = true;
     }
+
+    @Inject(method = "doCloseContainer", at = @At("TAIL"))
+    private void extraLib$openPendingGui(CallbackInfo ci) {
+        Runnable pending = SimpleGui.PENDING_OPENS.remove(this.getUUID());
+        if (pending != null && this.getServer() != null) {
+            this.getServer().tell(new TickTask(this.getServer().getTickCount(), pending));
+        }
+    }
+
 }

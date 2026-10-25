@@ -9,7 +9,6 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.players.GameProfileCache;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -17,17 +16,22 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.inventory.ResultSlot;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ResolvableProfile;
+import com.vecoo.extralib.mixin.GameProfileCacheAccessor;
+import net.minecraft.server.players.GameProfileCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 public final class PlayerUtil {
     public static final String UNKNOWN_PLAYER = "Unknown";
+    private static final Map<String, UUID> UUID_BY_NAME = new HashMap<>();
+    private static final Map<UUID, String> NAME_BY_UUID = new HashMap<>();
 
     private PlayerUtil() {
     }
@@ -40,15 +44,7 @@ public final class PlayerUtil {
      */
     @Nullable
     public static UUID findUUID(@NotNull String playerName) {
-        GameProfileCache profileCache = ExtraLib.getInstance().getServer().getProfileCache();
-
-        if (profileCache == null) {
-            return null;
-        }
-
-        GameProfile gameProfile = profileCache.get(playerName).orElse(null);
-
-        return gameProfile != null ? gameProfile.getId() : null;
+        return UUID_BY_NAME.get(playerName.toLowerCase(Locale.ROOT));
     }
 
     /**
@@ -69,33 +65,7 @@ public final class PlayerUtil {
      */
     @NotNull
     public static String getPlayerName(@NotNull UUID playerUUID) {
-        GameProfileCache profileCache = ExtraLib.getInstance().getServer().getProfileCache();
-
-        if (profileCache == null) {
-            return UNKNOWN_PLAYER;
-        }
-
-        GameProfile gameProfile = profileCache.get(playerUUID).orElse(null);
-
-        return gameProfile != null ? gameProfile.getName() : UNKNOWN_PLAYER;
-    }
-
-    /**
-     * Sends a system formatted message to a player identified by UUID.
-     * <p>
-     * Use this method when the player's online status is unknown.
-     * If the player is offline, the message is silently ignored.
-     * </p>
-     *
-     * @param playerUUID the UUID of the player
-     * @param message    the message to send
-     */
-    public static void sendMessageUUID(@NotNull UUID playerUUID, @NotNull String message) {
-        ServerPlayer player = ExtraLib.getInstance().getServer().getPlayerList().getPlayer(playerUUID);
-
-        if (player != null) {
-            player.sendSystemMessage(TextUtil.formatMessage(message));
-        }
+        return NAME_BY_UUID.getOrDefault(playerUUID, UNKNOWN_PLAYER);
     }
 
     /**
@@ -109,10 +79,36 @@ public final class PlayerUtil {
      * @param message    the message to send
      */
     public static void sendMessageUUID(@NotNull UUID playerUUID, @NotNull Component message) {
-        ServerPlayer player = ExtraLib.getInstance().getServer().getPlayerList().getPlayer(playerUUID);
+        MinecraftServer server = ExtraLib.getCurrentServer();
 
-        if (player != null) {
-            player.sendSystemMessage(message);
+        if (server != null) {
+            ServerPlayer player = server.getPlayerList().getPlayer(playerUUID);
+
+            if (player != null) {
+                player.sendSystemMessage(message);
+            }
+        }
+    }
+
+    /**
+     * Sends a system formatted message to a player identified by UUID.
+     * <p>
+     * Use this method when the player's online status is unknown.
+     * If the player is offline, the message is silently ignored.
+     * </p>
+     *
+     * @param playerUUID the UUID of the player
+     * @param message    the message to send
+     */
+    public static void sendMessageUUID(@NotNull UUID playerUUID, @NotNull String message) {
+        MinecraftServer server = ExtraLib.getCurrentServer();
+
+        if (server != null) {
+            ServerPlayer player = server.getPlayerList().getPlayer(playerUUID);
+
+            if (player != null) {
+                player.sendSystemMessage(TextUtil.formatMessage(message));
+            }
         }
     }
 
@@ -124,7 +120,13 @@ public final class PlayerUtil {
      */
     @Nullable
     public static ServerPlayer findPlayer(@NotNull UUID playerUUID) {
-        return ExtraLib.getInstance().getServer().getPlayerList().getPlayer(playerUUID);
+        MinecraftServer server = ExtraLib.getCurrentServer();
+
+        if (server == null) {
+            return null;
+        }
+
+        return server.getPlayerList().getPlayer(playerUUID);
     }
 
     /**
@@ -135,24 +137,32 @@ public final class PlayerUtil {
      */
     @Nullable
     public static ServerPlayer findPlayer(@NotNull String playerName) {
-        return ExtraLib.getInstance().getServer().getPlayerList().getPlayerByName(playerName);
+        MinecraftServer server = ExtraLib.getCurrentServer();
+
+        if (server == null) {
+            return null;
+        }
+
+        return server.getPlayerList().getPlayerByName(playerName);
     }
 
     /**
-     * Returns a {@link CommandSourceStack} for the finds player name.
-     * <p>
-     * If the player is not online, returns the server's command source stack.
-     * </p>
+     * Returns a {@link CommandSourceStack} for an online player name.
      *
-     * @param sourceName the name of the player or source
-     * @return the command source stack
+     * @param sourceName the name of the player
+     * @return the player's command source stack, or null if the player is not online
      */
-    @NotNull
+    @Nullable
     public static CommandSourceStack getSource(@NotNull String sourceName) {
-        MinecraftServer server = ExtraLib.getInstance().getServer();
+        MinecraftServer server = ExtraLib.getCurrentServer();
+
+        if (server == null) {
+            return null;
+        }
+
         ServerPlayer player = server.getPlayerList().getPlayerByName(sourceName);
 
-        return player != null ? player.createCommandSourceStack() : server.createCommandSourceStack();
+        return player != null ? player.createCommandSourceStack() : null;
     }
 
     /**
@@ -162,8 +172,12 @@ public final class PlayerUtil {
      * @param command the command string
      */
     public static void executeCommand(@Nullable Player player, @NotNull String command) {
-        if (player != null) {
-            ExtraLib.getInstance().getServer().getCommands().performPrefixedCommand(player.createCommandSourceStack(), command);
+        MinecraftServer server = ExtraLib.getCurrentServer();
+
+        if (server != null) {
+            if (player != null) {
+                server.getCommands().performPrefixedCommand(player.createCommandSourceStack(), command);
+            }
         }
     }
 
@@ -181,17 +195,22 @@ public final class PlayerUtil {
     public static ItemStack getPlayerSkull(@NotNull UUID playerUUID, @NotNull String playerName) {
         ItemStack itemStack = Items.PLAYER_HEAD.getDefaultInstance();
 
-        if (!playerName.equals(UNKNOWN_PLAYER)) {
-            GameProfile profile = new GameProfile(playerUUID, playerName);
-            ProfileResult profileResult = ExtraLib.getInstance().getServer().getSessionService().fetchProfile(profile.getId(), false);
+        if (UNKNOWN_PLAYER.equals(playerName)) {
+            return itemStack;
+        }
+
+        GameProfile profile = new GameProfile(playerUUID, playerName);
+        MinecraftServer server = ExtraLib.getCurrentServer();
+
+        if (server != null) {
+            ProfileResult profileResult = server.getSessionService().fetchProfile(profile.getId(), false);
 
             if (profileResult != null) {
                 profile = profileResult.profile();
             }
-
-            itemStack.set(DataComponents.PROFILE, new ResolvableProfile(profile));
         }
 
+        itemStack.set(DataComponents.PROFILE, new ResolvableProfile(profile));
         return itemStack;
     }
 
@@ -214,7 +233,13 @@ public final class PlayerUtil {
 
         int count = 0;
 
-        for (ItemStack itemStack : player.inventoryMenu.getItems()) {
+        for (Slot slot : player.inventoryMenu.slots) {
+            if (slot instanceof ResultSlot) {
+                continue;
+            }
+
+            ItemStack itemStack = slot.getItem();
+
             if (itemStack.isEmpty()) {
                 continue;
             }
@@ -251,21 +276,18 @@ public final class PlayerUtil {
 
         int count = 0;
 
-        for (ItemStack itemStack : player.inventoryMenu.getItems()) {
+        for (Slot slot : player.inventoryMenu.slots) {
+            if (slot instanceof ResultSlot) {
+                continue;
+            }
+
+            ItemStack itemStack = slot.getItem();
+
             if (itemStack.isEmpty() || itemStack.getItem() != searchItemStack.getItem()) {
                 continue;
             }
 
-            if (itemStack.getComponents().isEmpty() && searchItemStack.getComponents().isEmpty()) {
-                count += itemStack.getCount();
-                continue;
-            }
-
-            if (itemStack.getComponents().isEmpty() || searchItemStack.getComponents().isEmpty()) {
-                continue;
-            }
-
-            if (!Objects.equals(itemStack.getComponents().get(dataComponent), searchItemStack.getComponents().get(dataComponent))) {
+            if (!Objects.equals(itemStack.get(dataComponent), searchItemStack.get(dataComponent))) {
                 continue;
             }
 
@@ -292,25 +314,36 @@ public final class PlayerUtil {
             return;
         }
 
+        if (amount <= 0) {
+            return;
+        }
+
         int totalRemoved = 0;
 
-        InventoryMenu playerContainer = player.inventoryMenu;
+        ItemStack searchItemStack = removeItemStack.copy();
+        InventoryMenu inventoryMenu = player.inventoryMenu;
 
-        for (ItemStack itemStack : playerContainer.getItems()) {
+        for (Slot slot : inventoryMenu.slots) {
             if (totalRemoved >= amount) {
                 break;
             }
+
+            if (slot instanceof ResultSlot) {
+                continue;
+            }
+
+            ItemStack itemStack = slot.getItem();
 
             if (itemStack.isEmpty()) {
                 continue;
             }
 
             if (strict) {
-                if (!ItemStack.isSameItemSameComponents(itemStack, removeItemStack)) {
+                if (!ItemStack.isSameItemSameComponents(itemStack, searchItemStack)) {
                     continue;
                 }
             } else {
-                if (!itemStack.is(removeItemStack.getItem())) {
+                if (!itemStack.is(searchItemStack.getItem())) {
                     continue;
                 }
             }
@@ -318,10 +351,59 @@ public final class PlayerUtil {
             int toRemove = Math.min(itemStack.getCount(), amount - totalRemoved);
 
             itemStack.shrink(toRemove);
+            slot.setChanged();
             totalRemoved += toRemove;
         }
 
-        playerContainer.broadcastChanges();
+        inventoryMenu.broadcastChanges();
+    }
+
+    /**
+     * Removes a specific number of item stacks from the player's inventory
+     * that match a specific data component.
+     *
+     * @param player          the player
+     * @param removeItemStack the item stack to remove
+     * @param dataComponent   the data component to match
+     * @param amount          the number of items to remove
+     */
+    public static void removeItemStackTag(@Nullable Player player, @NotNull ItemStack removeItemStack, @NotNull DataComponentType<?> dataComponent, int amount) {
+        if (player == null || amount <= 0) {
+            return;
+        }
+
+        int totalRemoved = 0;
+
+        ItemStack searchItemStack = removeItemStack.copy();
+        InventoryMenu inventoryMenu = player.inventoryMenu;
+
+        for (Slot slot : inventoryMenu.slots) {
+            if (totalRemoved >= amount) {
+                break;
+            }
+
+            if (slot instanceof ResultSlot) {
+                continue;
+            }
+
+            ItemStack itemStack = slot.getItem();
+
+            if (itemStack.isEmpty() || itemStack.getItem() != searchItemStack.getItem()) {
+                continue;
+            }
+
+            if (!Objects.equals(itemStack.get(dataComponent), searchItemStack.get(dataComponent))) {
+                continue;
+            }
+
+            int toRemove = Math.min(itemStack.getCount(), amount - totalRemoved);
+
+            itemStack.shrink(toRemove);
+            slot.setChanged();
+            totalRemoved += toRemove;
+        }
+
+        inventoryMenu.broadcastChanges();
     }
 
     public static void giveItem(@Nullable Player player, @NotNull ItemStack itemStack) {
@@ -330,16 +412,23 @@ public final class PlayerUtil {
             return;
         }
 
-        if (!player.addItem(itemStack)) {
+        int originalCount = itemStack.getCount();
+        boolean added = player.addItem(itemStack);
+        boolean inventoryChanged = added || itemStack.getCount() < originalCount;
+
+        if (!added) {
             ItemEntity itemEntity = player.drop(itemStack, false);
 
             if (itemEntity != null) {
-                itemEntity.setNoPickUpDelay();
                 itemEntity.setTarget(player.getUUID());
+                itemEntity.setNoPickUpDelay();
             }
         }
 
-        playSound(player, SoundEvents.ITEM_PICKUP);
+        if (inventoryChanged) {
+            playSound(player, SoundEvents.ITEM_PICKUP, 0.2F);
+        }
+
         player.containerMenu.broadcastChanges();
     }
 
@@ -374,5 +463,32 @@ public final class PlayerUtil {
 
             player.level().playSound(null, player.getX(), player.getY(), player.getZ(), soundEvent, SoundSource.PLAYERS, volume, pitch);
         }
+    }
+
+    public static void rebuildUUIDCache() {
+        UUID_BY_NAME.clear();
+        NAME_BY_UUID.clear();
+
+        MinecraftServer server = ExtraLib.getCurrentServer();
+
+        if (server == null || server.getProfileCache() == null) {
+            return;
+        }
+
+        GameProfileCache cache = server.getProfileCache();
+
+        for (UUID uuid : ((GameProfileCacheAccessor) cache).extraLib$getProfilesByUUID().keySet()) {
+            cache.get(uuid).ifPresent(profile -> cacheUUID(profile.getId(), profile.getName()));
+        }
+
+        server.getPlayerList().getPlayers().forEach(online -> cacheUUID(online.getUUID(), online.getGameProfile().getName()));
+    }
+
+    public static void cacheUUID(@NotNull UUID playerUUID, @NotNull String playerName) {
+        String normalizedName = playerName.toLowerCase(Locale.ROOT);
+
+        UUID_BY_NAME.entrySet().removeIf(entry -> entry.getValue().equals(playerUUID) && !entry.getKey().equals(normalizedName));
+        UUID_BY_NAME.put(normalizedName, playerUUID);
+        NAME_BY_UUID.put(playerUUID, playerName);
     }
 }

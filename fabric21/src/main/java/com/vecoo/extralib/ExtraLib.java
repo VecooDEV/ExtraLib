@@ -3,6 +3,11 @@ package com.vecoo.extralib;
 import com.vecoo.extralib.internal.ExtraLibLogger;
 import com.vecoo.extralib.config.ServerConfig;
 import com.vecoo.extralib.loader.YamlLoader;
+import com.vecoo.extralib.loader.GsonLoader;
+import com.vecoo.extralib.util.PlayerUtil;
+import com.vecoo.extralib.ui.api.gui.SimpleGui;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import org.jetbrains.annotations.Nullable;
 import com.vecoo.extralib.scheduler.ResetScheduler;
 import com.vecoo.extralib.scheduler.TaskTimer;
 import com.vecoo.extralib.util.ChatUtil;
@@ -14,6 +19,7 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
 
 public class ExtraLib implements ModInitializer {
     public static final String MOD_ID = "extralib";
@@ -23,7 +29,7 @@ public class ExtraLib implements ModInitializer {
 
     private ServerConfig serverConfig;
 
-    private MinecraftServer server;
+    private volatile MinecraftServer server;
 
     @Override
     public void onInitialize() {
@@ -31,16 +37,40 @@ public class ExtraLib implements ModInitializer {
 
         loadConfig();
 
-        ServerLifecycleEvents.SERVER_STARTING.register(server -> this.server = server);
+        ServerLifecycleEvents.SERVER_STARTING.register(server -> {
+            this.server = server;
+            ResetScheduler.start();
+        });
+
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) ->
+                PlayerUtil.cacheUUID(handler.player.getUUID(), handler.player.getGameProfile().getName()));
+
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> SimpleGui.PENDING_OPENS.remove(handler.player.getUUID()));
+
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+            PlayerUtil.rebuildUUIDCache();
+
             if (this.serverConfig.isNotification()) {
                 notificationMessage();
             }
         });
+
         ServerTickEvents.END_SERVER_TICK.register(server -> TaskTimer.onServerTickEnd());
+
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
             TaskTimer.cancelAll();
             ResetScheduler.shutdown();
+            CompletableFuture.allOf(YamlLoader.flush(), GsonLoader.flush()).join();
+        });
+
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
+            try {
+                CompletableFuture.allOf(YamlLoader.flush(), GsonLoader.flush()).join();
+            } finally {
+                SimpleGui.PENDING_OPENS.clear();
+                this.server = null;
+                PlayerUtil.rebuildUUIDCache();
+            }
         });
     }
 
@@ -48,11 +78,12 @@ public class ExtraLib implements ModInitializer {
         try {
             this.serverConfig = YamlLoader.load(ServerConfig.class, "config/extralib/config.yml", false);
         } catch (IOException e) {
-            throw new RuntimeException(e.getMessage());
+            throw new RuntimeException("Failed to load ExtraLib config.", e);
         }
     }
 
     private void notificationMessage() {
+        LOGGER.info("Thanks for using ExtraLib. Support: https://discord.gg/VSGEVagRPq");
         String separator = "==========================================================================";
 
         ChatUtil.broadcast("&8" + separator);
@@ -100,7 +131,8 @@ public class ExtraLib implements ModInitializer {
         return LOGGER;
     }
 
-    public MinecraftServer getServer() {
-        return instance.server;
+    @Nullable
+    public static MinecraftServer getCurrentServer() {
+        return instance == null ? null : instance.server;
     }
 }

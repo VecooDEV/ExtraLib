@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "com.vecoo.extralib.ui.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "extralib.refmap.json",
+  "mixins": [
+    "AbstractContainerMenuMixin",
+    "ServerGamePacketListenerImplMixin",
+    "ServerPlayerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

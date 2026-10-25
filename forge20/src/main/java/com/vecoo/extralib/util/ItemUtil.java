@@ -97,8 +97,8 @@ public final class ItemUtil {
     public static ItemStack deserialize(@NotNull String itemStack) {
         try {
             return ItemStack.of(TagParser.parseTag(itemStack));
-        } catch (CommandSyntaxException e) {
-            ExtraLib.getLogger().error("Invalid tag item.");
+        } catch (CommandSyntaxException | RuntimeException e) {
+            ExtraLib.getLogger().error("Invalid item data.", e);
             return ItemStack.EMPTY;
         }
     }

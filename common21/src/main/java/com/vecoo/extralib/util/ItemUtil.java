@@ -3,6 +3,13 @@ package com.vecoo.extralib.util;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.TagParser;
+import net.minecraft.util.datafix.fixes.References;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.SharedConstants;
+import com.mojang.serialization.Dynamic;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.vecoo.extralib.internal.ExtraLibLogger;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -108,14 +115,34 @@ public final class ItemUtil {
      */
     @NotNull
     public static ItemStack deserialize(@NotNull JsonElement jsonElement, @NotNull MinecraftServer server) {
-        if (jsonElement.isJsonObject()) {
-            JsonObject object = jsonElement.getAsJsonObject();
+        try {
+            if (jsonElement.isJsonObject()) {
+                JsonObject object = jsonElement.getAsJsonObject();
 
-            if (object.has("id") && !object.get("id").isJsonNull() && "minecraft:air".equals(object.get("id").getAsString())) {
-                return ItemStack.EMPTY;
+                if (object.has("id") && !object.get("id").isJsonNull() && "minecraft:air".equals(object.get("id").getAsString())) {
+                    return ItemStack.EMPTY;
+                }
             }
+            return ItemStack.CODEC.decode(server.registryAccess().createSerializationContext(JsonOps.INSTANCE), jsonElement).getOrThrow().getFirst();
+        } catch (RuntimeException error) {
+            ExtraLibLogger.getLogger().error("Invalid item data.", error);
+            return ItemStack.EMPTY;
         }
-
-        return ItemStack.CODEC.decode(server.registryAccess().createSerializationContext(JsonOps.INSTANCE), jsonElement).getOrThrow().getFirst();
     }
+
+    /** Migrates SNBT saved on an older Minecraft version using its DataVersion. */
+    @NotNull
+    public static ItemStack deserializeLegacy(@NotNull String snbt, int dataVersion, @NotNull MinecraftServer server) {
+        try {
+            CompoundTag tag = (CompoundTag) server.getFixerUpper().update(References.ITEM_STACK,
+                    new Dynamic<>(NbtOps.INSTANCE, TagParser.parseTag(snbt)), dataVersion,
+                    SharedConstants.getCurrentVersion().getDataVersion().getVersion()).getValue();
+
+            return ItemStack.parseOptional(server.registryAccess(), tag);
+        } catch (CommandSyntaxException | RuntimeException error) {
+            ExtraLibLogger.getLogger().error("Invalid legacy item data.", error);
+            return ItemStack.EMPTY;
+        }
+    }
+
 }

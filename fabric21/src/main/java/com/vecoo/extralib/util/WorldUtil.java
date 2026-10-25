@@ -30,9 +30,13 @@ public final class WorldUtil {
      */
     @Nullable
     public static ServerLevel findLevelByName(@NotNull String levelName) {
-        for (ServerLevel level : ExtraLib.getInstance().getServer().getAllLevels()) {
-            if (level.dimension().location().getPath().equals(levelName.toLowerCase(Locale.ROOT))) {
-                return level;
+        MinecraftServer server = ExtraLib.getCurrentServer();
+
+        if (server != null) {
+            for (ServerLevel level : server.getAllLevels()) {
+                if (level.dimension().location().getPath().equals(levelName.toLowerCase(Locale.ROOT))) {
+                    return level;
+                }
             }
         }
 

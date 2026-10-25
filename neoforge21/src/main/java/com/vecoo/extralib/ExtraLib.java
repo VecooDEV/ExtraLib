@@ -7,6 +7,7 @@ import com.vecoo.extralib.loader.GsonLoader;
 import com.vecoo.extralib.loader.YamlLoader;
 import com.vecoo.extralib.scheduler.ResetScheduler;
 import com.vecoo.extralib.scheduler.TaskTimer;
+import com.vecoo.extralib.ui.api.gui.SimpleGui;
 import com.vecoo.extralib.ui.listener.GuiListener;
 import com.vecoo.extralib.util.ChatUtil;
 import com.vecoo.extralib.util.PlayerUtil;
@@ -15,11 +16,14 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
 
 @Mod(ExtraLib.MOD_ID)
 public class ExtraLib {
@@ -41,6 +45,11 @@ public class ExtraLib {
         NeoForge.EVENT_BUS.register(new TaskTimer.EventHandler());
     }
 
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onServerStarting(ServerStartingEvent event) {
+        ResetScheduler.start();
+    }
+
     @SubscribeEvent
     public void onServerStarted(ServerStartedEvent event) {
         PlayerUtil.rebuildUUIDCache();
@@ -50,13 +59,18 @@ public class ExtraLib {
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onServerStopping(ServerStoppingEvent event) {
         TaskTimer.cancelAll();
         ResetScheduler.shutdown();
 
-        YamlLoader.flush().join();
-        GsonLoader.flush().join();
+        CompletableFuture.allOf(YamlLoader.flush(), GsonLoader.flush()).join();
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void onServerStopped(ServerStoppedEvent event) {
+        SimpleGui.PENDING_OPENS.clear();
+        CompletableFuture.allOf(YamlLoader.flush(), GsonLoader.flush()).join();
     }
 
     public void loadConfig() {

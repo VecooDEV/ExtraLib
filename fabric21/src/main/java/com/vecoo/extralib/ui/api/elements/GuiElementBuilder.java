@@ -1,11 +1,11 @@
 package com.vecoo.extralib.ui.api.elements;
 
+import com.vecoo.extralib.ExtraLib;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTextures;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.authlib.yggdrasil.ProfileResult;
-import com.vecoo.extralib.ExtraLib;
 import com.vecoo.extralib.ui.api.GuiHelpers;
 import com.vecoo.extralib.util.ItemUtil;
 import com.vecoo.extralib.util.TextUtil;
@@ -197,7 +197,13 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
 
     @NotNull
     public GuiElementBuilder enchant(@NotNull ResourceKey<Enchantment> enchantment, int level) {
-        return enchant(ExtraLib.getInstance().getServer().registryAccess(), enchantment, level);
+        MinecraftServer server = ExtraLib.getCurrentServer();
+
+        if (server == null) {
+            return this;
+        }
+
+        return enchant(server.registryAccess(), enchantment, level);
     }
 
     @NotNull
@@ -232,11 +238,14 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
 
     @NotNull
     public GuiElementBuilder setSkullOwner(@NotNull GameProfile profile) {
-        if (ExtraLib.getInstance().getServer().getSessionService().getTextures(profile) == MinecraftProfileTextures.EMPTY) {
-            ProfileResult profileResult = ExtraLib.getInstance().getServer().getSessionService().fetchProfile(profile.getId(), false);
+        MinecraftServer server = ExtraLib.getCurrentServer();
 
-            if (profileResult != null) {
-                profile = profileResult.profile();
+        if (server != null && server.getSessionService().getTextures(profile) == MinecraftProfileTextures.EMPTY) {
+
+            ProfileResult result = server.getSessionService().fetchProfile(profile.getId(), false);
+
+            if (result != null) {
+                profile = result.profile();
             }
         }
 

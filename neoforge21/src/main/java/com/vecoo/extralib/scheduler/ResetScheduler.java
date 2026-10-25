@@ -6,7 +6,6 @@ import com.vecoo.extralib.util.time.TimeUtil;
 import net.minecraft.server.MinecraftServer;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.NotNull;
-
 import java.time.ZoneId;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
@@ -14,15 +13,23 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public final class ResetScheduler {
-    private static final ScheduledExecutorService SCHEDULER =
-            Executors.newSingleThreadScheduledExecutor(runnable -> {
-                Thread thread = new Thread(runnable, "ExtraLib-ResetScheduler");
-                thread.setDaemon(true);
-
-                return thread;
-            });
+    private static volatile ScheduledExecutorService scheduler = createExecutor();
 
     private ResetScheduler() {
+    }
+
+    private static ScheduledExecutorService createExecutor() {
+        return Executors.newSingleThreadScheduledExecutor(runnable -> {
+            Thread thread = new Thread(runnable, "ExtraLib-ResetScheduler");
+            thread.setDaemon(true);
+            return thread;
+        });
+    }
+
+    public static synchronized void start() {
+        if (scheduler.isShutdown()) {
+            scheduler = createExecutor();
+        }
     }
 
     public static void schedule(@NotNull ResetPeriod resetPeriod, @NotNull Runnable task) {
@@ -38,56 +45,48 @@ public final class ResetScheduler {
     }
 
     public static void schedule(@NotNull ResetPeriod resetPeriod, @NotNull ZoneId zoneId, boolean sync, @NotNull Runnable task) {
-        if (SCHEDULER.isShutdown()) {
+        schedule(scheduler, resetPeriod, zoneId, sync, task);
+    }
+
+    private static void schedule(ScheduledExecutorService executor, ResetPeriod period, ZoneId zone, boolean sync, Runnable task) {
+        if (executor != scheduler || executor.isShutdown()) {
             return;
         }
-
-        long delay = TimeUtil.getSecondsUntilNext(resetPeriod, zoneId);
-
         try {
-            SCHEDULER.schedule(() -> execute(resetPeriod, zoneId, sync, task), delay, TimeUnit.SECONDS);
+            executor.schedule(() -> execute(executor, period, zone, sync, task), TimeUtil.getSecondsUntilNext(period, zone), TimeUnit.SECONDS);
         } catch (RejectedExecutionException ignored) {
         }
     }
 
-    private static void execute(@NotNull ResetPeriod resetPeriod, @NotNull ZoneId zoneId, boolean sync, @NotNull Runnable task) {
-        if (sync) {
-            executeSync(resetPeriod, zoneId, task);
+    private static void execute(ScheduledExecutorService executor, ResetPeriod period, ZoneId zone, boolean sync, Runnable task) {
+        if (executor != scheduler || executor.isShutdown()) {
             return;
         }
-
-        try {
-            task.run();
-        } catch (Throwable throwable) {
-            ExtraLib.getLogger().error("An error occurred while executing reset task.", throwable);
-        } finally {
-            schedule(resetPeriod, zoneId, false, task);
-        }
-    }
-
-    private static void executeSync(@NotNull ResetPeriod resetPeriod, @NotNull ZoneId zoneId, @NotNull Runnable task) {
-        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-
-        if (server == null) {
-            if (!SCHEDULER.isShutdown()) {
-                schedule(resetPeriod, zoneId, true, task);
+        Runnable action = () -> {
+            if (executor != scheduler || executor.isShutdown()) {
+                return;
             }
-
-            return;
-        }
-
-        server.execute(() -> {
             try {
                 task.run();
-            } catch (Exception e) {
-                ExtraLib.getLogger().error("An error occurred while executing reset task.", e);
+            } catch (Throwable error) {
+                ExtraLib.getLogger().error("An error occurred while executing reset task.", error);
             } finally {
-                schedule(resetPeriod, zoneId, true, task);
+                schedule(executor, period, zone, sync, task);
             }
-        });
+        };
+        if (sync) {
+            MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+            if (server == null) {
+                schedule(executor, period, zone, true, task);
+            } else {
+                server.execute(action);
+            }
+        } else {
+            action.run();
+        }
     }
 
-    public static void shutdown() {
-        SCHEDULER.shutdownNow();
+    public static synchronized void shutdown() {
+        scheduler.shutdownNow();
     }
 }

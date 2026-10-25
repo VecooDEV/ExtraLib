@@ -116,4 +116,32 @@ public final class PermissionUtil {
 
         return value;
     }
+
+    /** Resolves the minimum permission value without blocking the server thread. */
+    @NotNull
+    public static CompletableFuture<Integer> minValue(int value, @NotNull UUID playerUUID, @NotNull Set<String> nodeList) {
+        CompletableFuture<Integer> result = CompletableFuture.completedFuture(value);
+
+        for (String permission : nodeList) {
+            CompletableFuture<Boolean> allowed = hasPermission(playerUUID, permission);
+            result = result.thenCombine(allowed, (current, granted) -> granted ? Math.min(current, Integer.parseInt(permission.substring(permission.lastIndexOf('.') + 1))) : current);
+        }
+
+        return result;
+    }
+
+
+    /** Resolves the maximum permission value without blocking the server thread. */
+    @NotNull
+    public static CompletableFuture<Integer> maxValue(int value, @NotNull UUID playerUUID, @NotNull Set<String> nodeList) {
+        CompletableFuture<Integer> result = CompletableFuture.completedFuture(value);
+
+        for (String permission : nodeList) {
+            CompletableFuture<Boolean> allowed = hasPermission(playerUUID, permission);
+            result = result.thenCombine(allowed, (current, granted) -> granted ? Math.max(current, Integer.parseInt(permission.substring(permission.lastIndexOf('.') + 1))) : current);
+        }
+
+        return result;
+    }
+
 }

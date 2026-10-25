@@ -2,6 +2,7 @@ package com.vecoo.extralib.ui.listener;
 
 import com.vecoo.extralib.ui.api.gui.SimpleGui;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.TickTask;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 
@@ -12,7 +13,7 @@ public class GuiListener {
         Runnable pending = SimpleGui.PENDING_OPENS.remove(player.getUUID());
 
         if (pending != null && player.getServer() != null) {
-            player.getServer().execute(pending);
+            player.getServer().tell(new TickTask(player.getServer().getTickCount(), pending));
         }
     }
 }

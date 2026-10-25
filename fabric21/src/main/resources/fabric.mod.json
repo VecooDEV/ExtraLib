@@ -16,7 +16,8 @@
     ]
   },
   "mixins": [
-    "extralib.mixins.json"
+    "extralib.mixins.json",
+    "extralib.fabric.mixins.json"
   ],
   "depends": {
     "fabricloader": "*",

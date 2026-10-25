@@ -51,7 +51,7 @@ public final class PacketUtil {
      */
     public static void sendToPlayer(@Nullable UUID playerUUID, @NotNull CustomPacketPayload packet) {
         if (playerUUID != null) {
-            MinecraftServer server = ExtraLib.getInstance().getServer();
+            MinecraftServer server = ExtraLib.getCurrentServer();
 
             if (server != null) {
                 sendToPlayer(server.getPlayerList().getPlayer(playerUUID), packet);
@@ -77,7 +77,11 @@ public final class PacketUtil {
      * @param packet the primary packet to broadcast
      */
     public static void sendToAllPlayers(@NotNull CustomPacketPayload packet) {
-        ExtraLib.getInstance().getServer().getPlayerList().broadcastAll(new ClientboundCustomPayloadPacket(packet));
+        MinecraftServer server = ExtraLib.getCurrentServer();
+
+        if (server != null) {
+            server.getPlayerList().broadcastAll(new ClientboundCustomPayloadPacket(packet));
+        }
     }
 
     /**
@@ -101,4 +105,67 @@ public final class PacketUtil {
     public static void sendToServer(@NotNull CustomPacketPayload packet) {
         ClientPlayNetworking.send(packet);
     }
+
+    public static void sendToPlayer(@Nullable ServerPlayer player, @NotNull CustomPacketPayload packet, @NotNull CustomPacketPayload... packets) {
+        sendToPlayer(player, packet);
+
+        for (CustomPacketPayload additional : packets) {
+            sendToPlayer(player, additional);
+        }
+    }
+
+
+    public static void sendToPlayer(@Nullable Player player, @NotNull CustomPacketPayload packet, @NotNull CustomPacketPayload... packets) {
+        sendToPlayer(player, packet);
+
+        for (CustomPacketPayload additional : packets) {
+            sendToPlayer(player, additional);
+        }
+    }
+
+
+    public static void sendToPlayer(@Nullable UUID playerUUID, @NotNull CustomPacketPayload packet, @NotNull CustomPacketPayload... packets) {
+        sendToPlayer(playerUUID, packet);
+
+        for (CustomPacketPayload additional : packets) {
+            sendToPlayer(playerUUID, additional);
+        }
+    }
+
+
+    public static void sendToPlayer(@Nullable String playerName, @NotNull CustomPacketPayload packet, @NotNull CustomPacketPayload... packets) {
+        sendToPlayer(playerName, packet);
+
+        for (CustomPacketPayload additional : packets) {
+            sendToPlayer(playerName, additional);
+        }
+    }
+
+
+    public static void sendToAllPlayers(@NotNull CustomPacketPayload packet, @NotNull CustomPacketPayload... packets) {
+        sendToAllPlayers(packet);
+
+        for (CustomPacketPayload additional : packets) {
+            sendToAllPlayers(additional);
+        }
+    }
+
+
+    public static void sendToPlayersInDimension(@Nullable ServerLevel level, @NotNull CustomPacketPayload packet, @NotNull CustomPacketPayload... packets) {
+        sendToPlayersInDimension(level, packet);
+
+        for (CustomPacketPayload additional : packets) {
+            sendToPlayersInDimension(level, additional);
+        }
+    }
+
+
+    public static void sendToServer(@NotNull CustomPacketPayload packet, @NotNull CustomPacketPayload... packets) {
+        sendToServer(packet);
+
+        for (CustomPacketPayload additional : packets) {
+            sendToServer(additional);
+        }
+    }
+
 }

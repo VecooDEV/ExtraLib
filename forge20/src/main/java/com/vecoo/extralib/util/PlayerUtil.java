@@ -1,6 +1,10 @@
 package com.vecoo.extralib.util;
 
 import com.vecoo.extralib.ExtraLib;
+import com.mojang.authlib.GameProfile;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.world.item.Items;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -13,6 +17,8 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.inventory.ResultSlot;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.UsernameCache;
 import net.minecraftforge.server.ServerLifecycleHooks;
@@ -195,7 +201,13 @@ public final class PlayerUtil {
 
         int count = 0;
 
-        for (ItemStack itemStack : player.inventoryMenu.getItems()) {
+        for (Slot slot : player.inventoryMenu.slots) {
+            if (slot instanceof ResultSlot) {
+                continue;
+            }
+
+            ItemStack itemStack = slot.getItem();
+
             if (itemStack.isEmpty()) {
                 continue;
             }
@@ -232,21 +244,18 @@ public final class PlayerUtil {
 
         int count = 0;
 
-        for (ItemStack itemStack : player.inventoryMenu.getItems()) {
+        for (Slot slot : player.inventoryMenu.slots) {
+            if (slot instanceof ResultSlot) {
+                continue;
+            }
+
+            ItemStack itemStack = slot.getItem();
+
             if (itemStack.isEmpty() || itemStack.getItem() != searchItemStack.getItem()) {
                 continue;
             }
 
-            if (itemStack.getTag() == null && searchItemStack.getTag() == null) {
-                count += itemStack.getCount();
-                continue;
-            }
-
-            if (itemStack.getTag() == null || searchItemStack.getTag() == null) {
-                continue;
-            }
-
-            if (!Objects.equals(itemStack.getTag().get(tag), searchItemStack.getTag().get(tag))) {
+            if (!Objects.equals(itemStack.getTag() == null ? null : itemStack.getTag().get(tag), searchItemStack.getTag() == null ? null : searchItemStack.getTag().get(tag))) {
                 continue;
             }
 
@@ -273,25 +282,36 @@ public final class PlayerUtil {
             return;
         }
 
+        if (amount <= 0) {
+            return;
+        }
+
         int totalRemoved = 0;
 
+        ItemStack searchItemStack = removeItemStack.copy();
         InventoryMenu inventoryMenu = player.inventoryMenu;
 
-        for (ItemStack itemStack : inventoryMenu.getItems()) {
+        for (Slot slot : inventoryMenu.slots) {
             if (totalRemoved >= amount) {
                 break;
             }
+
+            if (slot instanceof ResultSlot) {
+                continue;
+            }
+
+            ItemStack itemStack = slot.getItem();
 
             if (itemStack.isEmpty()) {
                 continue;
             }
 
             if (strict) {
-                if (!ItemStack.isSameItemSameTags(itemStack, removeItemStack)) {
+                if (!ItemStack.isSameItemSameTags(itemStack, searchItemStack)) {
                     continue;
                 }
             } else {
-                if (!itemStack.is(removeItemStack.getItem())) {
+                if (!itemStack.is(searchItemStack.getItem())) {
                     continue;
                 }
             }
@@ -299,6 +319,7 @@ public final class PlayerUtil {
             int toRemove = Math.min(itemStack.getCount(), amount - totalRemoved);
 
             itemStack.shrink(toRemove);
+            slot.setChanged();
             totalRemoved += toRemove;
         }
 
@@ -311,17 +332,24 @@ public final class PlayerUtil {
             return;
         }
 
-        if (!player.addItem(itemStack)) {
+        int originalCount = itemStack.getCount();
+        boolean added = player.addItem(itemStack);
+        boolean inventoryChanged = added || itemStack.getCount() < originalCount;
+
+        if (!added) {
             ItemEntity itemEntity = player.drop(itemStack, false);
 
             if (itemEntity != null) {
                 itemEntity.setTarget(player.getUUID());
                 itemEntity.setNoPickUpDelay();
             }
-        } else {
-            playSound(player, SoundEvents.ITEM_PICKUP, 0.2F);
-            player.containerMenu.broadcastChanges();
         }
+
+        if (inventoryChanged) {
+            playSound(player, SoundEvents.ITEM_PICKUP, 0.2F);
+        }
+
+        player.containerMenu.broadcastChanges();
     }
 
     /**
@@ -368,5 +396,65 @@ public final class PlayerUtil {
 
         UUID_BY_NAME.entrySet().removeIf(entry -> entry.getValue().equals(playerUUID) && !entry.getKey().equals(normalizedName));
         UUID_BY_NAME.put(normalizedName, playerUUID);
+    }
+
+    /** Removes items matching the item type and the selected NBT tag. */
+    public static void removeItemStackTag(@Nullable Player player, @NotNull ItemStack removeItemStack, @NotNull String tag, int amount) {
+        if (player == null || amount <= 0) {
+            return;
+        }
+
+        int totalRemoved = 0;
+
+        ItemStack searchItemStack = removeItemStack.copy();
+        InventoryMenu inventoryMenu = player.inventoryMenu;
+
+        for (Slot slot : inventoryMenu.slots) {
+            if (totalRemoved >= amount) {
+                break;
+            }
+
+            if (slot instanceof ResultSlot) {
+                continue;
+            }
+
+            ItemStack itemStack = slot.getItem();
+
+            if (itemStack.isEmpty() || itemStack.getItem() != searchItemStack.getItem()) {
+                continue;
+            }
+
+            if (!Objects.equals(itemStack.getTag() == null ? null : itemStack.getTag().get(tag), searchItemStack.getTag() == null ? null : searchItemStack.getTag().get(tag))) {
+                continue;
+            }
+
+            int toRemove = Math.min(itemStack.getCount(), amount - totalRemoved);
+
+            itemStack.shrink(toRemove);
+            slot.setChanged();
+            totalRemoved += toRemove;
+        }
+
+        inventoryMenu.broadcastChanges();
+    }
+
+
+    @NotNull
+    public static ItemStack getPlayerSkull(@NotNull UUID playerUUID, @NotNull String playerName) {
+        ItemStack itemStack = Items.PLAYER_HEAD.getDefaultInstance();
+
+        if (UNKNOWN_PLAYER.equals(playerName)) {
+            return itemStack;
+        }
+
+        GameProfile profile = new GameProfile(playerUUID, playerName);
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+
+        if (server != null) {
+            profile = server.getSessionService().fillProfileProperties(profile, false);
+        }
+
+        itemStack.getOrCreateTag().put("SkullOwner", NbtUtils.writeGameProfile(new CompoundTag(), profile));
+        return itemStack;
     }
 }

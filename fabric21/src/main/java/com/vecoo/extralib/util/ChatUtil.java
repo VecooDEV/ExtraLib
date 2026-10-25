@@ -2,6 +2,7 @@ package com.vecoo.extralib.util;
 
 import com.vecoo.extralib.ExtraLib;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.NotNull;
 
 public final class ChatUtil {
@@ -14,7 +15,13 @@ public final class ChatUtil {
      * @param message the component message to broadcast
      */
     public static void broadcast(@NotNull Component message) {
-        ExtraLib.getInstance().getServer().getPlayerList().broadcastSystemMessage(message, false);
+        MinecraftServer server = ExtraLib.getCurrentServer();
+
+        if (server == null) {
+            return;
+        }
+
+        server.getPlayerList().broadcastSystemMessage(message, false);
     }
 
     /**
@@ -27,11 +34,23 @@ public final class ChatUtil {
     }
 
     public static void clickableBroadcastCommand(@NotNull Component message, @NotNull String command) {
-        ExtraLib.getInstance().getServer().getPlayerList().broadcastSystemMessage(TextUtil.clickableMessageCommand(message, command), false);
+        MinecraftServer server = ExtraLib.getCurrentServer();
+
+        if (server == null) {
+            return;
+        }
+
+        server.getPlayerList().broadcastSystemMessage(TextUtil.clickableMessageCommand(message, command), false);
     }
 
     public static void hoverBroadcastCommand(@NotNull Component message, @NotNull String text) {
-        ExtraLib.getInstance().getServer().getPlayerList().broadcastSystemMessage(TextUtil.hoverMessageText(message, text), false);
+        MinecraftServer server = ExtraLib.getCurrentServer();
+
+        if (server == null) {
+            return;
+        }
+
+        server.getPlayerList().broadcastSystemMessage(TextUtil.hoverMessageText(message, text), false);
     }
 
     /**

@@ -16,6 +16,8 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.inventory.ResultSlot;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ResolvableProfile;
@@ -232,7 +234,13 @@ public final class PlayerUtil {
 
         int count = 0;
 
-        for (ItemStack itemStack : player.inventoryMenu.getItems()) {
+        for (Slot slot : player.inventoryMenu.slots) {
+            if (slot instanceof ResultSlot) {
+                continue;
+            }
+
+            ItemStack itemStack = slot.getItem();
+
             if (itemStack.isEmpty()) {
                 continue;
             }
@@ -269,21 +277,18 @@ public final class PlayerUtil {
 
         int count = 0;
 
-        for (ItemStack itemStack : player.inventoryMenu.getItems()) {
+        for (Slot slot : player.inventoryMenu.slots) {
+            if (slot instanceof ResultSlot) {
+                continue;
+            }
+
+            ItemStack itemStack = slot.getItem();
+
             if (itemStack.isEmpty() || itemStack.getItem() != searchItemStack.getItem()) {
                 continue;
             }
 
-            if (itemStack.getComponents().isEmpty() && searchItemStack.getComponents().isEmpty()) {
-                count += itemStack.getCount();
-                continue;
-            }
-
-            if (itemStack.getComponents().isEmpty() || searchItemStack.getComponents().isEmpty()) {
-                continue;
-            }
-
-            if (!Objects.equals(itemStack.getComponents().get(dataComponent), searchItemStack.getComponents().get(dataComponent))) {
+            if (!Objects.equals(itemStack.get(dataComponent), searchItemStack.get(dataComponent))) {
                 continue;
             }
 
@@ -310,25 +315,36 @@ public final class PlayerUtil {
             return;
         }
 
+        if (amount <= 0) {
+            return;
+        }
+
         int totalRemoved = 0;
 
+        ItemStack searchItemStack = removeItemStack.copy();
         InventoryMenu inventoryMenu = player.inventoryMenu;
 
-        for (ItemStack itemStack : inventoryMenu.getItems()) {
+        for (Slot slot : inventoryMenu.slots) {
             if (totalRemoved >= amount) {
                 break;
             }
+
+            if (slot instanceof ResultSlot) {
+                continue;
+            }
+
+            ItemStack itemStack = slot.getItem();
 
             if (itemStack.isEmpty()) {
                 continue;
             }
 
             if (strict) {
-                if (!ItemStack.isSameItemSameComponents(itemStack, removeItemStack)) {
+                if (!ItemStack.isSameItemSameComponents(itemStack, searchItemStack)) {
                     continue;
                 }
             } else {
-                if (!itemStack.is(removeItemStack.getItem())) {
+                if (!itemStack.is(searchItemStack.getItem())) {
                     continue;
                 }
             }
@@ -336,6 +352,7 @@ public final class PlayerUtil {
             int toRemove = Math.min(itemStack.getCount(), amount - totalRemoved);
 
             itemStack.shrink(toRemove);
+            slot.setChanged();
             totalRemoved += toRemove;
         }
 
@@ -352,41 +369,38 @@ public final class PlayerUtil {
      * @param amount          the number of items to remove
      */
     public static void removeItemStackTag(@Nullable Player player, @NotNull ItemStack removeItemStack, @NotNull DataComponentType<?> dataComponent, int amount) {
-        if (player == null) {
-            ExtraLib.getLogger().error("Item {} was not claimed because the player is null, this is an error.", removeItemStack.getDisplayName());
+        if (player == null || amount <= 0) {
             return;
         }
 
         int totalRemoved = 0;
 
+        ItemStack searchItemStack = removeItemStack.copy();
         InventoryMenu inventoryMenu = player.inventoryMenu;
 
-        for (ItemStack itemStack : inventoryMenu.getItems()) {
+        for (Slot slot : inventoryMenu.slots) {
             if (totalRemoved >= amount) {
                 break;
             }
 
-            if (itemStack.isEmpty() || itemStack.getItem() != removeItemStack.getItem()) {
+            if (slot instanceof ResultSlot) {
+                continue;
+            }
+
+            ItemStack itemStack = slot.getItem();
+
+            if (itemStack.isEmpty() || itemStack.getItem() != searchItemStack.getItem()) {
+                continue;
+            }
+
+            if (!Objects.equals(itemStack.get(dataComponent), searchItemStack.get(dataComponent))) {
                 continue;
             }
 
             int toRemove = Math.min(itemStack.getCount(), amount - totalRemoved);
 
-            if (itemStack.getComponents().isEmpty() && removeItemStack.getComponents().isEmpty()) {
-                itemStack.shrink(toRemove);
-                totalRemoved += toRemove;
-                continue;
-            }
-
-            if (itemStack.getComponents().isEmpty() || removeItemStack.getComponents().isEmpty()) {
-                continue;
-            }
-
-            if (!Objects.equals(itemStack.getComponents().get(dataComponent), removeItemStack.getComponents().get(dataComponent))) {
-                continue;
-            }
-
             itemStack.shrink(toRemove);
+            slot.setChanged();
             totalRemoved += toRemove;
         }
 
@@ -399,17 +413,23 @@ public final class PlayerUtil {
             return;
         }
 
-        if (!player.addItem(itemStack)) {
-            ItemEntity itemEntity = player.drop(itemStack, false);
+        int originalCount = itemStack.getCount();
+        boolean added = player.addItem(itemStack);
+        boolean inventoryChanged = added || itemStack.getCount() < originalCount;
 
+        if (!added) {
+            ItemEntity itemEntity = player.drop(itemStack, false);
             if (itemEntity != null) {
                 itemEntity.setTarget(player.getUUID());
                 itemEntity.setNoPickUpDelay();
             }
-        } else {
-            playSound(player, SoundEvents.ITEM_PICKUP, 0.2F);
-            player.containerMenu.broadcastChanges();
         }
+
+        if (inventoryChanged) {
+            playSound(player, SoundEvents.ITEM_PICKUP, 0.2F);
+        }
+        
+        player.containerMenu.broadcastChanges();
     }
 
     /**

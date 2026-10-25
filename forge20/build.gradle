@@ -24,6 +24,7 @@ sourceSets.main.resources.srcDir(rootProject.file('common20/src/main/resources')
 
 dependencies {
     implementation project(':core')
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     compileOnly minecraft.dependency("net.minecraftforge:forge:1.20.1-${forge_20}")
 }
 
@@ -34,8 +35,29 @@ tasks.named('jar') {
     enabled = false
 }
 
-renamer.classes('renameJarToSrg', tasks.named('shadowJar', Jar)) {
+renamer {
     mappings(minecraft.dependency.toSrg.get())
+    enableMixinRefmaps {
+        source(sourceSets.main) {
+            refMap = 'extralib.refmap.json'
+        }
+        config 'extralib.mixins.json'
+        jar(tasks.named('shadowJar', Jar))
+    }
+}
+
+tasks.named('compileJava') {
+    outputs.file(layout.buildDirectory.file('tmp/compileJava/compileJava-refmap.json')).withPropertyName('mixinRefmap')
+    outputs.file(layout.buildDirectory.file('tmp/compileJava/compileJava-mappings.tsrg')).withPropertyName('mixinMappings')
+}
+
+renamer.mixin.generatedMappings.configure {
+    dependsOn(tasks.named('compileJava'))
+}
+
+renamer.classes('renameJarToSrg', tasks.named('shadowJar', Jar)) {
+    mappings(renamer.mixin.generatedMappings)
+    dependsOn(tasks.named('compileJava'))
     output = layout.buildDirectory.file("libs/${rootProject.name}-${project.version}.jar").get().asFile
 }
 

@@ -1,7 +1,7 @@
 package com.vecoo.extralib.util;
 
-import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.vecoo.extralib.ExtraLib;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.server.MinecraftServer;
@@ -24,9 +24,11 @@ public final class CommandUtil {
      * @param command the command to execute, without a leading slash
      */
     public static void executeCommand(@NotNull String command) {
-        MinecraftServer server = ExtraLib.getInstance().getServer();
+        MinecraftServer server = ExtraLib.getCurrentServer();
 
-        server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), command);
+        if (server != null) {
+            server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), command);
+        }
     }
 
     /**
