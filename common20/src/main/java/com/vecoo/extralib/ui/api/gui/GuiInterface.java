@@ -1,5 +1,6 @@
 package com.vecoo.extralib.ui.api.gui;
 
+import com.vecoo.extralib.internal.GuiErrorHandler;
 import com.vecoo.extralib.ui.api.ScreenProperty;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -60,7 +61,9 @@ public interface GuiInterface {
     }
 
     default void handleException(@NotNull Throwable throwable) {
-        throwable.printStackTrace();
+        ServerPlayer player = getPlayer();
+
+        GuiErrorHandler.log(this, player == null ? null : player.getUUID(), getSyncId(), throwable);
     }
 
     default void sendProperty(@NotNull ScreenProperty property, int value) {

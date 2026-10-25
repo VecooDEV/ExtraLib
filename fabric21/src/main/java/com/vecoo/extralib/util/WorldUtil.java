@@ -44,14 +44,10 @@ public final class WorldUtil {
     }
 
     /**
-     * Resolves the world directory path depending on whether the server is dedicated
-     * or running in singleplayer/integrated mode.
+     * Resolves the actual world directory for dedicated and integrated servers.
      * <p>
-     * Replaces the placeholder {@code %directory%} in the provided file path with:
-     * <ul>
-     *     <li>{@code world} for dedicated servers</li>
-     *     <li>{@code saves/<worldName>} for singleplayer/integrated servers</li>
-     * </ul>
+     * Replaces the placeholder {@code %directory%} with the server's world root,
+     * including custom world names and absolute paths.
      *
      * @param file   the file path template that contains the placeholder {@code %directory%}
      * @param server the current Minecraft server instance
@@ -59,12 +55,7 @@ public final class WorldUtil {
      */
     @NotNull
     public static String resolveWorldDirectory(@NotNull String file, @NotNull MinecraftServer server) {
-        if (server.isDedicatedServer()) {
-            return file.replace("%directory%", "world");
-        }
-
-        return file.replace("%directory%", "saves/" + server.getWorldPath(LevelResource.LEVEL_DATA_FILE)
-                .normalize().getParent().getFileName().toString());
+        return file.replace("%directory%", server.getWorldPath(LevelResource.ROOT).normalize().toString());
     }
 
     /**

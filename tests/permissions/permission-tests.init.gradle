@@ -1,0 +1,53 @@
+gradle.projectsEvaluated {
+    def moduleName = rootProject.findProperty('permissionLoader') ?: 'fabric21'
+    def withLuckPerms = rootProject.findProperty('permissionLuckPerms') == 'true'
+    def target = rootProject.project(":${moduleName}")
+    def platform = moduleName == 'fabric21' ? 'fabric' : 'neoforge'
+    def tests = rootProject.file('tests/permissions')
+    def profile = "run/permissions/${withLuckPerms ? 'luckperms' : 'vanilla'}"
+
+    target.with {
+        def permissionTest = sourceSets.create('permissionTest') {
+            java.srcDirs(new File(tests, 'common'), new File(tests, platform))
+            resources.srcDir(new File(tests, "${platform}-resources"))
+            compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
+            compileClasspath += files(file("run/permissions/dependencies/LuckPerms-${platform == 'fabric' ? 'Fabric-5.4.140' : 'NeoForge-5.4.150'}.jar"))
+            runtimeClasspath += sourceSets.main.runtimeClasspath
+        }
+
+        if (platform == 'fabric') {
+            loom.mods.create('extralib_permission_test') {
+                sourceSet permissionTest
+            }
+            def testJar = tasks.register('permissionTestJar', Jar) {
+                from permissionTest.output
+                archiveClassifier = 'permission-test-dev'
+            }
+            def remapTask = Class.forName('net.fabricmc.loom.task.RemapJarTask', true, loom.class.classLoader)
+            tasks.register('remapPermissionTestJar', remapTask) {
+                inputFile.set(testJar.flatMap { it.archiveFile })
+                archiveClassifier = 'permission-test'
+                addNestedDependencies = false
+            }
+            loom.runs.named('server') {
+                runDir profile
+            }
+        } else {
+            neoForge.mods.create('extralib_permission_test') {
+                sourceSet permissionTest
+            }
+            neoForge.runs.named('server') {
+                gameDirectory = layout.projectDirectory.dir(profile)
+            }
+        }
+
+        tasks.named('runServer', JavaExec) {
+            dependsOn tasks.named('permissionTestClasses')
+            classpath += permissionTest.output
+            systemProperty 'extralib.permissions.luckperms', withLuckPerms
+        }
+    }
+}
+
+
+

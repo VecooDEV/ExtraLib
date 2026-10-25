@@ -42,23 +42,11 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_21}"
 
-    modImplementation "me.lucko:fabric-permissions-api:${fabric_permissions_api_21}"
-
-    shadow("me.lucko:fabric-permissions-api:${fabric_permissions_api_21}") {
-        transitive = false
-    }
+    include(modImplementation("me.lucko:fabric-permissions-api:${fabric_permissions_api_21}"))
 }
 
 apply from: rootProject.file('gradle/library-dependencies.gradle')
 apply from: rootProject.file('gradle/shadow.gradle')
-
-shadowJar {
-    filesMatching('fabric.mod.json') {
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    }
-
-    relocate('me.lucko.fabric.api.permissions.v0', 'com.vecoo.extralib.shade.lucko.fabric.api.permissions.v0')
-}
 
 remapJar {
     dependsOn shadowJar

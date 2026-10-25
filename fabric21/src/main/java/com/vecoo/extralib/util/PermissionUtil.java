@@ -14,21 +14,13 @@ public final class PermissionUtil {
     private PermissionUtil() {
     }
 
-    /**
-     * Checks whether the given command source has the specified permission.
-     * <p>
-     * If the source represents a player, the permission is resolved through the PermissionAPI.
-     * Players with operator level 4 automatically bypass permissions.
-     * <br>
-     * If the source is not a player (e.g. console), the operation is treated as having permission.
-     * <p>
-     * If the permission node is not registered, an error is logged and {@code false} is returned.
-     *
-     * @param source the command source executing the action
-     * @param node   the permission node to check
-     * @return {@code true} if the source has permission or is console; otherwise {@code false}
-     */
+    /** Checks a player's permission, or permits a non-player command source. */
     public static boolean hasPermission(@Nullable CommandSourceStack source, @NotNull String node) {
+        return hasPermission(source, node, false);
+    }
+
+    /** Uses defaultValue only when the permission provider has no result for this node. */
+    public static boolean hasPermission(@Nullable CommandSourceStack source, @NotNull String node, boolean defaultValue) {
         if (source == null) {
             return false;
         }
@@ -39,52 +31,49 @@ public final class PermissionUtil {
             return true;
         }
 
-        return hasPermission(player, node);
+        return hasPermission(player, node, defaultValue);
     }
 
-    /**
-     * Checks whether the given player has the specified permission.
-     * <p>
-     * The permission is resolved through the PermissionAPI.
-     * Players with operator level 4 automatically bypass the check.
-     * <p>
-     * If the permission node is not registered, an error is logged and {@code false} is returned.
-     *
-     * @param player the player whose permissions are checked
-     * @param node   the permission node to evaluate
-     * @return {@code true} if the player has the permission or is OP-level 4; otherwise {@code false}
-     */
+    /** Checks a permission with a default of false. Operator level 4 bypasses the check. */
     public static boolean hasPermission(@Nullable ServerPlayer player, @NotNull String node) {
+        return hasPermission(player, node, false);
+    }
+
+    /** An explicit provider denial overrides defaultValue. Operator level 4 still bypasses it. */
+    public static boolean hasPermission(@Nullable ServerPlayer player, @NotNull String node, boolean defaultValue) {
         if (player == null) {
             return false;
         }
 
-        return Permissions.check(player, node) || player.hasPermissions(4);
+        if (player.hasPermissions(4)) {
+            return true;
+        }
+
+        return Permissions.check(player, node, defaultValue);
     }
 
-    /**
-     * Checks whether an offline or online player (identified by UUID) has the specified permission.
-     * If the node is not registered, an error is logged and {@code false} is returned.
-     *
-     * @param playerUUID the UUID of the player
-     * @param node       the permission node to evaluate
-     * @return {@code true} if the player has the permission; otherwise {@code false}
-     */
+    /** Checks a UUID asynchronously, with a default of false and no operator bypass. */
     @NotNull
     public static CompletableFuture<Boolean> hasPermission(@NotNull UUID playerUUID, @NotNull String node) {
-        return Permissions.check(playerUUID, node);
+        return hasPermission(playerUUID, node, false);
+    }
+
+    /** Checks a UUID asynchronously, using defaultValue only when the provider has no result. */
+    @NotNull
+    public static CompletableFuture<Boolean> hasPermission(@NotNull UUID playerUUID, @NotNull String node, boolean defaultValue) {
+        return Permissions.check(playerUUID, node, defaultValue);
     }
 
     /**
-     * Calculates the maximum allowed value for the given player based on a collection of permission nodes.
+     * Calculates the minimum allowed value for the given player based on a collection of permission nodes.
      * <p>
      * Each permission node must end with an integer suffix (e.g. {@code "example.limit.50"}).
-     * If the player has the permission, that suffix is considered a candidate maximum.
+     * If the player has the permission, that suffix is considered a candidate minimum.
      *
      * @param value    the initial value to compare against
      * @param player   the player whose permissions are evaluated
      * @param nodeList a set of permission nodes containing numeric suffixes
-     * @return the maximum numeric suffix among permissions the player has, or the original value if unchanged
+     * @return the minimum numeric suffix among permissions the player has, or the original value if unchanged
      */
     public static int minValue(int value, @Nullable ServerPlayer player, @NotNull Set<String> nodeList) {
         for (String permission : nodeList) {

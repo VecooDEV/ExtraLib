@@ -56,6 +56,8 @@ public class SimpleGui extends BaseSlotGui {
     public void setSlot(int index, @NotNull GuiElementInterface element) {
         super.setSlot(index, element);
 
+        this.hasRedirects = Arrays.stream(this.slotRedirects).anyMatch(Objects::nonNull);
+
         if (this.isOpen() && this.autoUpdate) {
             this.screenHandler.setSlot(index, new VirtualSlot(this, index, 0, 0));
         }
@@ -64,6 +66,8 @@ public class SimpleGui extends BaseSlotGui {
     @Override
     public void setSlotRedirect(int index, @NotNull Slot slot) {
         super.setSlotRedirect(index, slot);
+
+        this.hasRedirects = true;
 
         if (this.isOpen() && this.autoUpdate) {
             this.screenHandler.setSlot(index, slot);
@@ -74,7 +78,7 @@ public class SimpleGui extends BaseSlotGui {
     public void clearSlot(int index) {
         super.clearSlot(index);
 
-        this.hasRedirects = true;
+        this.hasRedirects = Arrays.stream(this.slotRedirects).anyMatch(Objects::nonNull);
 
         if (this.isOpen() && this.autoUpdate) {
             this.screenHandler.setSlot(index, new VirtualSlot(this, index, 0, 0));

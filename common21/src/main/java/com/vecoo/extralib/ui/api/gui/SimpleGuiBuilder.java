@@ -13,6 +13,9 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 public final class SimpleGuiBuilder implements SlotHolder {
     private final int size;
     private final int width;
@@ -77,6 +80,8 @@ public final class SimpleGuiBuilder implements SlotHolder {
 
     public void setSlot(int index, @NotNull GuiElementInterface element) {
         this.elements[index] = element;
+        this.slotRedirects[index] = null;
+        this.hasRedirects = Arrays.stream(this.slotRedirects).anyMatch(Objects::nonNull);
     }
 
     public void addSlot(@NotNull GuiElementInterface element) {
@@ -137,6 +142,7 @@ public final class SimpleGuiBuilder implements SlotHolder {
     public void clearSlot(int index) {
         this.elements[index] = null;
         this.slotRedirects[index] = null;
+        this.hasRedirects = Arrays.stream(this.slotRedirects).anyMatch(Objects::nonNull);
     }
 
     public boolean isIncludingPlayer() {

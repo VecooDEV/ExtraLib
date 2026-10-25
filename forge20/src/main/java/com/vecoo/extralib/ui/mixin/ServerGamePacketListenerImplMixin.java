@@ -143,12 +143,14 @@ public abstract class ServerGamePacketListenerImplMixin {
                 AbstractContainerMenu screenHandler = this.player.containerMenu;
 
                 try {
-                    if (screenHandler.getType() != null) {
-                        send(new ClientboundOpenScreenPacket(screenHandler.containerId, screenHandler.getType(), handler.getGui().getTitle()));
+                    var type = handler.getGui().getType();
+
+                    if (type != null) {
+                        send(new ClientboundOpenScreenPacket(screenHandler.containerId, type, handler.getGui().getTitle()));
                         screenHandler.sendAllDataToRemote();
                     }
-                } catch (Throwable ignored) {
-
+                } catch (Throwable e) {
+                    handler.getGui().handleException(e);
                 }
                 info.cancel();
             }
@@ -168,11 +170,11 @@ public abstract class ServerGamePacketListenerImplMixin {
             if (this.previousMenu instanceof VirtualScreenHandlerInterface screenHandler) {
                 screenHandler.getGui().handleException(e);
             } else {
-                ExtraLib.getLogger().error(e.getMessage());
+                ExtraLib.getLogger().error("Failed to close GUI for player {}.", this.player.getUUID(), e);
             }
+        } finally {
+            this.previousMenu = null;
         }
-
-        this.previousMenu = null;
     }
 
     @Inject(

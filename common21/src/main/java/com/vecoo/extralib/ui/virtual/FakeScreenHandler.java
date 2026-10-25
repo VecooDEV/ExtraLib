@@ -1,6 +1,5 @@
 package com.vecoo.extralib.ui.virtual;
 
-import com.vecoo.extralib.internal.ExtraLibLogger;
 import com.vecoo.extralib.ui.api.gui.GuiInterface;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -32,7 +31,7 @@ public class FakeScreenHandler extends AbstractContainerMenu implements VirtualS
         try {
             this.gui.onTick();
         } catch (Exception e) {
-            ExtraLibLogger.getLogger().error(e.getMessage());
+            this.gui.handleException(e);
         }
         super.broadcastChanges();
     }

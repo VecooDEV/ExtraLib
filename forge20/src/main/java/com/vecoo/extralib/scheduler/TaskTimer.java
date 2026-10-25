@@ -41,6 +41,7 @@ public final class TaskTimer {
         this.countdown = delay;
         this.interval = interval;
         this.iterations = iterations;
+        this.expired = iterations == 0;
     }
 
     /**
@@ -86,7 +87,7 @@ public final class TaskTimer {
         try {
             this.consumer.accept(this);
         } catch (Exception e) {
-            ExtraLib.getLogger().error("Task execution failed.", e);
+            ExtraLib.getLogger().error("Task {} failed on iteration {} and was cancelled.", this.consumer.getClass().getName(), this.currentIteration + 1, e);
 
             cancel();
             return;
@@ -179,7 +180,7 @@ public final class TaskTimer {
         /**
          * Sets the number of iterations this task should run.
          *
-         * @param iterations number of executions; -1 for infinite
+         * @param iterations number of executions; 0 for none, -1 for infinite
          * @return this builder instance
          */
         @NotNull
@@ -229,7 +230,9 @@ public final class TaskTimer {
 
             TaskTimer task = new TaskTimer(this.consumer, this.delay, this.interval, this.iterations);
 
-            TASKS.add(task);
+            if (!task.isExpired()) {
+                TASKS.add(task);
+            }
             return task;
         }
     }

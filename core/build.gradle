@@ -7,4 +7,8 @@ apply from: rootProject.file('gradle/library-dependencies.gradle')
 dependencies {
     compileOnlyApi 'org.slf4j:slf4j-api:2.0.1'
     compileOnly 'org.jetbrains:annotations:26.0.2'
+
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'com.google.code.gson:gson:2.10.1'
+    testImplementation 'org.slf4j:slf4j-simple:2.0.18'
 }

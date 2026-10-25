@@ -1,0 +1,10 @@
+{
+  "name": "extralib-permission-tests",
+  "private": true,
+  "scripts": {
+    "test": "node run.cjs all"
+  },
+  "dependencies": {
+    "minecraft-protocol": "1.68.0"
+  }
+}
