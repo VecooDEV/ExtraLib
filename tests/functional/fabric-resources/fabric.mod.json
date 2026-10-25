@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "extralib_functional_test",
+  "version": "1.0.0",
+  "environment": "server",
+  "entrypoints": {
+    "main": ["com.vecoo.extralib.functionaltest.FunctionalTestMod"]
+  },
+  "depends": {
+    "extralib": "*"
+  }
+}

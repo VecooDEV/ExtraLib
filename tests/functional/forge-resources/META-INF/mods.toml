@@ -1,0 +1,15 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="MIT"
+
+[[mods]]
+modId="extralib_functional_test"
+version="1.0.0"
+displayName="ExtraLib functional tests"
+
+[[dependencies.extralib_functional_test]]
+modId="extralib"
+mandatory=true
+versionRange="[0,)"
+ordering="AFTER"
+side="SERVER"

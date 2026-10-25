@@ -1,0 +1,55 @@
+gradle.projectsEvaluated {
+    def moduleName = rootProject.findProperty('functionalLoader') ?: 'fabric21'
+
+    if (!(moduleName in ['forge20', 'fabric21', 'neoforge21'])) {
+        throw new GradleException('Supported functionalLoader values: forge20, fabric21, neoforge21')
+    }
+
+    def target = rootProject.project(":${moduleName}")
+    def platform = moduleName == 'forge20' ? 'forge' : moduleName == 'fabric21' ? 'fabric' : 'neoforge'
+    def tests = rootProject.file('tests/functional')
+
+    target.with {
+        def functionalTest = sourceSets.create('functionalTest') {
+            java.srcDirs(new File(tests, 'common'), new File(tests, platform), new File(tests, platform == 'forge' ? 'legacy' : 'modern'))
+            resources.srcDir(new File(tests, "${platform}-resources"))
+            compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
+            runtimeClasspath += sourceSets.main.runtimeClasspath
+        }
+
+        if (platform == 'fabric') {
+            loom.mods.create('extralib_functional_test') {
+                sourceSet functionalTest
+            }
+            loom.runs.named('server') {
+                runDir 'run/functional'
+            }
+        } else if (platform == 'neoforge') {
+            neoForge.mods.create('extralib_functional_test') {
+                sourceSet functionalTest
+            }
+            neoForge.runs.named('server') {
+                gameDirectory = layout.projectDirectory.dir('run/functional')
+            }
+        } else {
+            minecraft.runs.named('server') {
+                workingDir = layout.projectDirectory.dir('run/functional')
+                mods {
+                    extralib_functional_test {
+                        source functionalTest
+                    }
+                }
+                environment 'MOD_CLASSES', (
+                        files(sourceSets.main.output, project(':core').sourceSets.main.output).collect { "extralib%%${it.absolutePath}" } +
+                                functionalTest.output.files.collect { "extralib_functional_test%%${it.absolutePath}" }
+                ).join(File.pathSeparator)
+            }
+        }
+
+        tasks.named('runServer') {
+            dependsOn tasks.named('functionalTestClasses')
+            classpath += functionalTest.output
+            standardInput = System.in
+        }
+    }
+}
