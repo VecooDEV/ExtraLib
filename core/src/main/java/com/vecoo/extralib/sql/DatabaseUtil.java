@@ -127,7 +127,12 @@ public class DatabaseUtil implements AutoCloseable {
         this.dataSource = new HikariDataSource(config);
 
         AtomicInteger threadCounter = new AtomicInteger();
-        this.executor = Executors.newFixedThreadPool(threadPool, runnable -> new Thread(runnable, prefix + "-db-" + threadCounter.incrementAndGet()));
+        this.executor = Executors.newFixedThreadPool(threadPool, runnable -> {
+            Thread thread = new Thread(runnable, prefix + "-db-" + threadCounter.incrementAndGet());
+
+            thread.setDaemon(true);
+            return thread;
+        });
     }
 
     /**

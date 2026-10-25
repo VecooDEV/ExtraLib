@@ -10,6 +10,26 @@ version = "${project_version}-1.21.1-NeoForge"
 
 neoForge {
     version = "${neoforge_21}"
+
+    mods {
+        extralib {
+            sourceSet sourceSets.main
+            sourceSet project(':core').sourceSets.main
+        }
+    }
+
+    runs {
+        client {
+            client()
+            gameDirectory = layout.projectDirectory.dir('run/client')
+        }
+
+        server {
+            server()
+            gameDirectory = layout.projectDirectory.dir('run/server')
+            programArgument '--nogui'
+        }
+    }
 }
 
 sourceSets.main.java.srcDir(rootProject.file('common21/src/main/java'))
@@ -22,6 +42,12 @@ dependencies {
 
 apply from: rootProject.file('gradle/library-dependencies.gradle')
 apply from: rootProject.file('gradle/shadow.gradle')
+
+configurations.additionalRuntimeClasspath.extendsFrom(configurations.shadow)
+
+tasks.named('runServer', JavaExec) {
+    standardInput = System.in
+}
 
 processResources {
     filesMatching('META-INF/neoforge.mods.toml') {

@@ -1,9 +1,9 @@
 package com.vecoo.extralib;
 
+import com.vecoo.extralib.internal.ConfigSaveHandler;
 import com.vecoo.extralib.internal.ExtraLibLogger;
 import com.vecoo.extralib.config.ServerConfig;
 import com.vecoo.extralib.loader.YamlLoader;
-import com.vecoo.extralib.loader.GsonLoader;
 import com.vecoo.extralib.util.PlayerUtil;
 import com.vecoo.extralib.ui.api.gui.SimpleGui;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -19,7 +19,6 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.Locale;
-import java.util.concurrent.CompletableFuture;
 
 public class ExtraLib implements ModInitializer {
     public static final String MOD_ID = "extralib";
@@ -60,12 +59,12 @@ public class ExtraLib implements ModInitializer {
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
             TaskTimer.cancelAll();
             ResetScheduler.shutdown();
-            CompletableFuture.allOf(YamlLoader.flush(), GsonLoader.flush()).join();
+            ConfigSaveHandler.flush();
         });
 
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
             try {
-                CompletableFuture.allOf(YamlLoader.flush(), GsonLoader.flush()).join();
+                ConfigSaveHandler.flush();
             } finally {
                 SimpleGui.PENDING_OPENS.clear();
                 this.server = null;

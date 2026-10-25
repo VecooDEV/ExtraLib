@@ -11,6 +11,30 @@ version = "${project_version}-1.20.1-Forge"
 
 minecraft {
     mappings channel: 'official', version: '1.20.1'
+
+    runs {
+        configureEach {
+            workingDir = layout.projectDirectory.dir("run/${name}")
+
+            environment 'MOD_CLASSES', files(sourceSets.main.output, project(':core').sourceSets.main.output).collect {
+                "extralib%%${it.absolutePath}"
+            }.join(File.pathSeparator)
+
+            extraLibraries configurations.shadow
+
+            mods {
+                extralib {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        client {}
+
+        server {
+            args '--nogui'
+        }
+    }
 }
 
 repositories {
@@ -25,7 +49,7 @@ sourceSets.main.resources.srcDir(rootProject.file('common20/src/main/resources')
 dependencies {
     implementation project(':core')
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-    compileOnly minecraft.dependency("net.minecraftforge:forge:1.20.1-${forge_20}")
+    implementation minecraft.dependency("net.minecraftforge:forge:1.20.1-${forge_20}")
 }
 
 apply from: rootProject.file('gradle/library-dependencies.gradle')
@@ -43,6 +67,10 @@ renamer {
         }
         config 'extralib.mixins.json'
         jar(tasks.named('shadowJar', Jar))
+
+        minecraft.runs.each { runConfig ->
+            run(runConfig)
+        }
     }
 }
 

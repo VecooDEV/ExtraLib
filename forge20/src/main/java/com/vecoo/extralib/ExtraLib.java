@@ -1,9 +1,9 @@
 package com.vecoo.extralib;
 
 import com.vecoo.extralib.config.ServerConfig;
+import com.vecoo.extralib.internal.ConfigSaveHandler;
 import com.vecoo.extralib.internal.ExtraLibLogger;
 import com.vecoo.extralib.listener.ExtraLibListener;
-import com.vecoo.extralib.loader.GsonLoader;
 import com.vecoo.extralib.loader.YamlLoader;
 import com.vecoo.extralib.scheduler.ResetScheduler;
 import com.vecoo.extralib.scheduler.TaskTimer;
@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.Locale;
-import java.util.concurrent.CompletableFuture;
 
 @Mod(ExtraLib.MOD_ID)
 public class ExtraLib {
@@ -64,13 +63,13 @@ public class ExtraLib {
         TaskTimer.cancelAll();
         ResetScheduler.shutdown();
 
-        CompletableFuture.allOf(YamlLoader.flush(), GsonLoader.flush()).join();
+        ConfigSaveHandler.flush();
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onServerStopped(ServerStoppedEvent event) {
         SimpleGui.PENDING_OPENS.clear();
-        CompletableFuture.allOf(YamlLoader.flush(), GsonLoader.flush()).join();
+        ConfigSaveHandler.flush();
     }
 
     public void loadConfig() {
