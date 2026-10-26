@@ -5,7 +5,7 @@ const protocol = require('minecraft-protocol');
 const minecraftData = require('minecraft-data');
 
 const root = path.resolve(__dirname, '../..');
-const modules = ['forge20', 'fabric21', 'neoforge21'];
+const modules = ['forge20', 'fabric20', 'fabric21', 'neoforge21'];
 
 function prepare(moduleName) {
     const profile = path.join(root, moduleName, 'run/functional');
@@ -36,7 +36,7 @@ async function run(moduleName) {
         env: process.env,
         stdio: ['pipe', 'pipe', 'pipe']
     });
-    const metrics = {windows: [], buttonClicks: 0, displayedButton: false, lockedCloseAttempts: 0, lockedReopens: 0};
+    const metrics = {windows: [], buttonClicks: 0, displayedButton: false, lockedCloseAttempts: 0, lockedReopens: 0, packetMessages: []};
     let buffer = '', client, complete = false, stopAt;
     let buttonsId;
     const timers = new Set();
@@ -55,12 +55,17 @@ async function run(moduleName) {
     }
 
     function connect() {
-        const legacy = moduleName === 'forge20';
+        const legacy = moduleName.endsWith('20');
         const version = legacy ? '1.20.1' : '1.21.1';
         const data = minecraftData(version);
         const emptySlot = legacy ? {present: false} : {itemCount: 0};
         const states = new Map();
         client = protocol.createClient({host: '127.0.0.1', port: 25580, username: 'ExtraLibTest', auth: 'offline', version, hideErrors: true});
+        client.on('custom_payload', packet => {
+            if (packet.channel === 'extralib:functional') {
+                metrics.packetMessages.push(packet.data.subarray(1, 1 + packet.data[0]).toString('utf8'));
+            }
+        });
         client.on('ping', packet => client.write('pong', {id: packet.id}));
         client.on('error', error => {
             console.error('Test client: ' + error.message);
@@ -147,7 +152,8 @@ async function run(moduleName) {
             if (client) client.end();
             output.end();
             const result = fs.existsSync(resultFile) ? fs.readFileSync(resultFile, 'utf8') : 'no result';
-            const networkPassed = metrics.buttonClicks === 6 && metrics.displayedButton && metrics.lockedCloseAttempts === 1 && metrics.lockedReopens >= 1 &&
+            const packetsPassed = moduleName !== 'fabric20' || JSON.stringify(metrics.packetMessages) === JSON.stringify(['player', 'generic', 'uuid', 'name', 'all', 'dimension', 'first', 'second']);
+            const networkPassed = packetsPassed && metrics.buttonClicks === 6 && metrics.displayedButton && metrics.lockedCloseAttempts === 1 && metrics.lockedReopens >= 1 &&
                     metrics.windows.some(title => title.includes('Functional/deferred-second'));
             const passed = code === 0 && complete && result.startsWith('passed=true') && networkPassed;
             const summary = {moduleName, passed, code, networkPassed, shutdownSeconds: stopAt ? (Date.now() - stopAt) / 1000 : null, metrics, result};
@@ -160,7 +166,7 @@ async function run(moduleName) {
 
 (async () => {
     const target = process.argv[2];
-    if (target !== 'all' && !modules.includes(target)) throw new Error('Usage: node tests/functional/run.cjs <all|forge20|fabric21|neoforge21>');
+    if (target !== 'all' && !modules.includes(target)) throw new Error('Usage: node tests/functional/run.cjs <all|forge20|fabric20|fabric21|neoforge21>');
     let passed = true;
     for (const moduleName of target === 'all' ? modules : [target]) passed = await run(moduleName) && passed;
     process.exitCode = passed ? 0 : 1;

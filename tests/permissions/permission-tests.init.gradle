@@ -2,7 +2,8 @@ gradle.projectsEvaluated {
     def moduleName = rootProject.findProperty('permissionLoader') ?: 'fabric21'
     def withLuckPerms = rootProject.findProperty('permissionLuckPerms') == 'true'
     def target = rootProject.project(":${moduleName}")
-    def platform = moduleName == 'fabric21' ? 'fabric' : 'neoforge'
+    def fabricLuckPerms = moduleName == 'fabric20' ? 'Fabric-5.4.102' : 'Fabric-5.4.140'
+    def platform = moduleName.startsWith('fabric') ? 'fabric' : 'neoforge'
     def tests = rootProject.file('tests/permissions')
     def profile = "run/permissions/${withLuckPerms ? 'luckperms' : 'vanilla'}"
 
@@ -11,7 +12,7 @@ gradle.projectsEvaluated {
             java.srcDirs(new File(tests, 'common'), new File(tests, platform))
             resources.srcDir(new File(tests, "${platform}-resources"))
             compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
-            compileClasspath += files(file("run/permissions/dependencies/LuckPerms-${platform == 'fabric' ? 'Fabric-5.4.140' : 'NeoForge-5.4.150'}.jar"))
+            compileClasspath += files(file("run/permissions/dependencies/LuckPerms-${platform == 'fabric' ? fabricLuckPerms : 'NeoForge-5.4.150'}.jar"))
             runtimeClasspath += sourceSets.main.runtimeClasspath
         }
 

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "extralib",
+  "version": "${project_version}",
+  "name": "${project_name}",
+  "icon": "assets/extralib/icon.png",
+  "description": "Library for mods.",
+  "authors": [
+    "Vecoo"
+  ],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.vecoo.extralib.ExtraLib"
+    ]
+  },
+  "mixins": [
+    "extralib.mixins.json",
+    "extralib.fabric.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": "*",
+    "fabric": "*",
+    "fabric-permissions-api-v0": "*",
+    "minecraft": "~1.20.1",
+    "java": ">=17"
+  }
+}

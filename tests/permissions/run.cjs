@@ -32,7 +32,7 @@ async function run(moduleName, withLuckPerms) {
         buffer = (buffer + data.toString()).slice(-32000);
         if (!client && /Done \([\d.,]+s\)!/.test(buffer)) {
             console.log(`${name}: server ready, connecting test player`);
-            client = protocol.createClient({host: '127.0.0.1', port: 25578, username: 'ExtraPermTest', auth: 'offline', version: '1.21.1', hideErrors: true});
+            client = protocol.createClient({host: '127.0.0.1', port: 25578, username: 'ExtraPermTest', auth: 'offline', version: moduleName.endsWith('20') ? '1.20.1' : '1.21.1', hideErrors: true});
             client.on('ping', packet => client.write('pong', {id: packet.id}));
             client.on('error', error => {
                 console.error(`Test client: ${error.message}`);
@@ -79,12 +79,12 @@ async function run(moduleName, withLuckPerms) {
     const moduleName = process.argv[2];
     let passed = true;
     if (moduleName === 'all') {
-        for (const module of ['fabric21', 'neoforge21']) {
+        for (const module of ['fabric20', 'fabric21', 'neoforge21']) {
             for (const luckPerms of [false, true]) passed = await run(module, luckPerms) && passed;
         }
     } else {
-        if (!['fabric21', 'neoforge21'].includes(moduleName) || !['false', 'true'].includes(process.argv[3])) {
-            throw new Error('Usage: node tests/permissions/run.cjs all | <fabric21|neoforge21> <false|true>');
+        if (!['fabric20', 'fabric21', 'neoforge21'].includes(moduleName) || !['false', 'true'].includes(process.argv[3])) {
+            throw new Error('Usage: node tests/permissions/run.cjs all | <fabric20|fabric21|neoforge21> <false|true>');
         }
         passed = await run(moduleName, process.argv[3] === 'true');
     }

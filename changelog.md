@@ -13,3 +13,4 @@
 * Add server integration tests for permissions with and without LuckPerms on Fabric and NeoForge.
 * Add cross-loader functional tests for item delivery/counting/removal, item serialization, GUI callbacks and network interactions, timers and world paths.
 * Add regression tests for configuration persistence and GUI error logging.
+* Add Fabric 1.20.1 (fabric20) with shared legacy GUI/NBT support, Fabric permissions, networking, client/server runs and functional tests.

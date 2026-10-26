@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.19+'
+    id 'fabric-loom'
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)

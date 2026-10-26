@@ -4,6 +4,11 @@ const https = require('https');
 const crypto = require('crypto');
 
 const dependencies = {
+    fabric20: {
+        filename: 'LuckPerms-Fabric-5.4.102.jar',
+        url: 'https://cdn.modrinth.com/data/Vebnzrzj/versions/7PNj6nCm/LuckPerms-Fabric-5.4.102.jar',
+        sha512: '45058fd2bbd2e7723af01a093ef7233d8a6fa2278a2232dfcc2aa53dae6df7ed78dbfbdb9ee133b19bc36655ccff5a4facdd476319c18e290b284733bf10edff'
+    },
     fabric21: {
         filename: 'LuckPerms-Fabric-5.4.140.jar',
         url: 'https://cdn.modrinth.com/data/Vebnzrzj/versions/l47d4ZWk/LuckPerms-Fabric-5.4.140.jar',
@@ -37,7 +42,7 @@ function download(url, redirects = 0) {
 
 async function prepare(root, moduleName, withLuckPerms) {
     const dependency = dependencies[moduleName];
-    if (!dependency) throw new Error('Supported modules: fabric21, neoforge21');
+    if (!dependency) throw new Error('Supported modules: fabric20, fabric21, neoforge21');
     const base = path.join(root, moduleName, 'run/permissions');
     const dependencyDir = path.join(base, 'dependencies');
     fs.mkdirSync(dependencyDir, {recursive: true});

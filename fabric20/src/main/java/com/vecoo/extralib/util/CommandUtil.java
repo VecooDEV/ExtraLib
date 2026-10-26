@@ -1,0 +1,98 @@
+package com.vecoo.extralib.util;
+
+import com.vecoo.extralib.ExtraLib;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.server.MinecraftServer;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Collection;
+import java.util.function.Supplier;
+
+public final class CommandUtil {
+    private CommandUtil() {
+    }
+
+    /**
+     * Executes a server command as if it was run by the console.
+     * <p>
+     * This method creates a command source stack for the server console and performs the
+     * specified command. It does not require a player and runs with full permissions.
+     * </p>
+     *
+     * @param command the command to execute, without a leading slash
+     */
+    public static void executeCommand(@NotNull String command) {
+        MinecraftServer server = ExtraLib.getCurrentServer();
+
+        if (server != null) {
+            server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), command);
+        }
+    }
+
+    /**
+     * Provides a suggestion provider for online player names.
+     * <p>
+     * This can be used in commands to suggest names of currently online players
+     * that match the user's partially typed input.
+     * </p>
+     *
+     * @return a SuggestionProvider that suggests online player names
+     */
+    @NotNull
+    public static SuggestionProvider<CommandSourceStack> suggestOnlinePlayers() {
+        return (context, builder) ->
+                SharedSuggestionProvider.suggest(context.getSource().getOnlinePlayerNames(), builder);
+    }
+
+    /**
+     * Provides a suggestion provider for a collection of strings.
+     * <p>
+     * Each string in the provided collection will be suggested regardless of
+     * the user's current input.
+     * </p>
+     *
+     * @param collection the collection of strings to suggest
+     * @return a SuggestionProvider that suggests the provided strings
+     */
+    @NotNull
+    public static SuggestionProvider<CommandSourceStack> suggestString(@NotNull Collection<String> collection) {
+        return suggestString(() -> collection);
+    }
+
+    @NotNull
+    public static SuggestionProvider<CommandSourceStack> suggestString(@NotNull Supplier<Collection<String>> supplier) {
+        return (context, builder) -> SharedSuggestionProvider.suggest(supplier.get(), builder);
+    }
+
+    /**
+     * Provides a suggestion provider for a collection of integers.
+     * <p>
+     * Each integer in the provided collection will be suggested as a number
+     * for command arguments.
+     * </p>
+     *
+     * @param collection the collection of integers to suggest
+     * @return a SuggestionProvider that suggests the provided integers
+     */
+    @NotNull
+    public static SuggestionProvider<CommandSourceStack> suggestAmount(@NotNull Collection<Integer> collection) {
+        return suggestAmount(() -> collection);
+    }
+
+    @NotNull
+    public static SuggestionProvider<CommandSourceStack> suggestAmount(@NotNull Supplier<Collection<Integer>> supplier) {
+        return (context, builder) -> {
+            String remaining = builder.getRemaining();
+
+            for (int amount : supplier.get()) {
+                if (Integer.toString(amount).startsWith(remaining)) {
+                    builder.suggest(amount);
+                }
+            }
+
+            return builder.buildFuture();
+        };
+    }
+}
