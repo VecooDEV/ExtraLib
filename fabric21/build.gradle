@@ -82,3 +82,5 @@ modrinth {
 }
 
 build.finalizedBy('versionedRelease')
+
+apply from: rootProject.file('gradle/curseforge.gradle')

@@ -49,6 +49,10 @@ tasks.named('runServer', JavaExec) {
     standardInput = System.in
 }
 
+jar {
+    archiveClassifier = 'dev'
+}
+
 processResources {
     filesMatching('META-INF/neoforge.mods.toml') {
         expand(
@@ -79,3 +83,5 @@ modrinth {
 
 versionedRelease.dependsOn("shadowJar")
 build.finalizedBy('versionedRelease')
+
+apply from: rootProject.file('gradle/curseforge.gradle')

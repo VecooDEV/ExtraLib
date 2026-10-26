@@ -1,0 +1,68 @@
+name: Publish to CurseForge
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Prepare release files without uploading
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: curseforge-release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      CURSEFORGE_DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: |
+            17
+            21
+            25
+
+      - uses: gradle/actions/setup-gradle@v5
+
+      - name: Check release tag
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const version = fs.readFileSync('gradle.properties', 'utf8').match(/^project_version\s*=\s*(\S+)/m)[1];
+          if (process.env.GITHUB_REF_TYPE === 'tag' && process.env.GITHUB_REF_NAME !== 'v' + version) {
+              throw new Error('The release tag must match project_version: v' + version);
+          }
+          NODE
+
+      - name: Check publishing key
+        if: env.CURSEFORGE_DRY_RUN != 'true'
+        run: |
+          if [[ -z "$CURSEFORGE_API_KEY" ]]; then
+              echo '::error::Add CURSEFORGE_API_KEY to the repository Actions secrets.'
+              exit 1
+          fi
+        env:
+          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
+
+      - name: Build and test
+        run: bash ./gradlew build --max-workers=2 -Porg.gradle.java.installations.fromEnv=JAVA_HOME_17_X64,JAVA_HOME_21_X64,JAVA_HOME_25_X64 --console=plain
+
+      - name: Publish to CurseForge
+        run: bash ./gradlew publishCurseforge "-PcurseforgeDryRun=$CURSEFORGE_DRY_RUN" -Porg.gradle.java.installations.fromEnv=JAVA_HOME_17_X64,JAVA_HOME_21_X64,JAVA_HOME_25_X64 --console=plain
+        env:
+          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}

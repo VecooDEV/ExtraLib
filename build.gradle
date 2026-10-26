@@ -2,6 +2,7 @@ plugins {
     id 'fabric-loom' version '1.19+' apply false
     id 'net.fabricmc.fabric-loom' version '1.19+' apply false
     id 'net.neoforged.moddev' version '2.0.148' apply false
+    id 'me.modmuss50.mod-publish-plugin' version '2.2.1' apply false
 }
 
 subprojects {
@@ -69,5 +70,21 @@ tasks.register('versionedRelease') {
     description = 'Builds and collects every implemented loader.'
     dependsOn(loaderModules.collect {
         "${it.path}:build"
+    })
+}
+
+tasks.register('publishCurseforge') {
+    group = 'publishing'
+    description = 'Publishes every implemented loader to CurseForge.'
+    dependsOn(loaderModules.collect {
+        "${it.path}:publishCurseforge"
+    })
+}
+
+tasks.register('publishMods') {
+    group = 'publishing'
+    description = 'Runs the configured publishing tasks for every implemented loader.'
+    dependsOn(loaderModules.collect {
+        "${it.path}:publishMods"
     })
 }

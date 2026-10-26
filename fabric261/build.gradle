@@ -87,3 +87,5 @@ modrinth {
 
 versionedRelease.dependsOn('shadowJar')
 build.finalizedBy('versionedRelease')
+
+apply from: rootProject.file('gradle/curseforge.gradle')
