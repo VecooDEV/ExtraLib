@@ -1,8 +1,8 @@
 gradle.projectsEvaluated {
     def moduleName = rootProject.findProperty('functionalLoader') ?: 'fabric21'
 
-    if (!(moduleName in ['forge20', 'fabric20', 'fabric21', 'neoforge21'])) {
-        throw new GradleException('Supported functionalLoader values: forge20, fabric20, fabric21, neoforge21')
+    if (!(moduleName in ['forge20', 'fabric20', 'fabric21', 'neoforge21', 'fabric261', 'neoforge261'])) {
+        throw new GradleException('Supported functionalLoader values: forge20, fabric20, fabric21, neoforge21, fabric261, neoforge261')
     }
 
     def target = rootProject.project(":${moduleName}")
@@ -11,7 +11,7 @@ gradle.projectsEvaluated {
 
     target.with {
         def functionalTest = sourceSets.create('functionalTest') {
-            java.srcDirs(new File(tests, 'common'), new File(tests, moduleName == 'fabric20' ? 'fabric20' : platform), new File(tests, moduleName.endsWith('20') ? 'legacy' : 'modern'))
+            java.srcDirs(new File(tests, 'common'), new File(tests, moduleName == 'fabric20' ? 'fabric20' : platform), new File(tests, moduleName.endsWith('261') ? 'modern261' : moduleName.endsWith('20') ? 'legacy' : 'modern'))
             resources.srcDir(new File(tests, "${platform}-resources"))
             compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
             runtimeClasspath += sourceSets.main.runtimeClasspath
@@ -25,12 +25,14 @@ gradle.projectsEvaluated {
                 from functionalTest.output
                 archiveClassifier = 'functional-test-dev'
             }
-            def remapTask = Class.forName('net.fabricmc.loom.task.RemapJarTask', true, loom.class.classLoader)
-            tasks.register('remapFunctionalTestJar', remapTask) {
-                inputFile.set(testJar.flatMap { it.archiveFile })
-                archiveClassifier = 'functional-test'
-                classpath.from(sourceSets.main.output)
-                addNestedDependencies = false
+            if (!moduleName.endsWith('261')) {
+                def remapTask = Class.forName('net.fabricmc.loom.task.RemapJarTask', true, loom.class.classLoader)
+                tasks.register('remapFunctionalTestJar', remapTask) {
+                    inputFile.set(testJar.flatMap { it.archiveFile })
+                    archiveClassifier = 'functional-test'
+                    classpath.from(sourceSets.main.output)
+                    addNestedDependencies = false
+                }
             }
             loom.runs.named('server') {
                 runDir 'run/functional'

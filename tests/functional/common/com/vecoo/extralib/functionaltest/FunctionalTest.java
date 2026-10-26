@@ -79,9 +79,10 @@ public final class FunctionalTest {
 
     private void start(ServerPlayer player) {
         ItemTests.run(player, this.checks);
+        PlatformItems.additionalChecks(player, this.checks);
         GuiTests.run(player, this.checks);
-        Path expected = player.server.getWorldPath(LevelResource.ROOT).normalize().resolve("storage/test.json");
-        this.checks.check("world/uses actual world directory", Path.of(WorldUtil.resolveWorldDirectory("%directory%/storage/test.json", player.server)).normalize().equals(expected));
+        Path expected = PlatformItems.level(player).getServer().getWorldPath(LevelResource.ROOT).normalize().resolve("storage/test.json");
+        this.checks.check("world/uses actual world directory", Path.of(WorldUtil.resolveWorldDirectory("%directory%/storage/test.json", PlatformItems.level(player).getServer())).normalize().equals(expected));
         this.checks.check("text/legacy color codes converted", TextUtil.formatMessage("&aHello").getString().equals("\u00a7aHello"));
         TaskTimer zero = TaskTimer.builder().iterations(0).execute(this.zeroRuns::incrementAndGet).build();
         this.checks.check("timer/zero expires immediately", zero.isExpired());

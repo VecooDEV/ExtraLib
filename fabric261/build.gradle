@@ -1,0 +1,89 @@
+plugins {
+    id 'net.fabricmc.fabric-loom'
+    id 'com.modrinth.minotaur' version '2.10.0'
+    id 'com.gradleup.shadow' version '9.6.1'
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
+
+base {
+    archivesName = "${project_name}"
+}
+
+version = "${project_version}-26.1-Fabric"
+
+loom {
+    mods {
+        extralib {
+            sourceSet sourceSets.main
+            modFiles.from(project(':core').sourceSets.main.output)
+        }
+    }
+
+    runs {
+        client {
+            runDir 'run/client'
+        }
+
+        server {
+            runDir 'run/server'
+        }
+    }
+}
+
+sourceSets.main.java.srcDir(rootProject.file('common261/src/main/java'))
+sourceSets.main.resources.srcDir(rootProject.file('common261/src/main/resources'))
+
+dependencies {
+    implementation project(':core')
+    minecraft "com.mojang:minecraft:26.1"
+
+    implementation "net.fabricmc:fabric-loader:${fabric_loader}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_261}"
+
+    include(implementation("me.lucko:fabric-permissions-api:${fabric_permissions_api_261}"))
+}
+
+apply from: rootProject.file('gradle/library-dependencies.gradle')
+apply from: rootProject.file('gradle/shadow.gradle')
+
+jar {
+    archiveClassifier = 'dev'
+}
+
+shadowJar {
+    archiveClassifier = ''
+}
+
+net.fabricmc.loom.configuration.IncludeConfigurations.nestJars(project, tasks.named('shadowJar', Jar), configurations.named('include'))
+
+processResources {
+    filesMatching('fabric.mod.json') {
+        expand(
+                'project_name': project_name,
+                'project_version': project_version
+        )
+    }
+}
+
+def gradleProperties = new Properties()
+def gradlePropertiesFile = new File(rootProject.file("/.gradle/gradle.properties").path)
+
+if (gradlePropertiesFile.exists()) {
+    gradlePropertiesFile.withInputStream { gradleProperties.load(it) }
+}
+
+modrinth {
+    token = gradleProperties.getProperty("MODRINTH_API_KEY")
+    projectId = "extralib"
+    versionName = "${project_name}-${version}"
+    versionNumber = project_version
+    versionType = "release"
+    changelog = rootProject.file("changelog.md").text
+    uploadFile = shadowJar
+    gameVersions = ["26.1", "26.1.1", "26.1.2"]
+    loaders = ["fabric"]
+}
+
+versionedRelease.dependsOn('shadowJar')
+build.finalizedBy('versionedRelease')

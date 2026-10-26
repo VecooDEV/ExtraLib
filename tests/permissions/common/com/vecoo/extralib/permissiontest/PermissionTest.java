@@ -4,7 +4,6 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.players.ServerOpListEntry;
 import org.slf4j.Logger;
 
 import java.nio.file.Files;
@@ -49,12 +48,12 @@ public final class PermissionTest {
             check("online min", this.bridge.minimum(player) == (this.luckPerms ? 5 : 100), true);
             check("online max", this.bridge.maximum(player) == (this.luckPerms ? 20 : 0), true);
 
-            server.getPlayerList().getOps().add(new ServerOpListEntry(player.getGameProfile(), 2, false));
+            PlatformPermissions.setLevel(player, 2);
             check("OP 2 does not bypass", this.bridge.online(player, "unset"), false);
-            server.getPlayerList().getOps().add(new ServerOpListEntry(player.getGameProfile(), 4, false));
+            PlatformPermissions.setLevel(player, 4);
             check("OP 4 bypass", this.bridge.online(player, "unset"), true);
             check("OP 4 explicit deny bypass", this.bridge.online(player, "deny"), true);
-            server.getPlayerList().getOps().remove(player.getGameProfile());
+            PlatformPermissions.clear(player);
             this.bridge.details();
         }, server).thenCompose(ignored -> this.bridge.offline(uuid, "unset").thenAccept(value -> check("UUID unset false", value, false)))
                 .thenCompose(ignored -> this.bridge.offline(uuid, "default").thenAccept(value -> check("UUID unset true", value, true)))

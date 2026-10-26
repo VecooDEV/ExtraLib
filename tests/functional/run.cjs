@@ -5,7 +5,7 @@ const protocol = require('minecraft-protocol');
 const minecraftData = require('minecraft-data');
 
 const root = path.resolve(__dirname, '../..');
-const modules = ['forge20', 'fabric20', 'fabric21', 'neoforge21'];
+const modules = ['forge20', 'fabric20', 'fabric21', 'neoforge21', 'fabric261', 'neoforge261'];
 
 function prepare(moduleName) {
     const profile = path.join(root, moduleName, 'run/functional');
@@ -56,9 +56,9 @@ async function run(moduleName) {
 
     function connect() {
         const legacy = moduleName.endsWith('20');
-        const version = legacy ? '1.20.1' : '1.21.1';
+        const version = moduleName.endsWith('261') ? '26.1' : legacy ? '1.20.1' : '1.21.1';
         const data = minecraftData(version);
-        const emptySlot = legacy ? {present: false} : {itemCount: 0};
+        const emptySlot = moduleName.endsWith('261') ? null : legacy ? {present: false} : {itemCount: 0};
         const states = new Map();
         client = protocol.createClient({host: '127.0.0.1', port: 25580, username: 'ExtraLibTest', auth: 'offline', version, hideErrors: true});
         client.on('custom_payload', packet => {
@@ -166,7 +166,7 @@ async function run(moduleName) {
 
 (async () => {
     const target = process.argv[2];
-    if (target !== 'all' && !modules.includes(target)) throw new Error('Usage: node tests/functional/run.cjs <all|forge20|fabric20|fabric21|neoforge21>');
+    if (target !== 'all' && !modules.includes(target)) throw new Error('Usage: node tests/functional/run.cjs <all|forge20|fabric20|fabric21|neoforge21|fabric261|neoforge261>');
     let passed = true;
     for (const moduleName of target === 'all' ? modules : [target]) passed = await run(moduleName) && passed;
     process.exitCode = passed ? 0 : 1;

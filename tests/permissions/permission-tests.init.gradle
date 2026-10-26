@@ -2,17 +2,18 @@ gradle.projectsEvaluated {
     def moduleName = rootProject.findProperty('permissionLoader') ?: 'fabric21'
     def withLuckPerms = rootProject.findProperty('permissionLuckPerms') == 'true'
     def target = rootProject.project(":${moduleName}")
-    def fabricLuckPerms = moduleName == 'fabric20' ? 'Fabric-5.4.102' : 'Fabric-5.4.140'
+    def modern = moduleName.endsWith('261')
+    def fabricLuckPerms = modern ? 'Fabric-5.5.42' : moduleName == 'fabric20' ? 'Fabric-5.4.102' : 'Fabric-5.4.140'
     def platform = moduleName.startsWith('fabric') ? 'fabric' : 'neoforge'
     def tests = rootProject.file('tests/permissions')
     def profile = "run/permissions/${withLuckPerms ? 'luckperms' : 'vanilla'}"
 
     target.with {
         def permissionTest = sourceSets.create('permissionTest') {
-            java.srcDirs(new File(tests, 'common'), new File(tests, platform))
+            java.srcDirs(new File(tests, 'common'), new File(tests, platform), new File(tests, modern ? 'modern261' : 'legacy'))
             resources.srcDir(new File(tests, "${platform}-resources"))
             compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
-            compileClasspath += files(file("run/permissions/dependencies/LuckPerms-${platform == 'fabric' ? fabricLuckPerms : 'NeoForge-5.4.150'}.jar"))
+            compileClasspath += files(file("run/permissions/dependencies/LuckPerms-${platform == 'fabric' ? fabricLuckPerms : modern ? 'NeoForge-5.5.41' : 'NeoForge-5.4.150'}.jar"))
             runtimeClasspath += sourceSets.main.runtimeClasspath
         }
 
@@ -24,11 +25,13 @@ gradle.projectsEvaluated {
                 from permissionTest.output
                 archiveClassifier = 'permission-test-dev'
             }
-            def remapTask = Class.forName('net.fabricmc.loom.task.RemapJarTask', true, loom.class.classLoader)
-            tasks.register('remapPermissionTestJar', remapTask) {
-                inputFile.set(testJar.flatMap { it.archiveFile })
-                archiveClassifier = 'permission-test'
-                addNestedDependencies = false
+            if (!modern) {
+                def remapTask = Class.forName('net.fabricmc.loom.task.RemapJarTask', true, loom.class.classLoader)
+                tasks.register('remapPermissionTestJar', remapTask) {
+                    inputFile.set(testJar.flatMap { it.archiveFile })
+                    archiveClassifier = 'permission-test'
+                    addNestedDependencies = false
+                }
             }
             loom.runs.named('server') {
                 runDir profile
@@ -49,6 +52,3 @@ gradle.projectsEvaluated {
         }
     }
 }
-
-
-

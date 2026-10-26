@@ -1,5 +1,6 @@
 plugins {
     id 'fabric-loom' version '1.19+' apply false
+    id 'net.fabricmc.fabric-loom' version '1.19+' apply false
     id 'net.neoforged.moddev' version '2.0.148' apply false
 }
 
@@ -11,7 +12,7 @@ subprojects {
     version = project_version
 
     jar {
-        archiveBaseName.set(project.name in ['core', 'common20', 'common21'] ? "${rootProject.name}-${project.name}" : rootProject.name)
+        archiveBaseName.set(project.name in ['core', 'common20', 'common21', 'common261'] ? "${rootProject.name}-${project.name}" : rootProject.name)
     }
 
     tasks.withType(JavaCompile).configureEach {

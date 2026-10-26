@@ -14,3 +14,6 @@
 * Add cross-loader functional tests for item delivery/counting/removal, item serialization, GUI callbacks and network interactions, timers and world paths.
 * Add regression tests for configuration persistence and GUI error logging.
 * Add Fabric 1.20.1 (fabric20) with shared legacy GUI/NBT support, Fabric permissions, networking, client/server runs and functional tests.
+* Add Minecraft 26.1 modules (common261, fabric261 and neoforge261) on Java 25, including GUI, items, permissions, networking and client/server runs.
+* Adapt 26.1 item components, player profiles, GUI input, rendering and legacy item migration, with functional and permission integration tests.
+* Declare Minecraft 26.1 through 26.1.2 compatibility for the Fabric and NeoForge 26.1 modules.

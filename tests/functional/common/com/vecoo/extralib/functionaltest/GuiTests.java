@@ -11,7 +11,6 @@ import com.vecoo.extralib.ui.api.gui.SlotGuiInterface;
 import com.vecoo.extralib.ui.virtual.FakeScreenHandler;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -107,8 +106,8 @@ public final class GuiTests {
         gui.insertItem(new ItemStack(Items.STONE, 3), slots, true);
         checks.check("gui/reverse insert uses final slot", first.getItem(0).isEmpty() && second.getItem(0).getCount() == 3);
         checks.check("gui/reverse insert preserves caller slot order", slots.get(0).container == first && slots.get(1).container == second);
-        checks.check("click/offhand swap", ClickTypes.toClickType(ClickType.SWAP, 40, 0) == ClickTypes.OFFHAND_SWAP);
-        checks.check("click/outside drop", ClickTypes.toClickType(ClickType.THROW, 1, -999) == ClickTypes.MOUSE_RIGHT_OUTSIDE);
-        checks.check("click/drag end", ClickTypes.toClickType(ClickType.QUICK_CRAFT, 6, 0) == ClickTypes.MOUSE_RIGHT_DRAG_END);
+        checks.check("click/offhand swap", PlatformItems.clickType("SWAP", 40, 0) == ClickTypes.OFFHAND_SWAP);
+        checks.check("click/outside drop", PlatformItems.clickType("THROW", 1, -999) == ClickTypes.MOUSE_RIGHT_OUTSIDE);
+        checks.check("click/drag end", PlatformItems.clickType("QUICK_CRAFT", 6, 0) == ClickTypes.MOUSE_RIGHT_DRAG_END);
     }
 }

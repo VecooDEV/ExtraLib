@@ -4,6 +4,16 @@ const https = require('https');
 const crypto = require('crypto');
 
 const dependencies = {
+    neoforge261: {
+        filename: 'LuckPerms-NeoForge-5.5.41.jar',
+        url: 'https://cdn.modrinth.com/data/Vebnzrzj/versions/VYFqtnvv/LuckPerms-NeoForge-5.5.41.jar',
+        sha512: 'ddaca56ce27890032d414248a9c6cf1f08ff99262725cbb06b771a3f79a0688843760cf1c8365bcc9b58fe7f6582bd24e97ae1c847d50d8bfe742db0195e70fe'
+    },
+    fabric261: {
+        filename: 'LuckPerms-Fabric-5.5.42.jar',
+        url: 'https://cdn.modrinth.com/data/Vebnzrzj/versions/fTIdfb46/LuckPerms-Fabric-5.5.42.jar',
+        sha512: 'bfe9f0e0e2d9dfe3c1c456298dbd778af02310dabab5d7fb4a54fcc4a4e8c2653bae0be84151d7c52992065d9884cdab97ec1eea6607e7f7cf01126a13be8630'
+    },
     fabric20: {
         filename: 'LuckPerms-Fabric-5.4.102.jar',
         url: 'https://cdn.modrinth.com/data/Vebnzrzj/versions/7PNj6nCm/LuckPerms-Fabric-5.4.102.jar',
@@ -42,7 +52,7 @@ function download(url, redirects = 0) {
 
 async function prepare(root, moduleName, withLuckPerms) {
     const dependency = dependencies[moduleName];
-    if (!dependency) throw new Error('Supported modules: fabric20, fabric21, neoforge21');
+    if (!dependency) throw new Error('Supported modules: fabric20, fabric21, neoforge21, fabric261, neoforge261');
     const base = path.join(root, moduleName, 'run/permissions');
     const dependencyDir = path.join(base, 'dependencies');
     fs.mkdirSync(dependencyDir, {recursive: true});

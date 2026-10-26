@@ -6,6 +6,7 @@ import com.vecoo.extralib.util.PlayerUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -42,7 +43,7 @@ public final class ItemTests {
         clear(player);
         PlayerUtil.giveItem(player, new ItemStack(Items.STONE, 130));
         checks.check("give/oversized stack preserves 130", held(player, Items.STONE) == 130 && dropped(player, Items.STONE) == 0);
-        checks.check("give/splits into legal stacks", player.getInventory().items.stream().allMatch(stack -> stack.isEmpty() || stack.getCount() <= stack.getMaxStackSize()));
+        checks.check("give/splits into legal stacks", legalStacks(player));
 
         clear(player);
         ItemStack sword = new ItemStack(Items.IRON_SWORD);
@@ -67,8 +68,8 @@ public final class ItemTests {
         player.getInventory().setItem(1, tagged.copy());
         player.getInventory().setItem(2, otherName.copy());
         player.getInventory().setItem(3, model(6, 8, "Other"));
-        player.getInventory().setItem(40, new ItemStack(Items.STONE, 5));
-        player.getInventory().setItem(36, new ItemStack(Items.IRON_HELMET));
+        player.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(Items.STONE, 5));
+        player.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
         player.inventoryMenu.slots.get(0).set(new ItemStack(Items.STONE, 11));
         checks.check("count/non-strict excludes crafting preview", PlayerUtil.countItemStack(player, new ItemStack(Items.STONE), false) == 20);
         checks.check("count/strict compares all metadata", PlayerUtil.countItemStack(player, tagged) == 3);
@@ -105,12 +106,12 @@ public final class ItemTests {
         checks.check("remove/nonpositive amount has no effect", held(player, Items.STONE) == 1);
 
         clear(player);
-        player.getInventory().setItem(40, new ItemStack(Items.STONE, 3));
+        player.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(Items.STONE, 3));
         PlayerUtil.removeItemStack(player, new ItemStack(Items.STONE), 2);
-        checks.check("remove/offhand", player.getInventory().getItem(40).getCount() == 1);
+        checks.check("remove/offhand", player.getItemBySlot(EquipmentSlot.OFFHAND).getCount() == 1);
 
         ItemStack original = model(12, 7, "Saved item");
-        ItemStack restored = PlatformItems.roundTrip(original, player.server);
+        ItemStack restored = PlatformItems.roundTrip(original, PlatformItems.level(player).getServer());
         checks.check("serialization/count and metadata round trip", restored.getCount() == 12 && PlatformItems.same(original, restored));
         checks.check("parse/registered item", ItemUtil.parseItem("minecraft:stone").is(Items.STONE));
         clear(player);
@@ -129,8 +130,16 @@ public final class ItemTests {
     public static int held(ServerPlayer player, Item item) {
         int count = 0;
 
-        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+        for (int i = 0; i < 36; i++) {
             ItemStack stack = player.getInventory().getItem(i);
+
+            if (stack.is(item)) {
+                count += stack.getCount();
+            }
+        }
+
+        for (EquipmentSlot slot : new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET, EquipmentSlot.OFFHAND}) {
+            ItemStack stack = player.getItemBySlot(slot);
 
             if (stack.is(item)) {
                 count += stack.getCount();
@@ -140,15 +149,31 @@ public final class ItemTests {
         return count;
     }
 
+    private static boolean legalStacks(ServerPlayer player) {
+        for (int i = 0; i < 36; i++) {
+            ItemStack stack = player.getInventory().getItem(i);
+
+            if (!stack.isEmpty() && stack.getCount() > stack.getMaxStackSize()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private static int dropped(ServerPlayer player, Item item) {
-        return player.serverLevel().getEntitiesOfClass(ItemEntity.class, player.getBoundingBox().inflate(16)).stream()
+        return PlatformItems.level(player).getEntitiesOfClass(ItemEntity.class, player.getBoundingBox().inflate(16)).stream()
                 .filter(entity -> entity.getItem().is(item)).mapToInt(entity -> entity.getItem().getCount()).sum();
     }
 
     public static void clear(ServerPlayer player) {
         player.getInventory().clearContent();
+
+        for (EquipmentSlot slot : new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET, EquipmentSlot.OFFHAND, EquipmentSlot.MAINHAND}) {
+            player.setItemSlot(slot, ItemStack.EMPTY);
+        }
         player.inventoryMenu.slots.get(0).set(ItemStack.EMPTY);
-        player.serverLevel().getEntitiesOfClass(ItemEntity.class, player.getBoundingBox().inflate(16)).forEach(ItemEntity::discard);
+        PlatformItems.level(player).getEntitiesOfClass(ItemEntity.class, player.getBoundingBox().inflate(16)).forEach(ItemEntity::discard);
         player.inventoryMenu.setCarried(ItemStack.EMPTY);
     }
 }
