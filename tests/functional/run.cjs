@@ -36,7 +36,7 @@ async function run(moduleName) {
         env: process.env,
         stdio: ['pipe', 'pipe', 'pipe']
     });
-    const metrics = {windows: [], buttonClicks: 0, displayedButton: false, lockedCloseAttempts: 0, lockedReopens: 0, packetMessages: []};
+    const metrics = {windows: [], buttonClicks: 0, displayedButton: false, lockedCloseAttempts: 0, lockedReopens: 0, packetMessages: [], soundPitches: []};
     let buffer = '', client, complete = false, stopAt;
     let buttonsId;
     const timers = new Set();
@@ -64,6 +64,11 @@ async function run(moduleName) {
         client.on('custom_payload', packet => {
             if (packet.channel === 'extralib:functional') {
                 metrics.packetMessages.push(packet.data.subarray(1, 1 + packet.data[0]).toString('utf8'));
+            }
+        });
+        client.on('sound_effect', packet => {
+            if (Math.abs(packet.volume - 0.31) < 0.00001 || Math.abs(packet.volume - 0.32) < 0.00001) {
+                metrics.soundPitches.push(packet.pitch);
             }
         });
         client.on('ping', packet => client.write('pong', {id: packet.id}));
@@ -153,7 +158,8 @@ async function run(moduleName) {
             output.end();
             const result = fs.existsSync(resultFile) ? fs.readFileSync(resultFile, 'utf8') : 'no result';
             const packetsPassed = moduleName !== 'fabric20' || JSON.stringify(metrics.packetMessages) === JSON.stringify(['player', 'generic', 'uuid', 'name', 'all', 'dimension', 'first', 'second']);
-            const networkPassed = packetsPassed && metrics.buttonClicks === 6 && metrics.displayedButton && metrics.lockedCloseAttempts === 1 && metrics.lockedReopens >= 1 &&
+            const soundsPassed = metrics.soundPitches.length === 2 && metrics.soundPitches.every(pitch => pitch === 1);
+            const networkPassed = packetsPassed && soundsPassed && metrics.buttonClicks === 6 && metrics.displayedButton && metrics.lockedCloseAttempts === 1 && metrics.lockedReopens >= 1 &&
                     metrics.windows.some(title => title.includes('Functional/deferred-second'));
             const passed = code === 0 && complete && result.startsWith('passed=true') && networkPassed;
             const summary = {moduleName, passed, code, networkPassed, shutdownSeconds: stopAt ? (Date.now() - stopAt) / 1000 : null, metrics, result};

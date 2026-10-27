@@ -40,13 +40,38 @@ configure(loaderModules) {
 
     tasks.register('versionedRelease', Copy) {
         group = 'build'
-        description = 'Copies the finished mod JAR to the shared release directory.'
+        description = 'Collects the current mod JAR and removes previous releases of this module.'
 
-        from(layout.buildDirectory.dir('libs')) {
-            include '*Forge.jar', '*NeoForge.jar', '*Fabric.jar'
+        dependsOn {
+            tasks.named(project.name == 'forge20' ? 'renameJarToSrg' : project.name in ['fabric20', 'fabric21'] ? 'remapJar' : 'shadowJar')
         }
 
-        into(rootProject.layout.projectDirectory.dir('release'))
+        def moduleProject = project
+
+        def oldReleases = providers.provider {
+            def suffix = moduleProject.version.toString().substring(moduleProject.property('project_version').toString().length())
+
+            moduleProject.rootProject.fileTree('release') {
+                include "${moduleProject.rootProject.name}-*${suffix}.jar"
+                exclude "${moduleProject.rootProject.name}-${moduleProject.version}.jar"
+            }
+        }
+
+        from(providers.provider {
+            moduleProject.layout.buildDirectory.file("libs/${moduleProject.rootProject.name}-${moduleProject.version}.jar").get()
+        })
+
+        into(moduleProject.rootProject.layout.projectDirectory.dir('release'))
+
+        outputs.upToDateWhen {
+            oldReleases.get().isEmpty()
+        }
+
+        doFirst {
+            oldReleases.get().files.each {
+                java.nio.file.Files.delete(it.toPath())
+            }
+        }
     }
 }
 

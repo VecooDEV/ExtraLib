@@ -367,18 +367,32 @@ public final class PlayerUtil {
     }
 
     public static void playSound(@Nullable Player player, @NotNull SoundEvent soundEvent, float volume) {
+        playSound(player, soundEvent, volume, true);
+    }
+
+    public static void playSound(@Nullable Player player, @NotNull SoundEvent soundEvent, boolean randomPitch) {
+        playSound(player, soundEvent, 0.2F, randomPitch);
+    }
+
+    /** Uses the original random pitch when enabled, or the normal pitch of 1.0F when disabled. */
+    public static void playSound(@Nullable Player player, @NotNull SoundEvent soundEvent, float volume, boolean randomPitch) {
         if (player != null) {
             RandomSource random = player.level().getRandom();
-            float pitch = (random.nextFloat() - random.nextFloat() * 0.7F + 1.0F) * 2.0F;
+            float pitch = randomPitch ? (random.nextFloat() - random.nextFloat() * 0.7F + 1.0F) * 2.0F : 1.0F;
 
             player.playNotifySound(soundEvent, SoundSource.PLAYERS, volume, pitch);
         }
     }
 
     public static void playSoundLevel(@Nullable Player player, @NotNull SoundEvent soundEvent, float volume) {
+        playSoundLevel(player, soundEvent, volume, true);
+    }
+
+    /** Uses the original random pitch when enabled, or the normal pitch of 1.0F when disabled. */
+    public static void playSoundLevel(@Nullable Player player, @NotNull SoundEvent soundEvent, float volume, boolean randomPitch) {
         if (player != null) {
             RandomSource random = player.level().getRandom();
-            float pitch = (random.nextFloat() - random.nextFloat() * 0.7F + 1.0F) * 2.0F;
+            float pitch = randomPitch ? (random.nextFloat() - random.nextFloat() * 0.7F + 1.0F) * 2.0F : 1.0F;
 
             player.level().playSound(null, player.getX(), player.getY(), player.getZ(), soundEvent, SoundSource.PLAYERS, volume, pitch);
         }
